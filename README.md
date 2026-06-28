@@ -106,7 +106,7 @@ Tab is blocked globally except inside the Generate Window where normal Tab behav
 
 Download the latest installer from the releases section:
 
-My Awesome Setup 1.0.0.exe
+[My Awesome Setup 1.0.0.exe](https://github.com/YASSER-27/my-awesome/releases/download/1.0.0/My.Awesome.exe)
 
 Run the installer and follow the setup wizard. The application will be installed and a desktop shortcut will be created.
 
@@ -120,6 +120,7 @@ Requirements:
 git clone https://github.com/YASSER-27/my-awesome.git
 cd my-awesome
 npm install
+npm run dev
 npm run build
 ```
 
