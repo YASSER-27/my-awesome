@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI Color Palettes</title>
+<style>
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#1a1a1a}
+::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#444}
+::-webkit-scrollbar-corner{background:#1a1a1a}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#121212;color:#c8d0e8;font-family:'SF Mono','Fira Code',ui-monospace,monospace;min-height:100vh;padding:28px 20px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.logo{font-size:13px;font-weight:700;color:#ffffff;letter-spacing:.05em;text-transform:uppercase}
+.logo span{color:#c8ff00}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.search{background:#1e1e1e;border:1px solid #2a2a2a;border-radius:7px;padding:8px 14px;font-size:11px;color:#c8d0e8;outline:none;font-family:inherit;width:190px;transition:border-color .15s}
+.search:focus{border-color:#c8ff00}
+.search::placeholder{color:#4a5270}
+.filter-btns{display:flex;gap:4px;flex-wrap:wrap}
+.fbtn{padding:6px 12px;border-radius:6px;border:1px solid #2a2a2a;background:#1e1e1e;color:#6b7599;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.04em;text-transform:uppercase;transition:all .15s}
+.fbtn:hover{border-color:#444;color:#c8d0e8}
+.fbtn.active{background:rgba(200,255,0,.12);border-color:rgba(200,255,0,.35);color:#c8ff00}
+.count{font-size:10px;color:#3a4260;letter-spacing:.05em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:28px 18px}
+.card{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;transition:transform .12s}
+.card:hover{transform:translateY(-4px)}
+.drops{display:flex;flex-direction:column;align-items:center}
+.drop{width:46px;height:53px;clip-path:path("M23 0 C23 0 46 19 46 33 C46 45 36 53 23 53 C10 53 0 45 0 33 C0 19 23 0 23 0Z");margin-bottom:-17px;transition:filter .15s,transform .15s}
+.drop:last-child{margin-bottom:0}
+.card:hover .drop{filter:brightness(1.12)}
+.card-name{font-size:9px;color:#3a4260;letter-spacing:.04em;text-align:center;font-weight:600;text-transform:uppercase;transition:color .15s}
+.card:hover .card-name{color:#6b7599}
+.card-wrap{position:relative}
+.send-overlay{position:absolute;top:4px;right:4px;background:rgba(102,126,234,.85);color:#fff;border:none;border-radius:4px;font-size:8px;padding:2px 6px;cursor:pointer;opacity:0;transition:opacity .15s;z-index:5;font-family:inherit;font-weight:600;letter-spacing:.04em}
+.card-wrap:hover .send-overlay{opacity:1}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;backdrop-filter:blur(6px)}
+.overlay.open{display:flex}
+.modal{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:28px;width:100%;max-width:420px;box-shadow:0 32px 80px rgba(0,0,0,.6)}
+.modal-name{font-size:11px;font-weight:700;color:#c8ff00;text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px}
+.swatch-row{display:flex;height:80px;border-radius:10px;overflow:hidden;margin-bottom:18px}
+.sw{flex:1;position:relative;display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px}
+.sw span{font-size:8px;font-weight:700;padding:2px 5px;border-radius:3px;letter-spacing:.04em;font-family:'SF Mono',monospace}
+.code-rows{display:flex;flex-direction:column;gap:6px;margin-bottom:22px}
+.code-row{display:flex;align-items:center;gap:10px;background:#121212;border:1px solid #2a2a2a;border-radius:8px;padding:9px 12px}
+.cdot{width:22px;height:22px;border-radius:5px;flex-shrink:0;border:1px solid rgba(255,255,255,.06)}
+.cinfo{flex:1}
+.clabel{font-size:9px;color:#3a4260;margin-bottom:2px;letter-spacing:.04em;text-transform:uppercase}
+.chex{font-size:13px;font-weight:700;color:#e8edf8;font-family:'SF Mono',monospace;letter-spacing:.04em}
+.cpbtn{background:#1e1e1e;border:1px solid #2a2a2a;border-radius:5px;padding:5px 10px;font-size:10px;cursor:pointer;font-family:inherit;color:#6b7599;transition:all .15s;letter-spacing:.02em}
+.cpbtn:hover{border-color:#c8ff00;color:#c8ff00}
+.cpbtn.ok{border-color:#22c55e;color:#22c55e}
+.mactions{display:flex;gap:8px}
+.mabtn{flex:1;padding:11px;border-radius:9px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:opacity .15s}
+.mabtn:hover{opacity:.85}
+.ma1{background:#ffffff;color:#000000}
+.ma2{background:#c8ff00;color:#000000}
+.ma3{background:#1e1e1e;border:1px solid #2a2a2a;color:#6b7599;flex:.5}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e1e1e;border:1px solid #2a2a2a;color:#c8d0e8;font-size:11px;padding:9px 18px;border-radius:7px;opacity:0;transition:all .2s;pointer-events:none;z-index:999;font-family:'SF Mono',monospace;letter-spacing:.04em;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">UI <span>Color</span> Palettes</div>
+  <div class="controls">
+    <input class="search" id="sq" placeholder="Search hex..." oninput="go()">
+    <div class="filter-btns">
+      <button class="fbtn active" data-f="all" onclick="setF('all',this)">All</button>
+      <button class="fbtn" data-f="dark" onclick="setF('dark',this)">Dark</button>
+      <button class="fbtn" data-f="brand" onclick="setF('brand',this)">Brand</button>
+      <button class="fbtn" data-f="accent" onclick="setF('accent',this)">Accent</button>
+      <button class="fbtn" data-f="semantic" onclick="setF('semantic',this)">Semantic</button>
+      <button class="fbtn" data-f="light" onclick="setF('light',this)">Light</button>
+    </div>
+    <span class="count" id="cnt"></span>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="overlay" id="ov" onclick="closeMod(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-name" id="mname"></div>
+    <div class="swatch-row" id="msw"></div>
+    <div class="code-rows" id="mcr"></div>
+    <div class="mactions">
+      <button class="mabtn ma1" onclick="copyAll()">Copy All HEX</button>
+      <button class="mabtn ma2" onclick="copyCss()">Copy CSS Vars</button>
+      <button class="mabtn" id="modalSendBtn" onclick="sendCurrentPalette()" style="background:#667eea;color:#fff;flex:.7">+ Canvas</button>
+      <button class="mabtn ma3" onclick="closeMod()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const P=[{"name": "Dark UI", "tag": "dark", "colors": ["#121212", "#1e1e1e", "#2a2a2a", "#3a3a3a"]}, {"name": "Vercel Dark", "tag": "dark", "colors": ["#000000", "#111111", "#888888", "#ffffff"]}, {"name": "Linear App", "tag": "dark", "colors": ["#0f0f10", "#1c1c1f", "#5e5ce6", "#ffffff"]}, {"name": "Tailwind Slate", "tag": "dark", "colors": ["#0f172a", "#1e293b", "#64748b", "#f8fafc"]}, {"name": "Tailwind Zinc", "tag": "dark", "colors": ["#09090b", "#18181b", "#71717a", "#fafafa"]}, {"name": "GitHub Dark", "tag": "dark", "colors": ["#0d1117", "#161b22", "#30363d", "#c9d1d9"]}, {"name": "Shadcn UI", "tag": "dark", "colors": ["#09090b", "#18181b", "#27272a", "#a1a1aa"]}, {"name": "Figma Dark", "tag": "dark", "colors": ["#1e1e1e", "#2c2c2c", "#7b61ff", "#ffffff"]}, {"name": "Notion", "tag": "dark", "colors": ["#191919", "#2f2f2f", "#37352f", "#ffffff"]}, {"name": "Discord", "tag": "dark", "colors": ["#313338", "#2b2d31", "#5865f2", "#ffffff"]}, {"name": "VS Code", "tag": "dark", "colors": ["#1e1e1e", "#252526", "#007acc", "#d4d4d4"]}, {"name": "Stripe", "tag": "brand", "colors": ["#0a2540", "#425466", "#635bff", "#ffffff"]}, {"name": "Tailwind Blue", "tag": "brand", "colors": ["#1e40af", "#3b82f6", "#93c5fd", "#eff6ff"]}, {"name": "Material Blue", "tag": "brand", "colors": ["#0d47a1", "#1976d2", "#64b5f6", "#e3f2fd"]}, {"name": "Success Green", "tag": "semantic", "colors": ["#052e16", "#166534", "#22c55e", "#dcfce7"]}, {"name": "Danger Red", "tag": "semantic", "colors": ["#450a0a", "#991b1b", "#ef4444", "#fee2e2"]}, {"name": "Warning Amber", "tag": "semantic", "colors": ["#451a03", "#92400e", "#f59e0b", "#fef3c7"]}, {"name": "Violet Accent", "tag": "accent", "colors": ["#2e1065", "#5b21b6", "#8b5cf6", "#ede9fe"]}, {"name": "Cyan Teal", "tag": "accent", "colors": ["#022c22", "#065f46", "#10b981", "#d1fae5"]}, {"name": "Rose Pink", "tag": "accent", "colors": ["#4c0519", "#9f1239", "#f43f5e", "#ffe4e6"]}, {"name": "Indigo", "tag": "brand", "colors": ["#1e1b4b", "#3730a3", "#6366f1", "#e0e7ff"]}, {"name": "Orange Brand", "tag": "brand", "colors": ["#431407", "#c2410c", "#f97316", "#ffedd5"]}, {"name": "Sky Blue", "tag": "brand", "colors": ["#082f49", "#0369a1", "#0ea5e9", "#e0f2fe"]}, {"name": "Light UI", "tag": "light", "colors": ["#ffffff", "#f4f4f5", "#e4e4e7", "#a1a1aa"]}, {"name": "Neutral Gray", "tag": "light", "colors": ["#171717", "#404040", "#a3a3a3", "#fafafa"]}, {"name": "Apple Dark", "tag": "dark", "colors": ["#000000", "#1c1c1e", "#2c2c2e", "#48484a"]}, {"name": "Lime Accent", "tag": "accent", "colors": ["#1a2e05", "#365314", "#84cc16", "#ecfccb"]}, {"name": "Fuchsia Brand", "tag": "accent", "colors": ["#4a044e", "#86198f", "#d946ef", "#fae8ff"]}, {"name": "Glass Dark", "tag": "dark", "colors": ["#0f0f23", "#1a1a3e", "#4361ee", "#7b8cde"]}, {"name": "Neon Cyber", "tag": "accent", "colors": ["#0a0a0a", "#0d0d1a", "#00f5ff", "#c8ff00"]}];
+let cur=null,filt='all';
+
+function lum(h){const r=parseInt(h.slice(1,3),16)/255,g=parseInt(h.slice(3,5),16)/255,b=parseInt(h.slice(5,7),16)/255;return .299*r+.587*g+.114*b;}
+
+function setF(f,btn){
+  filt=f;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  go();
+}
+
+function go(){
+  const q=document.getElementById('sq').value.toLowerCase().trim();
+  let list=P;
+  if(q) list=list.filter(p=>p.colors.some(h=>h.toLowerCase().includes(q))||p.name.toLowerCase().includes(q));
+  if(filt!=='all') list=list.filter(p=>p.tag===filt);
+  render(list);
+}
+
+function render(list){
+  const g=document.getElementById('grid');
+  g.innerHTML='';
+  document.getElementById('cnt').textContent=list.length+' palettes';
+  list.forEach(p=>{
+    const wrap=document.createElement('div');
+    wrap.className='card-wrap';
+    const card=document.createElement('div');
+    card.className='card';
+    card.onclick=()=>open(p);
+    const drops=document.createElement('div');
+    drops.className='drops';
+    p.colors.forEach(hex=>{
+      const d=document.createElement('div');
+      d.className='drop';
+      d.style.background=hex;
+      drops.appendChild(d);
+    });
+    const nm=document.createElement('div');
+    nm.className='card-name';
+    nm.textContent=p.name;
+    card.appendChild(drops);
+    card.appendChild(nm);
+    const sendBtn=document.createElement('button');
+    sendBtn.className='send-overlay';
+    sendBtn.textContent='+ Canvas';
+    sendBtn.onclick=(ev)=>{ev.stopPropagation();sendToCanvas(p);};
+    wrap.appendChild(card);
+    wrap.appendChild(sendBtn);
+    g.appendChild(wrap);
+  });
+}
+
+function open(p){
+  cur=p;
+  document.getElementById('mname').textContent=p.name;
+  document.getElementById('msw').innerHTML=p.colors.map(h=>{
+    const l=lum(h);
+    const tc=l>0.5?'rgba(0,0,0,0.7)':'rgba(255,255,255,0.85)';
+    const bg=l>0.5?'rgba(0,0,0,0.15)':'rgba(255,255,255,0.15)';
+    return `<div class="sw" style="background:${h}"><span style="color:${tc};background:${bg}">${h}</span></div>`;
+  }).join('');
+  document.getElementById('mcr').innerHTML=p.colors.map((h,i)=>{
+    const labels=['Background','Surface','Primary / Accent','Text / Foreground'];
+    return `<div class="code-row">
+      <div class="cdot" style="background:${h}"></div>
+      <div class="cinfo">
+        <div class="clabel">${labels[i]||'Color '+(i+1)}</div>
+        <div class="chex">${h}</div>
+      </div>
+      <button class="cpbtn" id="cb${i}" onclick="ct('${h}',this)">Copy</button>
+    </div>`;
+  }).join('');
+  document.getElementById('ov').classList.add('open');
+}
+
+function closeMod(e){if(!e||e.target===document.getElementById('ov'))document.getElementById('ov').classList.remove('open');}
+
+function ct(text,btn){
+  navigator.clipboard.writeText(text).catch(()=>{const t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);});
+  if(btn){const o=btn.textContent;btn.textContent='ok';btn.classList.add('ok');setTimeout(()=>{btn.textContent=o;btn.classList.remove('ok');},1500);}
+}
+
+function copyAll(){if(!cur)return;ct(cur.colors.join(', '));toast('All colors copied');}
+
+function copyCss(){
+  if(!cur)return;
+  const names=['bg','surface','primary','text'];
+  const css=':root {\n'+cur.colors.map((h,i)=>`  --${names[i]||'c'+(i+1)}: ${h};`).join('\n')+'\n}';
+  ct(css);toast('CSS variables copied');
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)';},2000);
+}
+
+function sendToCanvas(p){
+  const labels=['Background','Surface','Primary / Accent','Text / Foreground'];
+  const html = '<div class="palette-display" style="display:flex;flex-direction:column;gap:8px;padding:12px;background:#121212;border-radius:8px">' +
+    '<div style="font-size:11px;font-weight:700;color:#c8ff00;letter-spacing:.1em;text-transform:uppercase">' + p.name + '</div>' +
+    '<div style="display:flex;height:60px;border-radius:6px;overflow:hidden">' +
+    p.colors.map(h => '<div style="flex:1;background:' + h + '"></div>').join('') +
+    '</div>' +
+    p.colors.map((h,i) => '<div style="display:flex;align-items:center;gap:8px;font-size:11px;color:#c8d0e8;font-family:monospace"><div style="width:16px;height:16px;border-radius:3px;background:' + h + ';border:1px solid rgba(255,255,255,.08)"></div><span>' + (labels[i]||'') + ': <strong>' + h + '</strong></span></div>').join('') +
+    '</div>';
+  const css = p.colors.map((h,i) => '--' + (['bg','surface','primary','text'][i]||'c'+i) + ': ' + h + ';').join('\n');
+  window.parent.postMessage({ type: 'tool-output', html, css: ':root {\n' + css + '\n}', name: p.name + ' Palette' }, '*');
+  closeMod();
+}
+function sendCurrentPalette(){if(cur)sendToCanvas(cur);}
+
+go();
+</script>
+</body>
+</html>

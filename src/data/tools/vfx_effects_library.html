@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>VFX Effects Library - مكتبة المؤثرات</title>
+<style>
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#1a1a1a}
+::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#444}
+::-webkit-scrollbar-corner{background:#1a1a1a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;font-family:sans-serif;direction:rtl;min-height:100vh}
+#app{display:flex;flex-direction:column;height:100vh;background:#000}
+#grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:#111;flex:1;overflow-y:auto}
+.cell{background:#000;aspect-ratio:16/9;position:relative;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cell:hover .cell-label{opacity:1}
+.cell.active{outline:2px solid #fff}
+.cell-label{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.75);color:#aaa;font-size:10px;text-align:center;padding:3px;opacity:0;transition:opacity .3s;direction:rtl}
+.cell .fx-text{font-size:22px;font-weight:900;letter-spacing:2px;white-space:nowrap;user-select:none}
+.send-btn{position:absolute;top:4px;right:4px;background:rgba(102,126,234,.85);color:#fff;border:none;border-radius:4px;font-size:9px;padding:2px 6px;cursor:pointer;z-index:5;font-family:inherit;font-weight:600;opacity:0;transition:opacity .15s}
+.cell:hover .send-btn{opacity:1}
+@keyframes neonPulse{0%,100%{text-shadow:0 0 5px #fff,0 0 10px #fff,0 0 20px #0fa,0 0 40px #0fa}50%{text-shadow:0 0 3px #fff,0 0 6px #fff,0 0 10px #0fa,0 0 20px #0fa}}
+@keyframes glowPulse{0%,100%{text-shadow:0 0 10px #ff0,0 0 20px #ff0,0 0 30px #f80}50%{text-shadow:0 0 5px #ff0,0 0 10px #ff0,0 0 15px #f80}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes rainbow{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+@keyframes glitch{0%,100%{transform:translate(0)}20%{transform:translate(-3px,2px)}40%{transform:translate(3px,-1px)}60%{transform:translate(-2px,-2px)}80%{transform:translate(2px,3px)}}
+@keyframes wave{0%,100%{transform:translateY(0)}25%{transform:translateY(-8px)}75%{transform:translateY(8px)}}
+@keyframes heartbeat{0%,100%{transform:scale(1)}15%{transform:scale(1.3)}30%{transform:scale(1)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes rotate3d{0%{transform:perspective(200px) rotateY(0)}100%{transform:perspective(200px) rotateY(360deg)}}
+@keyframes scanline{0%{top:-10%}100%{top:110%}}
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
+@keyframes twinkle{0%,100%{opacity:0.3}50%{opacity:1}}
+@keyframes drift{0%{transform:translateX(-100px)}100%{transform:translateX(calc(100vw + 100px))}}
+@keyframes expand{0%{transform:scale(0);opacity:1}100%{transform:scale(3);opacity:0}}
+@keyframes slideUp{0%{transform:translateY(100%)}100%{transform:translateY(0)}}
+@keyframes typewriter{0%{width:0}100%{width:100%}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes fire{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-30px) scale(0);opacity:0}}
+@keyframes smoke{0%{transform:translateY(0) scale(1);opacity:0.4}100%{transform:translateY(-40px) scale(2);opacity:0}}
+@keyframes radar{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.2);opacity:0.7}}
+@keyframes ripple{0%{transform:scale(0);opacity:1}100%{transform:scale(2);opacity:0}}
+@keyframes vortex{0%{transform:rotate(0deg) scale(1)}100%{transform:rotate(360deg) scale(0)}}
+@keyframes matrix{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+@keyframes laser{0%{top:0}100%{top:100%}}
+@keyframes hologram{0%,100%{opacity:0.8}50%{opacity:0.4}}
+@keyframes dissolve{0%{opacity:1;filter:blur(0)}50%{opacity:0.5;filter:blur(3px)}100%{opacity:1;filter:blur(0)}}
+@keyframes buildUp{0%{transform:scaleY(0)}100%{transform:scaleY(1)}}
+@keyframes floatAcross{0%{transform:translateX(-50px);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateX(50px);opacity:0}}
+@keyframes waterRipple{0%{transform:translateX(-5px)}50%{transform:translateX(5px)}100%{transform:translateX(-5px)}}
+@keyframes spotMove{0%,100%{transform:translateX(-30%)}50%{transform:translateX(30%)}}
+@keyframes warp{0%,100%{transform:skewX(0deg)}25%{transform:skewX(5deg)}75%{transform:skewX(-5deg)}}
+@keyframes echo{0%{opacity:0;transform:translateX(0)}50%{opacity:0.5;transform:translateX(-10px)}100%{opacity:0;transform:translateX(-20px)}}
+
+/* Effect classes */
+.fx-neon{color:#0fa;animation:neonPulse 2s infinite}
+.fx-sparkle{background:linear-gradient(90deg,#ffd700,#fffbe0,#ffd700);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 2s linear infinite}
+.fx-typewriter{color:#7fffb0;overflow:hidden;white-space:nowrap;border-right:2px solid #7fffb0;animation:typewriter 2s steps(10) infinite,blink 0.8s step-end infinite;display:inline-block}
+.fx-colorwave{background:linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite}
+.fx-zoomPulse{color:linear-gradient(180deg,#f0f,#00f);-webkit-background-clip:text;animation:pulse 1.5s infinite}
+.fx-glitch{color:#fff;animation:glitch 0.3s infinite;position:relative}
+.fx-glitch::before{content:attr(data-text);position:absolute;left:-2px;color:#f00;clip:rect(0,999px,20px,0);animation:glitch 0.2s infinite reverse}
+.fx-glitch::after{content:attr(data-text);position:absolute;left:2px;color:#0ff;clip:rect(40px,999px,60px,0);animation:glitch 0.25s infinite}
+.fx-rotate3d{color:#fff;animation:rotate3d 3s linear infinite;display:inline-block}
+.fx-crystal{color:#cff;text-shadow:0 0 20px #0ff;animation:float 3s ease-in-out infinite}
+.fx-lightflow{color:#ffe;position:relative}
+.fx-lightflow::before{content:'';position:absolute;top:0;left:-100%;width:200%;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,200,0.3),transparent);animation:shimmer 2s linear infinite}
+.fx-matrix{color:#0f0;font-family:monospace;text-shadow:0 0 10px #0f0}
+.fx-matrix::before{content:'ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ';position:absolute;top:-100%;left:0;font-size:6px;color:rgba(0,255,0,0.15);animation:matrix 3s linear infinite;letter-spacing:4px;line-height:8px;width:100%}
+.fx-heartbeat{color:#f44;animation:heartbeat 1.5s ease-in-out infinite}
+.fx-cloud{color:rgba(255,255,255,0.9);animation:drift 6s linear infinite}
+.fx-shatter{color:#fff;animation:glitch 0.5s infinite}
+.fx-electric{color:#adf;text-shadow:0 0 25px #44f;position:relative}
+.fx-electric::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,transparent,rgba(120,180,255,0.1),transparent);animation:shimmer 0.5s linear infinite}
+.fx-dotExpand{color:#ff0;position:relative}
+.fx-dotExpand::before{content:'';position:absolute;top:50%;left:50%;width:20px;height:20px;border:2px solid rgba(255,200,50,0.6);border-radius:50%;transform:translate(-50%,-50%);animation:expand 2s ease-out infinite}
+.fx-dotExpand::after{content:'';position:absolute;top:50%;left:50%;width:10px;height:10px;border:2px solid rgba(255,100,50,0.4);border-radius:50%;transform:translate(-50%,-50%);animation:expand 2s ease-out 0.5s infinite}
+.fx-pixelBuild{color:#fff;position:relative}
+.fx-pixelBuild::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(100,200,255,0.1) 2px,rgba(100,200,255,0.1) 4px);animation:buildUp 2s linear infinite;transform-origin:bottom}
+.fx-energyRing{color:#0ef;text-shadow:0 0 20px #0ff}
+.fx-energyRing::before{content:'';position:absolute;top:50%;left:50%;width:30px;height:30px;border:2px solid rgba(0,220,255,0.4);border-radius:50%;transform:translate(-50%,-50%);animation:expand 2s ease-out infinite}
+.fx-starFall{color:#ffe;position:relative}
+.fx-starFall::before{content:'✦';position:absolute;top:-20px;left:50%;color:rgba(255,255,180,0.8);font-size:8px;animation:matrix 2s linear infinite}
+.fx-radar{color:#0f4;position:relative}
+.fx-radar::before{content:'';position:absolute;top:50%;left:50%;width:40px;height:40px;border:1px solid rgba(0,255,80,0.15);border-radius:50%;transform:translate(-50%,-50%)}
+.fx-radar::after{content:'';position:absolute;top:50%;left:50%;width:2px;height:20px;background:rgba(0,255,80,0.5);transform-origin:bottom center;animation:radar 2s linear infinite}
+.fx-vortex{background:conic-gradient(from 0deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:rainbow 3s linear infinite}
+.fx-paperrip{color:#fff;position:relative}
+.fx-paperrip::before{content:'';position:absolute;top:0;left:0;right:0;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,0.03) 3px,rgba(255,255,255,0.03) 4px);animation:buildUp 3s linear infinite}
+.fx-fogfade{color:#e0e8ff;animation:float 4s ease-in-out infinite;opacity:0.7}
+.fx-lightning{color:#cdf;position:relative}
+.fx-lightning::before{content:'⚡';position:absolute;top:-15px;left:50%;font-size:10px;animation:twinkle 0.3s infinite}
+.fx-ripple{color:#8df;position:relative}
+.fx-ripple::before{content:'';position:absolute;top:50%;left:50%;width:10px;height:10px;border:1px solid rgba(80,180,255,0.4);border-radius:50%;transform:translate(-50%,-50%);animation:ripple 2s ease-out infinite}
+.fx-gold{background:linear-gradient(90deg,#8B6914,#ffd700,#fff8c0,#ffd700,#8B6914);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 2s linear infinite}
+.fx-fire{color:#fc0;position:relative}
+.fx-fire::before{content:'🔥';position:absolute;bottom:-5px;left:50%;font-size:8px;animation:fire 1s ease-out infinite}
+.fx-smoke{color:rgba(220,220,220,0.9);position:relative}
+.fx-smoke::before{content:'';position:absolute;top:50%;left:50%;width:6px;height:6px;background:rgba(120,120,120,0.15);border-radius:50%;animation:smoke 2s ease-out infinite}
+.fx-audiowave{color:#8cf;position:relative}
+.fx-audiowave::before{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,rgba(100,200,255,0.3),rgba(100,200,255,0.6),rgba(100,200,255,0.3));animation:shimmer 0.8s linear infinite;border-radius:2px}
+.fx-spacestar{color:#eef;position:relative}
+.fx-spacestar::before{content:'✦ ✧ ★ ✦ ✧';position:absolute;top:-10px;left:0;right:0;font-size:6px;color:rgba(255,255,255,0.5);letter-spacing:10px;animation:twinkle 2s ease-in-out infinite}
+.fx-kaleidoscope{color:#fff;position:relative}
+.fx-kaleidoscope::before{content:'';position:absolute;top:50%;left:50%;width:30px;height:30px;background:conic-gradient(from 0deg,rgba(255,0,0,0.15),rgba(0,255,0,0.15),rgba(0,0,255,0.15),rgba(255,0,255,0.15),rgba(255,0,0,0.15));border-radius:50%;transform:translate(-50%,-50%);animation:rainbow 4s linear infinite}
+.fx-blood{color:#c0010;font-family:Georgia,serif;text-shadow:0 0 5px rgba(200,0,16,0.5)}
+.fx-rainbow{background:linear-gradient(90deg,#f00,#ff7700,#ff0,#0f0,#00f,#8b00ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:rainbow 3s linear infinite}
+.fx-flychars{color:#fff;display:inline-block;animation:slideUp 2s ease-out infinite}
+.fx-hologram{color:#0ffcc0;text-shadow:0 0 15px #0ff;animation:hologram 0.1s infinite;position:relative}
+.fx-hologram::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:rgba(0,255,200,0.15);animation:laser 1s linear infinite}
+.fx-warpsurface{color:#99f;animation:warp 2s ease-in-out infinite;display:inline-block}
+.fx-spiral{background:conic-gradient(from 0deg,rgba(255,0,0,0.5),rgba(255,255,0,0.5),rgba(0,255,0,0.5),rgba(0,255,255,0.5),rgba(0,0,255,0.5),rgba(255,0,255,0.5),rgba(255,0,0,0.5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:rainbow 2s linear infinite}
+.fx-network{color:#9cf;position:relative}
+.fx-network::before{content:'';position:absolute;top:50%;left:50%;width:40px;height:30px;border:1px solid rgba(80,160,255,0.2);border-radius:50%;transform:translate(-50%,-50%);animation:radar 4s linear infinite}
+.fx-spotlight{color:#ffe;position:relative}
+.fx-spotlight::before{content:'';position:absolute;top:-20%;left:0;width:60%;height:140%;background:radial-gradient(ellipse at center,rgba(255,255,200,0.1),transparent 70%);animation:spotMove 3s ease-in-out infinite}
+.fx-dissolve{color:#ccf;animation:dissolve 3s ease-in-out infinite}
+.fx-echo{color:#fff;position:relative}
+.fx-echo::before{content:attr(data-text);position:absolute;color:rgba(100,150,255,0.3);animation:echo 1.5s ease-out infinite}
+.fx-letterwind{color:#8cf;display:inline-block;animation:wave 2s ease-in-out infinite}
+.fx-silver{background:linear-gradient(90deg,#888,#fff,#aaa);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 2s linear infinite}
+.fx-cubes{color:#9af;position:relative}
+.fx-cubes::before{content:'';position:absolute;bottom:0;left:5px;width:12px;height:12px;background:rgba(100,150,255,0.4);animation:buildUp 1s ease-out infinite;transform-origin:bottom}
+.fx-river{color:#5af;position:relative}
+.fx-river::before{content:'~';position:absolute;bottom:-5px;left:0;right:0;font-size:10px;color:rgba(0,140,255,0.2);animation:waterRipple 1.5s ease-in-out infinite;letter-spacing:8px}
+.fx-mirror{color:#fff;position:relative}
+.fx-mirror::after{content:attr(data-text);position:absolute;top:100%;left:0;right:0;transform:scaleY(-1);opacity:0.3;background:linear-gradient(180deg,rgba(255,255,255,0.4),transparent);-webkit-background-clip:text}
+.fx-digitalchaos{color:#0f8;font-family:monospace;animation:glitch 0.1s infinite}
+.fx-moonglow{color:#eef0cc;position:relative}
+.fx-moonglow::before{content:'';position:absolute;top:-10px;right:-5px;width:10px;height:10px;background:rgba(255,255,200,0.4);border-radius:50%;animation:float 4s ease-in-out infinite}
+.fx-lightstream{color:#fff;position:relative}
+.fx-lightstream::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2));animation:shimmer 1.5s linear infinite}
+.fx-laserscan{color:#f08;position:relative}
+.fx-laserscan::before{content:'';position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,rgba(255,0,80,0.6),transparent);animation:laser 2s linear infinite}
+
+/* Additional keyframes for text gradient colors */
+.fx-zoomPulse{background:linear-gradient(180deg,#f0f,#00f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:pulse 1.5s infinite}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="grid"></div>
+</div>
+<script>
+const EFFECTS = [
+  {name:"انعكاس + نجوم",cls:"fx-sparkle",html:'<span class="fx-sparkle fxt">SPARKLE</span>'},
+  {name:"وميض نيون",cls:"fx-neon",html:'<span class="fx-neon fxt">NEON</span>'},
+  {name:"كتابة متحركة",cls:"fx-typewriter",html:'<span class="fx-typewriter fxt">TYPE</span>'},
+  {name:"موجة لونية",cls:"fx-colorwave",html:'<span class="fx-colorwave fxt">WAVE</span>'},
+  {name:"تفجر جزيئات",cls:"fx-pixelBuild",html:'<span class="fx-pixelBuild fxt" style="color:#fff">BURST</span>'},
+  {name:"تمدد زوم",cls:"fx-zoomPulse",html:'<span class="fx-zoomPulse fxt">ZOOM</span>'},
+  {name:"خطوط كاشطة",cls:"fx-glitch",html:'<span class="fx-glitch fxt" data-text="GLITCH">GLITCH</span>'},
+  {name:"دوران 3D",cls:"fx-rotate3d",html:'<span class="fx-rotate3d fxt">3D</span>'},
+  {name:"بلورة ثلجية",cls:"fx-crystal",html:'<span class="fx-crystal fxt">CRYSTAL</span>'},
+  {name:"تدفق ضوئي",cls:"fx-lightflow",html:'<span class="fx-lightflow fxt">FLOW</span>'},
+  {name:"مطر المصفوفة",cls:"fx-matrix",html:'<span class="fx-matrix fxt">MATRIX</span>'},
+  {name:"نبض القلب",cls:"fx-heartbeat",html:'<span class="fx-heartbeat fxt">♥ BEAT</span>'},
+  {name:"انجراف غيمة",cls:"fx-cloud",html:'<span class="fx-cloud fxt">CLOUD</span>'},
+  {name:"تشظي حجري",cls:"fx-shatter",html:'<span class="fx-shatter fxt">SHATTER</span>'},
+  {name:"تعرج كهرباء",cls:"fx-electric",html:'<span class="fx-electric fxt">⚡ELECTRIC</span>'},
+  {name:"نقطة تضخم",cls:"fx-dotExpand",html:'<span class="fx-dotExpand fxt">DOT</span>'},
+  {name:"بناء بكسل",cls:"fx-pixelBuild",html:'<span class="fx-pixelBuild fxt">PIXEL</span>'},
+  {name:"حلقة طاقة",cls:"fx-energyRing",html:'<span class="fx-energyRing fxt">RING</span>'},
+  {name:"سقوط نجوم",cls:"fx-starFall",html:'<span class="fx-starFall fxt">STAR</span>'},
+  {name:"موجة الرادار",cls:"fx-radar",html:'<span class="fx-radar fxt">RADAR</span>'},
+  {name:"إعصار ضوئي",cls:"fx-vortex",html:'<span class="fx-vortex fxt">VORTEX</span>'},
+  {name:"تمزق أوراق",cls:"fx-paperrip",html:'<span class="fx-paperrip fxt">RIP</span>'},
+  {name:"غموض ضبابي",cls:"fx-fogfade",html:'<span class="fx-fogfade fxt">FOG</span>'},
+  {name:"برق مضيء",cls:"fx-lightning",html:'<span class="fx-lightning fxt">BOLT</span>'},
+  {name:"تموج مائي",cls:"fx-ripple",html:'<span class="fx-ripple fxt">RIPPLE</span>'},
+  {name:"بريق ذهبي",cls:"fx-gold",html:'<span class="fx-gold fxt">GOLD</span>'},
+  {name:"انفجار ناري",cls:"fx-fire",html:'<span class="fx-fire fxt">FIRE</span>'},
+  {name:"دخان سحري",cls:"fx-smoke",html:'<span class="fx-smoke fxt">SMOKE</span>'},
+  {name:"أمواج صوتية",cls:"fx-audiowave",html:'<span class="fx-audiowave fxt">AUDIO</span>'},
+  {name:"نجمة فضائية",cls:"fx-spacestar",html:'<span class="fx-spacestar fxt">SPACE</span>'},
+  {name:"كاليدوسكوب",cls:"fx-kaleidoscope",html:'<span class="fx-kaleidoscope fxt">KALEIDO</span>'},
+  {name:"كتابة دموية",cls:"fx-blood",html:'<span class="fx-blood fxt">BLOOD</span>'},
+  {name:"قوس قزح",cls:"fx-rainbow",html:'<span class="fx-rainbow fxt">RAINBOW</span>'},
+  {name:"حروف طائرة",cls:"fx-flychars",html:'<span class="fx-flychars fxt">FLY</span>'},
+  {name:"هولوغرام",cls:"fx-hologram",html:'<span class="fx-hologram fxt">HOLO</span>'},
+  {name:"سطح متموج",cls:"fx-warpsurface",html:'<span class="fx-warpsurface fxt">WARP</span>'},
+  {name:"انبثاق حلزوني",cls:"fx-spiral",html:'<span class="fx-spiral fxt">SPIRAL</span>'},
+  {name:"شبكة عقد",cls:"fx-network",html:'<span class="fx-network fxt">NODES</span>'},
+  {name:"إضاءة أمامية",cls:"fx-spotlight",html:'<span class="fx-spotlight fxt">SPOT</span>'},
+  {name:"تحلل ذري",cls:"fx-dissolve",html:'<span class="fx-dissolve fxt">ATOM</span>'},
+  {name:"صدى ضوئي",cls:"fx-echo",html:'<span class="fx-echo fxt" data-text="ECHO">ECHO</span>'},
+  {name:"ريح الحروف",cls:"fx-letterwind",html:'<span class="fx-letterwind fxt">WIND</span>'},
+  {name:"تلاشي فضي",cls:"fx-silver",html:'<span class="fx-silver fxt">SILVER</span>'},
+  {name:"بناء مكعبات",cls:"fx-cubes",html:'<span class="fx-cubes fxt">CUBES</span>'},
+  {name:"انسياب نهري",cls:"fx-river",html:'<span class="fx-river fxt">RIVER</span>'},
+  {name:"انعكاس مرآة",cls:"fx-mirror",html:'<span class="fx-mirror fxt" data-text="MIRROR">MIRROR</span>'},
+  {name:"فوضى ديجيتال",cls:"fx-digitalchaos",html:'<span class="fx-digitalchaos fxt">CHAOS</span>'},
+  {name:"توهج قمري",cls:"fx-moonglow",html:'<span class="fx-moonglow fxt">MOON</span>'},
+  {name:"تيار ضوئي",cls:"fx-lightstream",html:'<span class="fx-lightstream fxt">STREAM</span>'},
+  {name:"مسح ليزر",cls:"fx-laserscan",html:'<span class="fx-laserscan fxt">LASER</span>'},
+];
+
+function getCssFromDocument() {
+  const sheets = document.styleSheets;
+  let css = '';
+  for (const s of sheets) {
+    try {
+      for (const r of (s.cssRules || [])) css += r.cssText + '\n';
+    } catch {}
+  }
+  return css;
+}
+
+function buildHtml(effect) {
+  const text = (effect.html || '').replace(/fxt/g, 'fx-text');
+  return '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#000;font-family:sans-serif;position:relative;overflow:hidden">' +
+    '<div style="font-size:28px;font-weight:900;text-align:center;white-space:nowrap;position:relative">' +
+    text +
+    '</div></div>';
+}
+
+function sendEffectToCanvas(i) {
+  const ef = EFFECTS[i];
+  const css = getCssFromDocument();
+  const html = buildHtml(ef);
+  window.parent.postMessage({
+    type: 'tool-output',
+    html: html,
+    css: css,
+    name: ef.name + ' Effect'
+  }, '*');
+}
+
+function buildGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  EFFECTS.forEach((ef, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.innerHTML = buildHtml(ef) +
+      '<div class="cell-label">' + (i+1) + '. ' + ef.name + '</div>' +
+      '<button class="send-btn">+ Canvas</button>';
+    const sendBtn = cell.querySelector('.send-btn');
+    sendBtn.onclick = (ev) => { ev.stopPropagation(); sendEffectToCanvas(i); };
+    cell.onclick = () => {
+      document.querySelectorAll('.cell').forEach(c => c.classList.remove('active'));
+      cell.classList.add('active');
+    };
+    grid.appendChild(cell);
+  });
+}
+
+buildGrid();
+</script>
+</body>
+</html>

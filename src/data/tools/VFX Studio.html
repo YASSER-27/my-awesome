@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VFX Text Studio - استوديو التأثيرات</title>
+<style>
+  /* =========================================
+     1. إعدادات الواجهة والاستوديو
+     ========================================= */
+  :root {
+    --bg-color: #000000;
+    --ui-bg: #1a1a1a;
+    --primary: #ffc107;
+    --anim-speed: 3s; /* متغير السرعة الذي سنتحكم به بالبرمجة */
+  }
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+  
+  body { display: flex; height: 100vh; background: var(--ui-bg); color: white; overflow: hidden; }
+
+  /* لوحة التحكم الجانبية */
+  .sidebar {
+    width: 350px; background: #111; padding: 20px; border-left: 2px solid #333;
+    display: flex; flex-direction: column; gap: 20px; z-index: 100; overflow-y: auto;
+  }
+  
+  .sidebar h2 { color: var(--primary); text-align: center; margin-bottom: 10px; font-size: 1.5rem; }
+  
+  .control-group { display: flex; flex-direction: column; gap: 8px; }
+  .control-group label { font-size: 0.9rem; color: #ccc; }
+  .control-group input, .control-group select {
+    padding: 10px; border-radius: 5px; border: 1px solid #444; background: #222; color: white; outline: none; font-size: 1rem;
+  }
+  .control-group input:focus { border-color: var(--primary); }
+
+  .btn {
+    padding: 15px; border: none; border-radius: 5px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.3s;
+  }
+
+  /* منطقة العرض (الشاشة السوداء للتسجيل) */
+  .preview-area {
+    flex: 1; display: flex; justify-content: center; align-items: center; background: var(--bg-color); position: relative;
+  }
+  
+  /* =========================================
+     2. التأثيرات (تعمل بمتغير --anim-speed)
+     ========================================= */
+  .effect-container { display: none; } /* إخفاء الكل افتراضياً */
+  .effect-container.active { display: block; } /* إظهار النشط فقط */
+
+  /* 1. Sparkle Effect */
+  .sparkle-effect { position: relative; font-size: 5rem; font-weight: 900; text-transform: uppercase; }
+  .sparkle-text-bg { color: transparent; -webkit-text-stroke: 2px #555; position: absolute; top: 0; left: 0; }
+  .sparkle-text-fg {
+    position: relative; z-index: 2; color: transparent;
+    background: linear-gradient(108deg, transparent 0 55%, rgba(255,255,255,0.9) 55% 60%, transparent 60% 70%, rgba(255,255,255,0.9) 70% 85%, transparent 85%) 0% 0% / 200% 100%, #ffc107;
+    -webkit-background-clip: text;
+    animation: shine var(--anim-speed) infinite linear;
+  }
+  @keyframes shine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .sparkle-effect svg {
+    position: absolute; z-index: 3; width: 30px; height: 30px; fill: white;
+    transform: translate(-50%, -50%) scale(0); animation: sparkle-anim var(--anim-speed) infinite;
+  }
+  .sparkle-effect svg:nth-of-type(1) { top: 20%; left: 0%; animation-delay: 0.2s; }
+  .sparkle-effect svg:nth-of-type(2) { top: 80%; left: 20%; animation-delay: 0.6s; }
+  .sparkle-effect svg:nth-of-type(3) { top: 30%; left: 50%; animation-delay: 1.0s; }
+  .sparkle-effect svg:nth-of-type(4) { top: 70%; left: 80%; animation-delay: 1.4s; }
+  .sparkle-effect svg:nth-of-type(5) { top: 10%; left: 100%; animation-delay: 1.8s; }
+  @keyframes sparkle-anim { 0%, 100% { transform: translate(-50%, -50%) scale(0); } 15% { transform: translate(-50%, -50%) scale(1.2); } 30% { transform: translate(-50%, -50%) scale(0); } }
+
+  /* 2. Neon Glow */
+  .neon-text { font-size: 5rem; font-weight: bold; color: #fff; animation: neon-flicker var(--anim-speed) infinite alternate; text-transform: uppercase;}
+  @keyframes neon-flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #0fa, 0 0 40px #0fa, 0 0 80px #0fa; }
+    20%, 24%, 55% { text-shadow: none; }
+  }
+
+  /* 3. Glitch Effect */
+  .glitch-text { font-size: 6rem; font-weight: bold; position: relative; color: white; text-transform: uppercase;}
+  .glitch-text::before, .glitch-text::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: black; }
+  .glitch-text::before { left: 3px; text-shadow: -3px 0 red; clip: rect(44px, 900px, 56px, 0); animation: glitch-anim var(--anim-speed) infinite linear alternate-reverse; }
+  .glitch-text::after { left: -3px; text-shadow: -3px 0 blue; clip: rect(44px, 900px, 56px, 0); animation: glitch-anim2 var(--anim-speed) infinite linear alternate-reverse; }
+  @keyframes glitch-anim { 0% { clip: rect(31px, 9999px, 94px, 0); } 20% { clip: rect(30px, 9999px, 30px, 0); } 100% { clip: rect(31px, 9999px, 94px, 0); } }
+  @keyframes glitch-anim2 { 0% { clip: rect(10px, 9999px, 50px, 0); } 20% { clip: rect(80px, 9999px, 90px, 0); } 100% { clip: rect(10px, 9999px, 50px, 0); } }
+
+  /* 4. RGB Wave */
+  .rgb-wave-text { font-size: 6rem; font-weight: 900; background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000); background-size: 200% auto; color: transparent; -webkit-background-clip: text; animation: rgb-wave var(--anim-speed) infinite linear; text-transform: uppercase;}
+  @keyframes rgb-wave { 0% { background-position: 0% center; } 100% { background-position: -200% center; } }
+
+  /* Send to Canvas button */
+  .send-canvas-btn {
+    display: block; margin: 12px auto 0; padding: 8px 18px;
+    background: #667eea; color: white; border: none; border-radius: 6px;
+    font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity .2s;
+  }
+  .send-canvas-btn:hover { opacity: .8; }
+
+</style>
+</head>
+<body>
+
+  <!-- منطقة العرض -->
+  <div class="preview-area" id="previewArea">
+
+    <!-- التأثير 1 -->
+    <div class="effect-container active" id="eff-sparkle">
+      <div class="sparkle-effect">
+        <svg viewBox="0 0 96 96"><path d="M93.781 51.578C95 50.969 96 49.359 96 48c0-1.375-1-2.969-2.219-3.578 0 0-22.868-1.514-31.781-10.422-8.915-8.91-10.438-31.781-10.438-31.781C50.969 1 49.375 0 48 0s-2.969 1-3.594 2.219c0 0-1.5 22.87-10.406 31.781-8.908 8.913-31.781 10.422-31.781 10.422C1 45.031 0 46.625 0 48c0 1.359 1 2.969 2.219 3.578 0 0 22.873 1.51 31.781 10.422 8.906 8.911 10.406 31.781 10.406 31.781C45.031 95 46.625 96 48 96s2.969-1 3.562-2.219c0 0 1.523-22.871 10.438-31.781 8.913-8.908 31.781-10.422 31.781-10.422Z"/></svg>
+        <svg viewBox="0 0 96 96"><path d="M93.781 51.578C95 50.969 96 49.359 96 48c0-1.375-1-2.969-2.219-3.578 0 0-22.868-1.514-31.781-10.422-8.915-8.91-10.438-31.781-10.438-31.781C50.969 1 49.375 0 48 0s-2.969 1-3.594 2.219c0 0-1.5 22.87-10.406 31.781-8.908 8.913-31.781 10.422-31.781 10.422Z"/></svg>
+        <svg viewBox="0 0 96 96"><path d="M93.781 51.578C95 50.969 96 49.359 96 48c0-1.375-1-2.969-2.219-3.578 0 0-22.868-1.514-31.781-10.422-8.915-8.91-10.438-31.781-10.438-31.781Z"/></svg>
+        <svg viewBox="0 0 96 96"><path d="M93.781 51.578C95 50.969 96 49.359 96 48c0-1.375-1-2.969-2.219-3.578 0 0-22.868-1.514-31.781-10.422-8.915-8.91-10.438-31.781-10.438-31.781Z"/></svg>
+        <svg viewBox="0 0 96 96"><path d="M93.781 51.578C95 50.969 96 49.359 96 48c0-1.375-1-2.969-2.219-3.578 0 0-22.868-1.514-31.781-10.422-8.915-8.91-10.438-31.781-10.438-31.781Z"/></svg>
+        <span class="sparkle-text-bg target-text">SPARKLE</span>
+        <span class="sparkle-text-fg target-text">SPARKLE</span>
+        <button class="send-canvas-btn" data-effect="sparkle" onclick="sendEffect('sparkle')">+ Canvas</button>
+      </div>
+    </div>
+
+    <!-- التأثير 2 -->
+    <div class="effect-container" id="eff-neon">
+      <div class="neon-text target-text">NEON GLOW</div>
+      <button class="send-canvas-btn" data-effect="neon" onclick="sendEffect('neon')">+ Canvas</button>
+    </div>
+
+    <!-- التأثير 3 -->
+    <div class="effect-container" id="eff-glitch">
+      <div class="glitch-text target-text target-glitch" data-text="ERROR 404">ERROR 404</div>
+      <button class="send-canvas-btn" data-effect="glitch" onclick="sendEffect('glitch')">+ Canvas</button>
+    </div>
+
+    <!-- التأثير 4 -->
+    <div class="effect-container" id="eff-rgb">
+      <div class="rgb-wave-text target-text">RGB WAVE</div>
+      <button class="send-canvas-btn" data-effect="rgb" onclick="sendEffect('rgb')">+ Canvas</button>
+    </div>
+
+  </div>
+
+  <!-- لوحة التحكم الجانبية -->
+  <div class="sidebar">
+    <h2>VFX Studio</h2>
+    
+    <div class="control-group">
+      <label>اختر التأثير (Effect):</label>
+      <select id="effectSelect">
+        <option value="eff-sparkle">انعكاس ونجوم (Sparkle)</option>
+        <option value="eff-neon">إضاءة نيون (Neon)</option>
+        <option value="eff-glitch">تشويش الشاشة (Glitch)</option>
+        <option value="eff-rgb">ألوان متحركة (RGB Wave)</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label>اكتب النص هنا (Text):</label>
+      <input type="text" id="textInput" value="SPARKLE">
+    </div>
+
+    <div class="control-group">
+      <label>سرعة التأثير (ثواني):</label>
+      <input type="number" id="speedInput" value="3" min="0.5" step="0.5">
+    </div>
+  </div>
+
+  <script>
+    // 1. تغيير التأثير المعروض
+    const effectSelect = document.getElementById('effectSelect');
+    const textInput = document.getElementById('textInput');
+    const speedInput = document.getElementById('speedInput');
+    
+    effectSelect.addEventListener('change', (e) => {
+      document.querySelectorAll('.effect-container').forEach(el => el.classList.remove('active'));
+      document.getElementById(e.target.value).classList.add('active');
+    });
+
+    // 2. تغيير النص لحظياً
+    textInput.addEventListener('input', (e) => {
+      const newText = e.target.value || ' ';
+      document.querySelectorAll('.target-text').forEach(el => {
+        el.innerText = newText;
+      });
+      // تحديث الداتا لتأثير الـ Glitch
+      document.querySelectorAll('.target-glitch').forEach(el => {
+        el.setAttribute('data-text', newText);
+      });
+    });
+
+    // 3. تغيير سرعة التأثير لحظياً
+    speedInput.addEventListener('input', (e) => {
+      document.documentElement.style.setProperty('--anim-speed', e.target.value + 's');
+    });
+
+    // 4. Send effect to canvas
+    function sendEffect(name) {
+      const el = document.getElementById('eff-' + name);
+      const html = el.innerHTML;
+      const styleTag = document.querySelector('style');
+      const css = styleTag ? styleTag.textContent : '';
+      window.parent.postMessage({ type: 'tool-output', html: '<div class="effect-container active">' + html + '</div>', css, name: name.charAt(0).toUpperCase() + name.slice(1) + ' Effect' }, '*');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Isolated Component</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #121212;
+            font-family: system-ui, sans-serif;
+        }
+
+        .navbar {
+            display: flex;
+            gap: 20px;
+            padding: 12px 24px;
+            background: #222;
+            border-radius: 8px;
+            list-style: none;
+            margin: 0;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #888;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .navbar a:hover, .navbar a.active {
+            color: #fff;
+            background: linear-gradient(90deg, #00c8ff, #0088cc);
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <ul class="navbar">
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Services</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+
+</body>
+</html>

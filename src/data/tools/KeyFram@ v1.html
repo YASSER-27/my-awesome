@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate CSS Keyframes Collection — 30+ Animations</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ================================================================
+   1. CORE VARIABLES
+================================================================ */
+:root {
+    --bg-base: #07070a;
+    --bg-surface: #111116;
+    --bg-elevated: #1a1d30;
+    --glass-bg: rgba(255,255,255,0.03);
+    --glass-border: rgba(255,255,255,0.08);
+    --neon-purple: #9d4edd;
+    --neon-cyan: #00f5d4;
+    --neon-pink: #ff007f;
+    --neon-yellow: #f59e0b;
+    --text-main: #ffffff;
+    --text-muted: #a0a5c0;
+    --text-faint: #555a78;
+    --radius-md: 14px;
+    --radius-lg: 22px;
+    --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ================================================================
+   2. RESET & BASE
+================================================================ */
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-base);
+    color: var(--text-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+a { color: inherit; text-decoration: none; }
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--neon-cyan); }
+
+/* ================================================================
+   3. LAYOUT
+================================================================ */
+.page-header {
+    text-align: center;
+    padding: 80px 5% 40px;
+    position: relative;
+    overflow: hidden;
+}
+.page-header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(157,78,221,0.2), transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(0,245,212,0.15), transparent 50%);
+    animation: aurora-shift 15s ease infinite;
+    background-size: 200% 200%;
+    z-index: 0;
+}
+.page-header > * { position: relative; z-index: 2; }
+.page-title {
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    background: linear-gradient(90deg, #fff 0%, #fff 40%, var(--neon-cyan) 50%, #fff 60%, #fff 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: text-shine 5s linear infinite;
+}
+.page-subtitle {
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+}
+.badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    color: var(--neon-cyan);
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+    animation: float 4s ease-in-out infinite;
+}
+
+.main-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 40px 5% 80px;
+}
+
+/* ================================================================
+   4. SECTION & COPY BUTTON
+================================================================ */
+.anim-section {
+    margin-bottom: 60px;
+    position: relative;
+}
+.section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+.section-num {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--neon-purple);
+    letter-spacing: 2px;
+}
+.section-name {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+.section-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.demo-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+}
+.demo-box:hover { border-color: rgba(157,78,221,0.3); }
+
+.copy-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 50;
+    background: rgba(157,78,221,0.15);
+    border: 1px solid var(--neon-purple);
+    color: var(--neon-purple);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    backdrop-filter: blur(8px);
+    font-family: inherit;
+}
+.copy-btn:hover {
+    background: var(--neon-purple);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 0 20px rgba(157,78,221,0.4);
+}
+.copy-btn.copied {
+    background: #10b981;
+    border-color: #10b981;
+    color: #fff;
+}
+.copy-btn svg { width: 12px; height: 12px; }
+
+/* ================================================================
+   5. ALL KEYFRAME ANIMATIONS
+================================================================ */
+
+/* 1. Aurora Shift */
+@keyframes aurora-shift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 2. Float */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-15px); }
+}
+
+/* 3. Text Shine (Metallic) */
+@keyframes text-shine {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+
+/* 4. Neon Pulse */
+@keyframes neon-pulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(157,78,221,0.3), 0 0 30px rgba(0,245,212,0.1); }
+    50%      { box-shadow: 0 0 30px rgba(157,78,221,0.7), 0 0 60px rgba(0,245,212,0.4); }
+}
+
+/* 5. Rotating Conic Border */
+@keyframes border-spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 6. Fade Up */
+@keyframes fade-up {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 7. Slide In Left */
+@keyframes slide-in-left {
+    from { opacity: 0; transform: translateX(-50px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* 8. Slide In Right */
+@keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(50px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* 9. Shimmer */
+@keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* 10. Skeleton Wave */
+@keyframes skeleton-wave {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* 11. Spin */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 12. Pulse Scale */
+@keyframes pulse-scale {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.1); opacity: 0.8; }
+}
+
+/* 13. Bounce */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    30%      { transform: translateY(-20px); }
+    50%      { transform: translateY(-10px); }
+    70%      { transform: translateY(-15px); }
+}
+
+/* 14. Wiggle */
+@keyframes wiggle {
+    0%, 100% { transform: rotate(-5deg); }
+    50%      { transform: rotate(5deg); }
+}
+
+/* 15. Ripple */
+@keyframes ripple {
+    0%   { transform: scale(0); opacity: 1; }
+    100% { transform: scale(4); opacity: 0; }
+}
+
+/* 16. Gradient Flow */
+@keyframes gradient-flow {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 17. Morphing Shape */
+@keyframes morph {
+    0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+    50%      { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+}
+
+/* 18. Typewriter Cursor */
+@keyframes blink-caret {
+    0%, 100% { border-color: transparent; }
+    50%      { border-color: var(--neon-cyan); }
+}
+
+/* 19. Glitch */
+@keyframes glitch {
+    0%, 100% { transform: translate(0); }
+    20%      { transform: translate(-2px, 2px); }
+    40%      { transform: translate(-2px, -2px); }
+    60%      { transform: translate(2px, 2px); }
+    80%      { transform: translate(2px, -2px); }
+}
+
+/* 20. Heartbeat */
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    14%      { transform: scale(1.2); }
+    28%      { transform: scale(1); }
+    42%      { transform: scale(1.2); }
+    70%      { transform: scale(1); }
+}
+
+/* 21. Orbit */
+@keyframes orbit {
+    0%   { transform: rotate(0deg) translateX(60px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(60px) rotate(-360deg); }
+}
+
+/* 22. Wave */
+@keyframes wave {
+    0%, 100% { transform: translateY(0) scaleY(1); }
+    50%      { transform: translateY(-15px) scaleY(1.2); }
+}
+
+/* 23. Hue Rotate */
+@keyframes hue-rotate {
+    0%   { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+/* 24. Shake */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* 25. Typing Text */
+@keyframes typing {
+    from { width: 0; }
+    to   { width: 100%; }
+}
+
+/* 26. Marquee Scroll */
+@keyframes marquee {
+    0%   { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+/* 27. Flip */
+@keyframes flip {
+    0%   { transform: perspective(400px) rotateY(0); }
+    50%  { transform: perspective(400px) rotateY(180deg); }
+    100% { transform: perspective(400px) rotateY(360deg); }
+}
+
+/* 28. Swing */
+@keyframes swing {
+    20%      { transform: rotate(15deg); }
+    40%      { transform: rotate(-10deg); }
+    60%      { transform: rotate(5deg); }
+    80%      { transform: rotate(-5deg); }
+    100%     { transform: rotate(0deg); }
+}
+
+/* 29. Glow */
+@keyframes glow {
+    0%, 100% { text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan); }
+    50%      { text-shadow: 0 0 20px var(--neon-cyan), 0 0 30px var(--neon-purple); }
+}
+
+/* 30. Scale In */
+@keyframes scale-in {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+/* ================================================================
+   6. DEMO ELEMENTS
+================================================================ */
+
+/* Aurora Demo */
+.aurora-demo {
+    width: 200px;
+    height: 120px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan), var(--neon-pink));
+    background-size: 200% 200%;
+    animation: aurora-shift 4s ease infinite;
+}
+
+/* Float Demo */
+.float-demo {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+    border-radius: 20px;
+    animation: float 3s ease-in-out infinite;
+    box-shadow: 0 20px 40px rgba(157,78,221,0.3);
+}
+
+/* Neon Pulse Demo */
+.neon-btn {
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+    color: #fff;
+    font-weight: 700;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    animation: neon-pulse 2s infinite;
+    font-family: inherit;
+}
+
+/* Rotating Border Demo */
+.rotating-border-wrap {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-elevated);
+}
+.rotating-border-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, transparent, var(--neon-purple), var(--neon-cyan), transparent);
+    animation: border-spin 3s linear infinite;
+    z-index: 0;
+}
+.rotating-border-wrap::after {
+    content: '🎯';
+    position: relative;
+    z-index: 2;
+    font-size: 40px;
+}
+.rotating-border-wrap > * { position: relative; z-index: 2; }
+
+/* Fade Up Demo */
+.fade-up-box {
+    display: flex;
+    gap: 16px;
+}
+.fade-up-item {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+    border-radius: 12px;
+    animation: fade-up 1s ease-out backwards;
+}
+.fade-up-item:nth-child(1) { animation-delay: 0.1s; }
+.fade-up-item:nth-child(2) { animation-delay: 0.3s; }
+.fade-up-item:nth-child(3) { animation-delay: 0.5s; }
+.fade-up-item:nth-child(4) { animation-delay: 0.7s; }
+
+/* Slide In Demo */
+.slide-demo {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 400px;
+}
+.slide-item {
+    padding: 12px 18px;
+    background: var(--bg-elevated);
+    border-radius: 10px;
+    border-left: 3px solid var(--neon-purple);
+    font-size: 13px;
+}
+.slide-item:nth-child(odd) { animation: slide-in-left 0.8s ease-out backwards; }
+.slide-item:nth-child(even) { animation: slide-in-right 0.8s ease-out backwards; }
+.slide-item:nth-child(1) { animation-delay: 0.1s; }
+.slide-item:nth-child(2) { animation-delay: 0.2s; }
+.slide-item:nth-child(3) { animation-delay: 0.3s; }
+.slide-item:nth-child(4) { animation-delay: 0.4s; }
+
+/* Shimmer / Skeleton Demo */
+.skeleton-demo {
+    width: 300px;
+    padding: 20px;
+    background: var(--bg-elevated);
+    border-radius: 14px;
+}
+.skel-block {
+    background: linear-gradient(90deg, #22263a 25%, #2d3147 50%, #22263a 75%);
+    background-size: 200% 100%;
+    animation: skeleton-wave 1.5s infinite;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+.skel-img { height: 100px; }
+.skel-line { height: 12px; }
+.skel-line.w80 { width: 80%; }
+.skel-line.w60 { width: 60%; }
+
+/* Spin Demo */
+.spin-group { display: flex; gap: 30px; align-items: center; }
+.spinner-1 {
+    width: 50px; height: 50px;
+    border: 4px solid rgba(157,78,221,0.2);
+    border-top-color: var(--neon-purple);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+.spinner-2 {
+    width: 50px; height: 50px;
+    border: 4px solid transparent;
+    border-top-color: var(--neon-cyan);
+    border-right-color: var(--neon-cyan);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite reverse;
+}
+.spinner-3 {
+    width: 50px; height: 50px;
+    background: conic-gradient(from 0deg, transparent, var(--neon-pink));
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite;
+    mask: radial-gradient(circle, transparent 40%, black 41%);
+    -webkit-mask: radial-gradient(circle, transparent 40%, black 41%);
+}
+
+/* Pulse Scale Demo */
+.pulse-demo {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+    border-radius: 50%;
+    animation: pulse-scale 1.5s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
+
+/* Bounce Demo */
+.bounce-demo {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+}
+.bounce-ball {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+    animation: bounce 1.2s ease-in-out infinite;
+}
+.bounce-ball:nth-child(2) { animation-delay: 0.2s; background: linear-gradient(135deg, var(--neon-pink), var(--neon-yellow)); }
+.bounce-ball:nth-child(3) { animation-delay: 0.4s; background: linear-gradient(135deg, var(--neon-yellow), var(--neon-cyan)); }
+.bounce-ball:nth-child(4) { animation-delay: 0.6s; background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink)); }
+
+/* Wiggle Demo */
+.wiggle-demo {
+    font-size: 80px;
+    animation: wiggle 0.5s ease-in-out infinite;
+    display: inline-block;
+}
+
+/* Ripple Demo */
+.ripple-demo {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ripple-circle {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--neon-cyan);
+    border-radius: 50%;
+    animation: ripple 2s ease-out infinite;
+}
+.ripple-circle:nth-child(2) { animation-delay: 0.5s; }
+.ripple-circle:nth-child(3) { animation-delay: 1s; }
+.ripple-center {
+    width: 20px;
+    height: 20px;
+    background: var(--neon-cyan);
+    border-radius: 50%;
+    position: relative;
+    z-index: 2;
+}
+
+/* Gradient Flow Demo */
+.gradient-flow-demo {
+    width: 200px;
+    height: 80px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan), var(--neon-pink), var(--neon-yellow));
+    background-size: 300% 300%;
+    animation: gradient-flow 4s ease infinite;
+}
+
+/* Morph Demo */
+.morph-demo {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+    animation: morph 6s ease-in-out infinite, hue-rotate 8s linear infinite;
+}
+
+/* Typewriter Demo */
+.typewriter-demo {
+    font-family: 'Courier New', monospace;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--neon-cyan);
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 3px solid var(--neon-cyan);
+    width: 0;
+    animation: typing 3s steps(20) infinite alternate, blink-caret 0.75s step-end infinite;
+}
+
+/* Glitch Demo */
+.glitch-demo {
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--neon-cyan);
+    position: relative;
+    animation: glitch 0.3s infinite;
+}
+.glitch-demo::before,
+.glitch-demo::after {
+    content: 'GLITCH';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+.glitch-demo::before {
+    color: var(--neon-pink);
+    animation: glitch 0.5s infinite reverse;
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+}
+.glitch-demo::after {
+    color: var(--neon-yellow);
+    animation: glitch 0.7s infinite;
+    clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+}
+
+/* Heartbeat Demo */
+.heartbeat-demo {
+    font-size: 80px;
+    animation: heartbeat 1.2s ease-in-out infinite;
+    display: inline-block;
+    filter: drop-shadow(0 0 20px rgba(255,0,127,0.5));
+}
+
+/* Orbit Demo */
+.orbit-demo {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.orbit-center {
+    width: 40px;
+    height: 40px;
+    background: var(--neon-yellow);
+    border-radius: 50%;
+    box-shadow: 0 0 30px var(--neon-yellow);
+}
+.orbit-planet {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    margin: -9px;
+}
+.orbit-planet.p1 { background: var(--neon-cyan); animation: orbit 3s linear infinite; }
+.orbit-planet.p2 { background: var(--neon-pink); animation: orbit 5s linear infinite reverse; }
+.orbit-planet.p3 { background: var(--neon-purple); animation: orbit 7s linear infinite; }
+
+/* Wave Demo */
+.wave-demo {
+    display: flex;
+    gap: 6px;
+    align-items: flex-end;
+    height: 80px;
+}
+.wave-bar {
+    width: 8px;
+    height: 40px;
+    background: linear-gradient(to top, var(--neon-purple), var(--neon-cyan));
+    border-radius: 4px;
+    animation: wave 1.2s ease-in-out infinite;
+}
+.wave-bar:nth-child(1) { animation-delay: 0s; }
+.wave-bar:nth-child(2) { animation-delay: 0.1s; }
+.wave-bar:nth-child(3) { animation-delay: 0.2s; }
+.wave-bar:nth-child(4) { animation-delay: 0.3s; }
+.wave-bar:nth-child(5) { animation-delay: 0.4s; }
+.wave-bar:nth-child(6) { animation-delay: 0.5s; }
+.wave-bar:nth-child(7) { animation-delay: 0.6s; }
+.wave-bar:nth-child(8) { animation-delay: 0.7s; }
+
+/* Hue Rotate Demo */
+.hue-demo {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #ff007f, #00f5d4, #f59e0b);
+    border-radius: 20px;
+    animation: hue-rotate 4s linear infinite;
+}
+
+/* Shake Demo */
+.shake-demo {
+    padding: 14px 28px;
+    background: var(--neon-pink);
+    color: #fff;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    animation: shake 0.6s ease-in-out infinite;
+    font-family: inherit;
+}
+
+/* Flip Demo */
+.flip-demo {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+    border-radius: 16px;
+    animation: flip 3s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
+
+/* Swing Demo */
+.swing-demo {
+    font-size: 70px;
+    transform-origin: top center;
+    animation: swing 2s ease-in-out infinite;
+    display: inline-block;
+}
+
+/* Glow Demo */
+.glow-demo {
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--neon-cyan);
+    animation: glow 2s ease-in-out infinite;
+}
+
+/* Scale In Demo */
+.scale-in-demo {
+    display: flex;
+    gap: 16px;
+}
+.scale-in-item {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+    border-radius: 12px;
+    animation: scale-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+}
+.scale-in-item:nth-child(1) { animation-delay: 0.1s; }
+.scale-in-item:nth-child(2) { animation-delay: 0.3s; }
+.scale-in-item:nth-child(3) { animation-delay: 0.5s; }
+.scale-in-item:nth-child(4) { animation-delay: 0.7s; }
+
+/* Marquee Demo */
+.marquee-demo {
+    width: 100%;
+    overflow: hidden;
+    padding: 10px 0;
+    background: var(--bg-elevated);
+    border-radius: 10px;
+}
+.marquee-text {
+    display: inline-block;
+    white-space: nowrap;
+    font-size: 20px;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: marquee 10s linear infinite;
+}
+
+/* ================================================================
+   7. FOOTER
+================================================================ */
+.page-footer {
+    text-align: center;
+    padding: 40px 5%;
+    border-top: 1px solid var(--glass-border);
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+/* ================================================================
+   8. RESPONSIVE
+================================================================ */
+@media (max-width: 768px) {
+    .demo-box { padding: 30px 20px; }
+    .typewriter-demo { font-size: 16px; }
+    .glitch-demo { font-size: 32px; }
+    .glow-demo { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<header class="page-header">
+    <div class="badge-pill">✨ 30+ CSS Animations</div>
+    <h1 class="page-title">The Ultimate Keyframes<br>Animation Library</h1>
+    <p class="page-subtitle">A complete collection of modern CSS @keyframes animations — each one isolated, documented, and ready to copy into your project.</p>
+</header>
+
+<main class="main-container">
+
+    <!-- 1. AURORA SHIFT -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-aurora')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">01 / 30</span></div>
+        <h2 class="section-name">Aurora Shift</h2>
+        <p class="section-desc">Smooth gradient background that continuously shifts position — perfect for hero sections and cards.</p>
+        <div class="demo-box">
+            <div class="aurora-demo"></div>
+        </div>
+    </section>
+    <textarea id="code-aurora" style="display:none">@keyframes aurora-shift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.aurora {
+    background: linear-gradient(135deg, #9d4edd, #00f5d4, #ff007f);
+    background-size: 200% 200%;
+    animation: aurora-shift 4s ease infinite;
+}</textarea>
+
+    <!-- 2. FLOAT -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-float')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">02 / 30</span></div>
+        <h2 class="section-name">Float</h2>
+        <p class="section-desc">Gentle up-and-down motion — ideal for badges, icons, and floating elements.</p>
+        <div class="demo-box">
+            <div class="float-demo"></div>
+        </div>
+    </section>
+    <textarea id="code-float" style="display:none">@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-15px); }
+}
+.float {
+    animation: float 3s ease-in-out infinite;
+}</textarea>
+
+    <!-- 3. NEON PULSE -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-neon')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">03 / 30</span></div>
+        <h2 class="section-name">Neon Pulse</h2>
+        <p class="section-desc">Pulsating neon glow effect — perfect for call-to-action buttons.</p>
+        <div class="demo-box">
+            <button class="neon-btn">Click Me</button>
+        </div>
+    </section>
+    <textarea id="code-neon" style="display:none">@keyframes neon-pulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(157,78,221,0.3), 0 0 30px rgba(0,245,212,0.1); }
+    50%      { box-shadow: 0 0 30px rgba(157,78,221,0.7), 0 0 60px rgba(0,245,212,0.4); }
+}
+.neon-btn {
+    background: linear-gradient(135deg, #9d4edd, #ff007f);
+    animation: neon-pulse 2s infinite;
+}</textarea>
+
+    <!-- 4. ROTATING CONIC BORDER -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-rotate')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">04 / 30</span></div>
+        <h2 class="section-name">Rotating Conic Border</h2>
+        <p class="section-desc">A spinning gradient border that creates a high-tech scanning effect.</p>
+        <div class="demo-box">
+            <div class="rotating-border-wrap"></div>
+        </div>
+    </section>
+    <textarea id="code-rotate" style="display:none">@keyframes border-spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.wrap {
+    position: relative;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+}
+.wrap::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, transparent, #9d4edd, #00f5d4, transparent);
+    animation: border-spin 3s linear infinite;
+}</textarea>
+
+    <!-- 5. FADE UP -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-fadeup')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">05 / 30</span></div>
+        <h2 class="section-name">Fade Up (Staggered)</h2>
+        <p class="section-desc">Elements fade in while sliding up — with staggered delays for a cascading effect.</p>
+        <div class="demo-box">
+            <div class="fade-up-box">
+                <div class="fade-up-item"></div>
+                <div class="fade-up-item"></div>
+                <div class="fade-up-item"></div>
+                <div class="fade-up-item"></div>
+            </div>
+        </div>
+    </section>
+    <textarea id="code-fadeup" style="display:none">@keyframes fade-up {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.item {
+    animation: fade-up 1s ease-out backwards;
+}
+.item:nth-child(1) { animation-delay: 0.1s; }
+.item:nth-child(2) { animation-delay: 0.3s; }
+.item:nth-child(3) { animation-delay: 0.5s; }</textarea>
+
+    <!-- 6. SLIDE IN -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-slide')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">06 / 30</span></div>
+        <h2 class="section-name">Slide In (Alternating)</h2>
+        <p class="section-desc">Items slide in from left and right alternately — great for lists and notifications.</p>
+        <div class="demo-box">
+            <div class="slide-demo">
+                <div class="slide-item">← Slides from the left</div>
+                <div class="slide-item">Slides from the right →</div>
+                <div class="slide-item">← Slides from the left</div>
+                <div class="slide-item">Slides from the right →</div>
+            </div>
+        </div>
+    </section>
+    <textarea id="code-slide" style="display:none">@keyframes slide-in-left {
+    from { opacity: 0; transform: translateX(-50px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(50px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+.item:nth-child(odd)  { animation: slide-in-left 0.8s ease-out backwards; }
+.item:nth-child(even) { animation: slide-in-right 0.8s ease-out backwards; }</textarea>
+
+    <!-- 7. SKELETON WAVE -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-skeleton')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">07 / 30</span></div>
+        <h2 class="section-name">Skeleton Wave</h2>
+        <p class="section-desc">Classic loading placeholder with shimmering wave effect.</p>
+        <div class="demo-box">
+            <div class="skeleton-demo">
+                <div class="skel-block skel-img"></div>
+                <div class="skel-block skel-line w80"></div>
+                <div class="skel-block skel-line w60"></div>
+            </div>
+        </div>
+    </section>
+    <textarea id="code-skeleton" style="display:none">@keyframes skeleton-wave {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.skeleton {
+    background: linear-gradient(90deg, #22263a 25%, #2d3147 50%, #22263a 75%);
+    background-size: 200% 100%;
+    animation: skeleton-wave 1.5s infinite;
+}</textarea>
+
+    <!-- 8. SPINNERS -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-spinners')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">08 / 30</span></div>
+        <h2 class="section-name">Loading Spinners (3 Styles)</h2>
+        <p class="section-desc">Three different rotating spinner designs — border, dual-color, and conic gradient.</p>
+        <div class="demo-box">
+            <div class="spin-group">
+                <div class="spinner-1"></div>
+                <div class="spinner-2"></div>
+                <div class="spinner-3"></div>
+            </div>
+        </div>
+    </section>
+    <textarea id="code-spinners" style="display:none">@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+.spinner {
+    border: 4px solid rgba(157,78,221,0.2);
+    border-top-color: #9d4edd;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+.spinner.reverse { animation-direction: reverse; }
+.spinner.conic {
+    background: conic-gradient(from 0deg, transparent, #ff007f);
+    mask: radial-gradient(circle, transparent 40%, black 41%);
+}</textarea>
+
+    <!-- 9. PULSE SCALE -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-pulse')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">09 / 30</span></div>
+        <h2 class="section-name">Pulse Scale</h2>
+        <p class="section-desc">Element grows and shrinks rhythmically — perfect for recording indicators or live badges.</p>
+        <div class="demo-box">
+            <div class="pulse-demo">🎙</div>
+        </div>
+    </section>
+    <textarea id="code-pulse" style="display:none">@keyframes pulse-scale {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.1); opacity: 0.8; }
+}
+.pulse {
+    animation: pulse-scale 1.5s ease-in-out infinite;
+}</textarea>
+
+    <!-- 10. BOUNCE -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-bounce')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">10 / 30</span></div>
+        <h2 class="section-name">Bounce</h2>
+        <p class="section-desc">Playful bouncing motion with staggered timing — great for loading indicators.</p>
+        <div class="demo-box">
+            <div class="bounce-demo">
+                <div class="bounce-ball"></div>
+                <div class="bounce-ball"></div>
+                <div class="bounce-ball"></div>
+                <div class="bounce-ball"></div>
+            </div>
+        </div>
+    </section>
+    <textarea id="code-bounce" style="display:none">@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    30%      { transform: translateY(-20px); }
+    50%      { transform: translateY(-10px); }
+    70%      { transform: translateY(-15px); }
+}
+.ball {
+    animation: bounce 1.2s ease-in-out infinite;
+}
+.ball:nth-child(2) { animation-delay: 0.2s; }
+.ball:nth-child(3) { animation-delay: 0.4s; }</textarea>
+
+    <!-- 11. WIGGLE -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-wiggle')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">11 / 30</span></div>
+        <h2 class="section-name">Wiggle</h2>
+        <p class="section-desc">Subtle back-and-forth rotation — perfect for attention-grabbing icons.</p>
+        <div class="demo-box">
+            <div class="wiggle-demo">🔔</div>
+        </div>
+    </section>
+    <textarea id="code-wiggle" style="display:none">@keyframes wiggle {
+    0%, 100% { transform: rotate(-5deg); }
+    50%      { transform: rotate(5deg); }
+}
+.wiggle {
+    animation: wiggle 0.5s ease-in-out infinite;
+}</textarea>
+
+    <!-- 12. RIPPLE -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-ripple')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">12 / 30</span></div>
+        <h2 class="section-name">Ripple Effect</h2>
+        <p class="section-desc">Expanding concentric circles — ideal for location markers or radar-style UIs.</p>
+        <div class="demo-box">
+            <div class="ripple-demo">
+                <div class="ripple-circle"></div>
+                <div class="ripple-circle"></div>
+                <div class="ripple-circle"></div>
+                <div class="ripple-center"></div>
+            </div>
+        </div>
+    </section>
+    <textarea id="code-ripple" style="display:none">@keyframes ripple {
+    0%   { transform: scale(0); opacity: 1; }
+    100% { transform: scale(4); opacity: 0; }
+}
+.ripple {
+    position: absolute;
+    border: 2px solid #00f5d4;
+    border-radius: 50%;
+    animation: ripple 2s ease-out infinite;
+}
+.ripple:nth-child(2) { animation-delay: 0.5s; }
+.ripple:nth-child(3) { animation-delay: 1s; }</textarea>
+
+    <!-- 13. GRADIENT FLOW -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-gradient')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">13 / 30</span></div>
+        <h2 class="section-name">Gradient Flow</h2>
+        <p class="section-desc">Multi-color gradient that flows smoothly — perfect for premium buttons and banners.</p>
+        <div class="demo-box">
+            <div class="gradient-flow-demo"></div>
+        </div>
+    </section>
+    <textarea id="code-gradient" style="display:none">@keyframes gradient-flow {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.gradient {
+    background: linear-gradient(135deg, #9d4edd, #00f5d4, #ff007f, #f59e0b);
+    background-size: 300% 300%;
+    animation: gradient-flow 4s ease infinite;
+}</textarea>
+
+    <!-- 14. MORPH -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-morph')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">14 / 30</span></div>
+        <h2 class="section-name">Morphing Shape</h2>
+        <p class="section-desc">Organic blob that continuously changes its border-radius — combined with hue rotation.</p>
+        <div class="demo-box">
+            <div class="morph-demo"></div>
+        </div>
+    </section>
+    <textarea id="code-morph" style="display:none">@keyframes morph {
+    0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+    50%      { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+}
+@keyframes hue-rotate {
+    0%   { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+.blob {
+    animation: morph 6s ease-in-out infinite, hue-rotate 8s linear infinite;
+}</textarea>
+
+    <!-- 15. TYPEWRITER -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-typewriter')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">15 / 30</span></div>
+        <h2 class="section-name">Typewriter</h2>
+        <p class="section-desc">Classic typing effect with blinking cursor — perfect for hero text.</p>
+        <div class="demo-box">
+            <div class="typewriter-demo">Hello, World!</div>
+        </div>
+    </section>
+    <textarea id="code-typewriter" style="display:none">@keyframes typing {
+    from { width: 0; }
+    to   { width: 100%; }
+}
+@keyframes blink-caret {
+    0%, 100% { border-color: transparent; }
+    50%      { border-color: #00f5d4; }
+}
+.typewriter {
+    font-family: monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 3px solid #00f5d4;
+    width: 0;
+    animation: typing 3s steps(20) infinite alternate,
+               blink-caret 0.75s step-end infinite;
+}</textarea>
+
+    <!-- 16. GLITCH -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-glitch')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">16 / 30</span></div>
+        <h2 class="section-name">Glitch Effect</h2>
+        <p class="section-desc">Cyberpunk-style text distortion with RGB split — perfect for gaming and tech themes.</p>
+        <div class="demo-box">
+            <div class="glitch-demo">GLITCH</div>
+        </div>
+    </section>
+    <textarea id="code-glitch" style="display:none">@keyframes glitch {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+}
+.glitch {
+    position: relative;
+    color: #00f5d4;
+    animation: glitch 0.3s infinite;
+}
+.glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute; top: 0; left: 0;
+}
+.glitch::before { color: #ff007f; clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%); }
+.glitch::after  { color: #f59e0b; clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%); }</textarea>
+
+    <!-- 17. HEARTBEAT -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-heartbeat')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">17 / 30</span></div>
+        <h2 class="section-name">Heartbeat</h2>
+        <p class="section-desc">Realistic heart-pumping animation — great for health apps and like buttons.</p>
+        <div class="demo-box">
+            <div class="heartbeat-demo">❤️</div>
+        </div>
+    </section>
+    <textarea id="code-heartbeat" style="display:none">@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    14%      { transform: scale(1.2); }
+    28%      { transform: scale(1); }
+    42%      { transform: scale(1.2); }
+    70%      { transform: scale(1); }
+}
+.heart {
+    animation: heartbeat 1.2s ease-in-out infinite;
+}</textarea>
+
+    <!-- 18. ORBIT -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-orbit')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">18 / 30</span></div>
+        <h2 class="section-name">Orbit</h2>
+        <p class="section-desc">Planets rotating around a central sun — perfect for space-themed UIs.</p>
+        <div class="demo-box">
+            <div class="orbit-demo">
+                <div class="orbit-center"></div>
+                <div class="orbit-planet p1"></div>
+                <div class="orbit-planet p2"></div>
+                <div class="orbit-planet p3"></div>
+            </div>
+        </div>
+    </section>
+    <textarea id="code-orbit" style="display:none">@keyframes orbit {
+    0%   { transform: rotate(0deg) translateX(60px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(60px) rotate(-360deg); }
+}
+.planet {
+    position: absolute;
+    top: 50%; left: 50%;
+    animation: orbit 3s linear infinite;
+}
+.planet:nth-child(2) { animation-duration: 5s; animation-direction: reverse; }
+.planet:nth-child(3) { animation-duration: 7s; }</textarea>
+
+    <!-- 19. WAVE -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-wave')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">19 / 30</span></div>
+        <h2 class="section-name">Audio Wave</h2>
+        <p class="section-desc">Equalizer-style wave bars — perfect for music players and voice indicators.</p>
+        <div class="demo-box">
+            <div class="wave-demo">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+            </div>
+        </div>
+    </section>
+    <textarea id="code-wave" style="display:none">@keyframes wave {
+    0%, 100% { transform: translateY(0) scaleY(1); }
+    50%      { transform: translateY(-15px) scaleY(1.2); }
+}
+.bar {
+    animation: wave 1.2s ease-in-out infinite;
+}
+.bar:nth-child(2) { animation-delay: 0.1s; }
+.bar:nth-child(3) { animation-delay: 0.2s; }
+.bar:nth-child(4) { animation-delay: 0.3s; }</textarea>
+
+    <!-- 20. HUE ROTATE -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-hue')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">20 / 30</span></div>
+        <h2 class="section-name">Hue Rotate</h2>
+        <p class="section-desc">Continuously cycles through the color spectrum — adds life to any element.</p>
+        <div class="demo-box">
+            <div class="hue-demo"></div>
+        </div>
+    </section>
+    <textarea id="code-hue" style="display:none">@keyframes hue-rotate {
+    0%   { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+.hue {
+    animation: hue-rotate 4s linear infinite;
+}</textarea>
+
+    <!-- 21. SHAKE -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-shake')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">21 / 30</span></div>
+        <h2 class="section-name">Shake</h2>
+        <p class="section-desc">Error-style horizontal shake — perfect for form validation feedback.</p>
+        <div class="demo-box">
+            <button class="shake-demo">Error!</button>
+        </div>
+    </section>
+    <textarea id="code-shake" style="display:none">@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80%      { transform: translateX(5px); }
+}
+.shake {
+    animation: shake 0.6s ease-in-out infinite;
+}</textarea>
+
+    <!-- 22. FLIP -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-flip')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">22 / 30</span></div>
+        <h2 class="section-name">3D Flip</h2>
+        <p class="section-desc">Full 360° rotation on the Y-axis — great for cards and icons.</p>
+        <div class="demo-box">
+            <div class="flip-demo">🎴</div>
+        </div>
+    </section>
+    <textarea id="code-flip" style="display:none">@keyframes flip {
+    0%   { transform: perspective(400px) rotateY(0); }
+    50%  { transform: perspective(400px) rotateY(180deg); }
+    100% { transform: perspective(400px) rotateY(360deg); }
+}
+.flip {
+    animation: flip 3s ease-in-out infinite;
+}</textarea>
+
+    <!-- 23. SWING -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-swing')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">23 / 30</span></div>
+        <h2 class="section-name">Swing</h2>
+        <p class="section-desc">Pendulum-like swinging motion anchored at the top — great for hanging elements.</p>
+        <div class="demo-box">
+            <div class="swing-demo">🔔</div>
+        </div>
+    </section>
+    <textarea id="code-swing" style="display:none">@keyframes swing {
+    20%  { transform: rotate(15deg); }
+    40%  { transform: rotate(-10deg); }
+    60%  { transform: rotate(5deg); }
+    80%  { transform: rotate(-5deg); }
+    100% { transform: rotate(0deg); }
+}
+.swing {
+    transform-origin: top center;
+    animation: swing 2s ease-in-out infinite;
+}</textarea>
+
+    <!-- 24. GLOW -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-glow')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">24 / 30</span></div>
+        <h2 class="section-name">Neon Text Glow</h2>
+        <p class="section-desc">Pulsating neon text shadow — perfect for retro and cyberpunk designs.</p>
+        <div class="demo-box">
+            <div class="glow-demo">NEON</div>
+        </div>
+    </section>
+    <textarea id="code-glow" style="display:none">@keyframes glow {
+    0%, 100% { text-shadow: 0 0 5px #00f5d4, 0 0 10px #00f5d4; }
+    50%      { text-shadow: 0 0 20px #00f5d4, 0 0 30px #9d4edd; }
+}
+.glow {
+    animation: glow 2s ease-in-out infinite;
+}</textarea>
+
+    <!-- 25. SCALE IN -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-scalein')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">25 / 30</span></div>
+        <h2 class="section-name">Scale In (Bouncy)</h2>
+        <p class="section-desc">Elements pop in from zero scale with elastic easing — great for modals and popups.</p>
+        <div class="demo-box">
+            <div class="scale-in-demo">
+                <div class="scale-in-item"></div>
+                <div class="scale-in-item"></div>
+                <div class="scale-in-item"></div>
+                <div class="scale-in-item"></div>
+            </div>
+        </div>
+    </section>
+    <textarea id="code-scalein" style="display:none">@keyframes scale-in {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+.item {
+    animation: scale-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+}
+.item:nth-child(1) { animation-delay: 0.1s; }
+.item:nth-child(2) { animation-delay: 0.3s; }</textarea>
+
+    <!-- 26. MARQUEE -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-marquee')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">26 / 30</span></div>
+        <h2 class="section-name">Marquee Scroll</h2>
+        <p class="section-desc">Classic horizontal scrolling text — perfect for announcements and news tickers.</p>
+        <div class="demo-box">
+            <div class="marquee-demo">
+                <span class="marquee-text">★ Breaking News • New Feature Released • Welcome to the Future • Stay Tuned ★</span>
+            </div>
+        </div>
+    </section>
+    <textarea id="code-marquee" style="display:none">@keyframes marquee {
+    0%   { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+.marquee {
+    white-space: nowrap;
+    animation: marquee 10s linear infinite;
+}</textarea>
+
+    <!-- 27. TEXT SHINE -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-textshine')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">27 / 30</span></div>
+        <h2 class="section-name">Metallic Text Shine</h2>
+        <p class="section-desc">A shine sweeps across the text — creates a premium, luxurious feel.</p>
+        <div class="demo-box">
+            <div class="page-title" style="font-size: 42px;">PREMIUM</div>
+        </div>
+    </section>
+    <textarea id="code-textshine" style="display:none">@keyframes text-shine {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+.shine {
+    background: linear-gradient(90deg, #fff 0%, #fff 40%, #00f5d4 50%, #fff 60%, #fff 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: text-shine 5s linear infinite;
+}</textarea>
+
+    <!-- 28. SHIMMER -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-shimmer')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">28 / 30</span></div>
+        <h2 class="section-name">Shimmer Overlay</h2>
+        <p class="section-desc">A light sweep passes over an element — great for progress bars and premium cards.</p>
+        <div class="demo-box" style="flex-direction: column; gap: 20px;">
+            <div style="width: 300px; height: 12px; background: linear-gradient(90deg, #9d4edd, #00f5d4); border-radius: 6px; position: relative; overflow: hidden;">
+                <div style="position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 2s infinite;"></div>
+            </div>
+            <div style="width: 300px; height: 100px; background: var(--bg-elevated); border-radius: 12px; position: relative; overflow: hidden;">
+                <div style="position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); animation: shimmer 2s infinite;"></div>
+            </div>
+        </div>
+    </section>
+    <textarea id="code-shimmer" style="display:none">@keyframes shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+}
+.shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}</textarea>
+
+    <!-- 29. COMBO -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-combo')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">29 / 30</span></div>
+        <h2 class="section-name">Combo: Float + Rotate + Glow</h2>
+        <p class="section-desc">Combine multiple animations on one element for a mesmerizing effect.</p>
+        <div class="demo-box">
+            <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #9d4edd, #00f5d4); border-radius: 20px; animation: float 3s ease-in-out infinite, border-spin 4s linear infinite, neon-pulse 2s infinite;"></div>
+        </div>
+    </section>
+    <textarea id="code-combo" style="display:none">/* Combine multiple animations */
+.combo {
+    animation:
+        float 3s ease-in-out infinite,
+        border-spin 4s linear infinite,
+        neon-pulse 2s infinite;
+}</textarea>
+
+    <!-- 30. COMPLETE EXAMPLE -->
+    <section class="anim-section">
+        <button class="copy-btn" onclick="copyCode(this, 'code-full')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy Code
+        </button>
+        <div class="section-label"><span class="section-num">30 / 30</span></div>
+        <h2 class="section-name">Complete Card Example</h2>
+        <p class="section-desc">A real-world card combining aurora background, floating icon, and neon button.</p>
+        <div class="demo-box" style="background: linear-gradient(135deg, #1a0b35, #0a1628); padding: 40px;">
+            <div style="position: relative; width: 280px; padding: 30px; background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; text-align: center; overflow: hidden;">
+                <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: #9d4edd; border-radius: 50%; filter: blur(60px); opacity: 0.4; animation: aurora-shift 5s ease infinite; background-size: 200% 200%; background: linear-gradient(135deg, #9d4edd, #00f5d4);"></div>
+                <div style="width: 60px; height: 60px; margin: 0 auto 16px; background: linear-gradient(135deg, #9d4edd, #00f5d4); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; animation: float 3s ease-in-out infinite;">⚡</div>
+                <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 8px;">Lightning Fast</h3>
+                <p style="font-size: 13px; color: #a0a5c0; margin-bottom: 20px;">Optimized for speed and performance</p>
+                <button style="padding: 10px 24px; background: linear-gradient(135deg, #9d4edd, #ff007f); color: #fff; border: none; border-radius: 50px; font-weight: 700; cursor: pointer; animation: neon-pulse 2s infinite; font-family: inherit;">Get Started</button>
+            </div>
+        </div>
+    </section>
+    <textarea id="code-full" style="display:none">/* Full Card Example */
+.card {
+    position: relative;
+    padding: 30px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    text-align: center;
+    overflow: hidden;
+}
+.card .bg-blob {
+    position: absolute;
+    width: 150px; height: 150px;
+    background: linear-gradient(135deg, #9d4edd, #00f5d4);
+    background-size: 200% 200%;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.4;
+    animation: aurora-shift 5s ease infinite;
+}
+.card .icon {
+    width: 60px; height: 60px;
+    background: linear-gradient(135deg, #9d4edd, #00f5d4);
+    border-radius: 16px;
+    margin: 0 auto 16px;
+    animation: float 3s ease-in-out infinite;
+}
+.card button {
+    background: linear-gradient(135deg, #9d4edd, #ff007f);
+    animation: neon-pulse 2s infinite;
+}</textarea>
+
+</main>
+
+<footer class="page-footer">
+    <p>🎨 Ultimate CSS Keyframes Collection — 30+ Animations Ready to Use</p>
+    <p style="margin-top: 8px; font-size: 11px; color: var(--text-faint);">Click "Copy Code" on any section to grab the animation</p>
+</footer>
+
+<script>
+function copyCode(btn, textareaId) {
+    const ta = document.getElementById(textareaId);
+    if (!ta) return;
+    const code = ta.value.trim();
+    
+    const originalHTML = btn.innerHTML;
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => {
+            showCopied(btn, originalHTML);
+        }).catch(() => {
+            fallbackCopy(code, btn, originalHTML);
+        });
+    } else {
+        fallbackCopy(code, btn, originalHTML);
+    }
+}
+
+function fallbackCopy(text, btn, originalHTML) {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.style.position = 'fixed';
+    el.style.opacity = '0';
+    document.body.appendChild(el);
+    el.select();
+    try {
+        document.execCommand('copy');
+        showCopied(btn, originalHTML);
+    } catch (e) {
+        console.error('Copy failed', e);
+    }
+    document.body.removeChild(el);
+}
+
+function showCopied(btn, originalHTML) {
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+    btn.classList.add('copied');
+    setTimeout(() => {
+        btn.innerHTML = originalHTML;
+        btn.classList.remove('copied');
+    }, 2000);
+}
+</script>
+<script>
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  const canvasBtn = document.createElement('button')
+  canvasBtn.textContent = '+Canvas'
+  canvasBtn.style.cssText = 'margin-left:6px;padding:4px 10px;border-radius:6px;border:1px solid #9d4edd;background:transparent;color:#9d4edd;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit'
+  canvasBtn.onmouseenter = () => canvasBtn.style.background = 'rgba(157,78,221,0.15)'
+  canvasBtn.onmouseleave = () => canvasBtn.style.background = 'transparent'
+  canvasBtn.onclick = () => {
+    const match = btn.getAttribute('onclick')?.match(/'([^']+)'/)
+    if (!match) return
+    const ta = document.getElementById(match[1])
+    if (!ta) return
+    const code = ta.value
+    const lines = code.split('\n')
+    const htmlLines = [], cssLines = []
+    let inStyle = false
+    for (const line of lines) {
+      if (line.trim() === '<style>') { inStyle = true; continue }
+      if (line.trim() === '</style>') { inStyle = false; continue }
+      if (inStyle) cssLines.push(line)
+      else htmlLines.push(line)
+    }
+    const html = htmlLines.join('\n')
+    const css = cssLines.join('\n')
+    parent.postMessage({ type: 'tool-output', toolName: 'KeyFram@ v1', name: match[1], html, css }, '*')
+  }
+  btn.parentNode?.insertBefore(canvasBtn, btn.nextSibling)
+})
+</script>
+</body>
+</html>

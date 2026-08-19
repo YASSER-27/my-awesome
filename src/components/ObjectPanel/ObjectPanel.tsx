@@ -127,7 +127,7 @@ function DraggableComponentCard({ component, color }: { component: ComponentItem
   return (
     <div ref={drag} className="op-card" onClick={handleClick}>
       <div className="op-card-preview" style={{ borderColor: color }}>
-        <ComponentPreview html={component.html} css={component.css} maxHeight={50} />
+        <ComponentPreview html={component.html} css={component.css} js={component.js} maxHeight={50} />
       </div>
       <div className="op-card-info">
         <span className="op-card-name">{component.name}</span>

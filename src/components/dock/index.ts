@@ -1,0 +1,7 @@
+export { DockPanel } from './DockPanel'
+export { DockContainer } from './DockContainer'
+export { useDockStore } from './dockStore'
+export type { PanelId, PanelZone } from './dockStore'
+export { ToolsPanel } from './panels/ToolsPanel'
+export { CategoriesPanel } from './panels/CategoriesPanel'
+export { ImportsPanel } from './panels/ImportsPanel'

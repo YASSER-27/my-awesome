@@ -1,0 +1,137 @@
+.settings-modal {
+  width: 640px;
+  max-width: 95vw;
+  max-height: 92vh;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+
+.settings-provider-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.settings-provider-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 4px;
+  border-radius: 8px;
+  border: 1px solid #2a2a2a;
+  background: #111;
+  color: #888;
+  font-size: 9px;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: inherit;
+}
+
+.settings-provider-btn:hover {
+  border-color: #444;
+  color: #ccc;
+  background: #1a1a1a;
+}
+
+.settings-provider-btn.active {
+  border-color: #667eea;
+  background: rgba(102,126,234,0.1);
+  color: #e0e0e0;
+}
+
+.settings-connect-btn {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  background: linear-gradient(135deg, #667eea, #f093fb);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+  margin-top: 8px;
+}
+
+.settings-connect-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.settings-connect-btn:hover:not(:disabled) {
+  box-shadow: 0 2px 12px rgba(102,126,234,0.3);
+}
+
+.settings-error {
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  background: rgba(255,50,50,0.1);
+  border: 1px solid rgba(255,50,50,0.2);
+  color: #ff6b6b;
+  font-size: 11px;
+}
+
+.settings-model-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+  overflow-y: visible;
+  padding: 6px;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  background: #0d0d0d;
+}
+
+.settings-model-chip {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: #aaa;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .1s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.settings-model-chip:hover {
+  background: #1a1a1a;
+  color: #ccc;
+}
+
+.settings-model-chip.active {
+  background: rgba(102,126,234,0.15);
+  color: #e0e0e0;
+  font-weight: 600;
+}
+
+.settings-done-btn {
+  padding: 8px 24px;
+  border-radius: 6px;
+  border: none;
+  background: linear-gradient(135deg, #667eea, #f093fb);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+}
+
+.settings-done-btn:hover {
+  box-shadow: 0 2px 12px rgba(102,126,234,0.3);
+}

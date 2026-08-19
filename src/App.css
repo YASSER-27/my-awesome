@@ -18,12 +18,20 @@
 }
 
 .right-panel {
-  width: 340px;
-  min-width: 340px;
   background: #1a1a1a;
   border-left: 1px solid #2a2a2a;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+.right-panel.right-panel-hidden {
+  display: none;
+}
+
+.right-panel > * {
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -43,6 +51,10 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #444;
+}
+
+::-webkit-scrollbar-corner {
+  background: #1a1a1a;
 }
 
 button {
@@ -76,4 +88,9 @@ input, textarea, select {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+@keyframes thinkingShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }

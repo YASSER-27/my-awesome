@@ -1,0 +1,1078 @@
+
+<style>
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#1a1a1a}
+::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#444}
+::-webkit-scrollbar-corner{background:#1a1a1a}
+/* تأثيرات إضافية للبطاقات لتصبح قابلة للضغط */
+.card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+/* تصميم النافذة المنبثقة (Modal) */
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 1000; 
+  left: 0; 
+  top: 0; 
+  width: 100%; 
+  height: 100%; 
+  background-color: rgba(0,0,0,0.4); 
+  backdrop-filter: blur(4px);
+  align-items: center; 
+  justify-content: center;
+}
+.modal-content {
+  background: var(--color-background-primary, #fff);
+  padding: 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  text-align: center;
+}
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+.modal-colors {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+.color-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.color-swatch .dot {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+.color-swatch span {
+  font-size: 11px;
+  font-family: monospace;
+  color: #555;
+}
+.copy-btn {
+  background: #111;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.copy-btn:hover { background: #333; }
+
+/* تصميم إشعار النسخ (Toast) */
+#toast {
+  visibility: hidden;
+  min-width: 250px;
+  background-color: #4caf50;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 12px;
+  position: fixed;
+  z-index: 1001;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.3s, bottom 0.3s;
+}
+#toast.show {
+  visibility: visible;
+  opacity: 1;
+  bottom: 50px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; padding: 1rem 0; }
+.card { border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); overflow: hidden; }
+.preview { height: 90px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; }
+.fake-btn { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: default; }
+.fake-input { padding: 5px 10px; border-radius: 5px; font-size: 12px; width: 90px; }
+.fake-title { font-size: 13px; font-weight: 500; }
+.info { padding: 12px 14px; background: var(--color-background-primary); border-top: 0.5px solid var(--color-border-tertiary); }
+.name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+.desc { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.colors { display: flex; gap: 5px; flex-wrap: wrap; }
+.dot { width: 14px; height: 14px; border-radius: 50%; border: 0.5px solid rgba(0,0,0,0.1); display: inline-block; }
+.tag { font-size: 10px; padding: 2px 7px; border-radius: 10px; display: inline-block; }
+</style>
+
+<div class="grid">
+
+<div class="card">
+  <div class="preview" style="background:#1e1e2e;">
+    <span class="fake-title" style="color:#cdd6f4;">Dashboard</span>
+    <div class="fake-btn" style="background:#89b4fa;color:#1e1e2e;">Save</div>
+    <div class="fake-input" style="background:#313244;border:1px solid #45475a;color:#cdd6f4;">Search...</div>
+  </div>
+  <div class="info">
+    <div class="name">1. Catppuccin Mocha</div>
+    <div class="desc">داكن دافئ مع ألوان باستيل ناعمة. الأشهر في مجتمع المطورين.</div>
+    <div class="colors">
+      <span class="dot" style="background:#1e1e2e;"></span>
+      <span class="dot" style="background:#89b4fa;"></span>
+      <span class="dot" style="background:#cba6f7;"></span>
+      <span class="dot" style="background:#a6e3a1;"></span>
+      <span class="dot" style="background:#cdd6f4;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#282c34;">
+    <span class="fake-title" style="color:#abb2bf;">Settings</span>
+    <div class="fake-btn" style="background:#61afef;color:#282c34;">Apply</div>
+    <div class="fake-input" style="background:#21252b;border:1px solid #3e4451;color:#abb2bf;">Value...</div>
+  </div>
+  <div class="info">
+    <div class="name">2. One Dark Pro</div>
+    <div class="desc">مستوحى من VS Code، مريح للعيون جداً للعمل الطويل.</div>
+    <div class="colors">
+      <span class="dot" style="background:#282c34;"></span>
+      <span class="dot" style="background:#61afef;"></span>
+      <span class="dot" style="background:#c678dd;"></span>
+      <span class="dot" style="background:#98c379;"></span>
+      <span class="dot" style="background:#e06c75;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#ffffff;border-bottom:0.5px solid #e0e0e0;">
+    <span class="fake-title" style="color:#212121;">Overview</span>
+    <div class="fake-btn" style="background:#1976d2;color:#fff;">Confirm</div>
+    <div class="fake-input" style="background:#f5f5f5;border:1px solid #bdbdbd;color:#424242;">Input...</div>
+  </div>
+  <div class="info">
+    <div class="name">3. Material Design Light</div>
+    <div class="desc">النظام الرسمي من Google. أبيض نظيف مع أزرق مميز.</div>
+    <div class="colors">
+      <span class="dot" style="background:#ffffff;border:0.5px solid #ddd;"></span>
+      <span class="dot" style="background:#1976d2;"></span>
+      <span class="dot" style="background:#f5f5f5;"></span>
+      <span class="dot" style="background:#424242;"></span>
+      <span class="dot" style="background:#ff5722;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#0d1117;">
+    <span class="fake-title" style="color:#e6edf3;">Repository</span>
+    <div class="fake-btn" style="background:#238636;color:#fff;">Commit</div>
+    <div class="fake-input" style="background:#161b22;border:1px solid #30363d;color:#c9d1d9;">Branch...</div>
+  </div>
+  <div class="info">
+    <div class="name">4. GitHub Dark</div>
+    <div class="desc">مستوحى من GitHub. أسود عميق مع أخضر للأحداث الإيجابية.</div>
+    <div class="colors">
+      <span class="dot" style="background:#0d1117;"></span>
+      <span class="dot" style="background:#238636;"></span>
+      <span class="dot" style="background:#58a6ff;"></span>
+      <span class="dot" style="background:#f85149;"></span>
+      <span class="dot" style="background:#e6edf3;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#fafafa;">
+    <span class="fake-title" style="color:#24292f;">Projects</span>
+    <div class="fake-btn" style="background:#0969da;color:#fff;">Create</div>
+    <div class="fake-input" style="background:#fff;border:1px solid #d0d7de;color:#24292f;">Search...</div>
+  </div>
+  <div class="info">
+    <div class="name">5. GitHub Light</div>
+    <div class="desc">فاتح نظيف مع أزرق GitHub المميز. رسمي ومحايد.</div>
+    <div class="colors">
+      <span class="dot" style="background:#fafafa;border:0.5px solid #ddd;"></span>
+      <span class="dot" style="background:#0969da;"></span>
+      <span class="dot" style="background:#d0d7de;"></span>
+      <span class="dot" style="background:#24292f;"></span>
+      <span class="dot" style="background:#cf222e;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#002b36;">
+    <span class="fake-title" style="color:#839496;">Terminal</span>
+    <div class="fake-btn" style="background:#268bd2;color:#002b36;">Run</div>
+    <div class="fake-input" style="background:#073642;border:1px solid #586e75;color:#93a1a1;">Command...</div>
+  </div>
+  <div class="info">
+    <div class="name">6. Solarized Dark</div>
+    <div class="desc">كلاسيكي أسطوري. أزرق بترولي داكن مع ألوان محسوبة علمياً.</div>
+    <div class="colors">
+      <span class="dot" style="background:#002b36;"></span>
+      <span class="dot" style="background:#268bd2;"></span>
+      <span class="dot" style="background:#2aa198;"></span>
+      <span class="dot" style="background:#859900;"></span>
+      <span class="dot" style="background:#dc322f;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#fdf6e3;">
+    <span class="fake-title" style="color:#657b83;">Editor</span>
+    <div class="fake-btn" style="background:#268bd2;color:#fdf6e3;">Open</div>
+    <div class="fake-input" style="background:#eee8d5;border:1px solid #93a1a1;color:#586e75;">File...</div>
+  </div>
+  <div class="info">
+    <div class="name">7. Solarized Light</div>
+    <div class="desc">نسخة فاتحة من Solarized. بيج دافئ مريح للعيون في النهار.</div>
+    <div class="colors">
+      <span class="dot" style="background:#fdf6e3;"></span>
+      <span class="dot" style="background:#268bd2;"></span>
+      <span class="dot" style="background:#eee8d5;"></span>
+      <span class="dot" style="background:#657b83;"></span>
+      <span class="dot" style="background:#cb4b16;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#2d2d2d;">
+    <span class="fake-title" style="color:#cccccc;">Monitor</span>
+    <div class="fake-btn" style="background:#f99157;color:#2d2d2d;">Alert</div>
+    <div class="fake-input" style="background:#393939;border:1px solid #515151;color:#d3d0c8;">Status...</div>
+  </div>
+  <div class="info">
+    <div class="name">8. Tomorrow Night</div>
+    <div class="desc">رمادي داكن محايد مع برتقالي دافئ. مثالي للـ Dashboard.</div>
+    <div class="colors">
+      <span class="dot" style="background:#2d2d2d;"></span>
+      <span class="dot" style="background:#f99157;"></span>
+      <span class="dot" style="background:#99cc99;"></span>
+      <span class="dot" style="background:#6699cc;"></span>
+      <span class="dot" style="background:#cc6666;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#1a1a2e;">
+    <span class="fake-title" style="color:#e94560;">ElecSa</span>
+    <div class="fake-btn" style="background:#e94560;color:#fff;">Save</div>
+    <div class="fake-input" style="background:#16213e;border:1px solid #0f3460;color:#a8b2d8;">Meter...</div>
+  </div>
+  <div class="info">
+    <div class="name">9. Midnight Blue</div>
+    <div class="desc">أزرق ليلي عميق مع أحمر مميز. مثالي لتطبيقات الطاقة.</div>
+    <div class="colors">
+      <span class="dot" style="background:#1a1a2e;"></span>
+      <span class="dot" style="background:#16213e;"></span>
+      <span class="dot" style="background:#0f3460;"></span>
+      <span class="dot" style="background:#e94560;"></span>
+      <span class="dot" style="background:#a8b2d8;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#f8f9fa;">
+    <span class="fake-title" style="color:#343a40;">Analytics</span>
+    <div class="fake-btn" style="background:#6c757d;color:#fff;">Export</div>
+    <div class="fake-input" style="background:#fff;border:1px solid #ced4da;color:#495057;">Filter...</div>
+  </div>
+  <div class="info">
+    <div class="name">10. Bootstrap Gray</div>
+    <div class="desc">رمادي Bootstrap الكلاسيكي. محايد ومناسب للتطبيقات المؤسسية.</div>
+    <div class="colors">
+      <span class="dot" style="background:#f8f9fa;border:0.5px solid #ddd;"></span>
+      <span class="dot" style="background:#6c757d;"></span>
+      <span class="dot" style="background:#343a40;"></span>
+      <span class="dot" style="background:#0d6efd;"></span>
+      <span class="dot" style="background:#dc3545;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#000000;">
+    <span class="fake-title" style="color:#ffffff;">AMOLED</span>
+    <div class="fake-btn" style="background:#bb86fc;color:#000;">Action</div>
+    <div class="fake-input" style="background:#121212;border:1px solid #333;color:#e0e0e0;">Input...</div>
+  </div>
+  <div class="info">
+    <div class="name">11. AMOLED Pure Black</div>
+    <div class="desc">أسود بالكامل #000. يوفر البطارية ويريح العيون في الظلام.</div>
+    <div class="colors">
+      <span class="dot" style="background:#000000;"></span>
+      <span class="dot" style="background:#bb86fc;"></span>
+      <span class="dot" style="background:#03dac6;"></span>
+      <span class="dot" style="background:#cf6679;"></span>
+      <span class="dot" style="background:#ffffff;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#fffef7;">
+    <span class="fake-title" style="color:#333;">Notes</span>
+    <div class="fake-btn" style="background:#ffb347;color:#333;">Add</div>
+    <div class="fake-input" style="background:#fff9e6;border:1px solid #f0d060;color:#555;">Write...</div>
+  </div>
+  <div class="info">
+    <div class="name">12. Warm Paper</div>
+    <div class="desc">أصفر ورقي دافئ. مثالي لتطبيقات الملاحظات والقراءة.</div>
+    <div class="colors">
+      <span class="dot" style="background:#fffef7;border:0.5px solid #ddd;"></span>
+      <span class="dot" style="background:#ffb347;"></span>
+      <span class="dot" style="background:#fff9e6;"></span>
+      <span class="dot" style="background:#f0d060;"></span>
+      <span class="dot" style="background:#555;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#0a192f;">
+    <span class="fake-title" style="color:#64ffda;">Portfolio</span>
+    <div class="fake-btn" style="background:transparent;color:#64ffda;border:1px solid #64ffda;">View</div>
+    <div class="fake-input" style="background:#112240;border:1px solid #233554;color:#8892b0;">Search...</div>
+  </div>
+  <div class="info">
+    <div class="name">13. Developer Portfolio</div>
+    <div class="desc">أزرق بحري مع أخضر فيروزي. الستايل الأشهر لمطوري الويب.</div>
+    <div class="colors">
+      <span class="dot" style="background:#0a192f;"></span>
+      <span class="dot" style="background:#64ffda;"></span>
+      <span class="dot" style="background:#112240;"></span>
+      <span class="dot" style="background:#8892b0;"></span>
+      <span class="dot" style="background:#ccd6f6;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#1b1b1b;">
+    <span class="fake-title" style="color:#e0e0e0;">System</span>
+    <div class="fake-btn" style="background:#333;color:#fff;border:1px solid #555;">Cancel</div>
+    <div class="fake-input" style="background:#2a2a2a;border:1px solid #444;color:#bbb;">Path...</div>
+  </div>
+  <div class="info">
+    <div class="name">14. Flat Dark Gray</div>
+    <div class="desc">رمادي داكن بسيط بدون زخرفة. مثالي لأدوات النظام.</div>
+    <div class="colors">
+      <span class="dot" style="background:#1b1b1b;"></span>
+      <span class="dot" style="background:#2a2a2a;"></span>
+      <span class="dot" style="background:#444;"></span>
+      <span class="dot" style="background:#888;"></span>
+      <span class="dot" style="background:#e0e0e0;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#0f0f23;">
+    <span class="fake-title" style="color:#00ff41;">Terminal</span>
+    <div class="fake-btn" style="background:#00ff41;color:#0f0f23;">Execute</div>
+    <div class="fake-input" style="background:#000;border:1px solid #00ff41;color:#00ff41;">$ _</div>
+  </div>
+  <div class="info">
+    <div class="name">15. Matrix / Hacker</div>
+    <div class="desc">أسود مع أخضر نيون. مستوحى من أفلام الهاكر والـ Terminal.</div>
+    <div class="colors">
+      <span class="dot" style="background:#0f0f23;"></span>
+      <span class="dot" style="background:#000000;"></span>
+      <span class="dot" style="background:#00ff41;"></span>
+      <span class="dot" style="background:#008f11;"></span>
+      <span class="dot" style="background:#ffffff;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#f0f4f8;">
+    <span class="fake-title" style="color:#2d3748;">Dashboard</span>
+    <div class="fake-btn" style="background:#4299e1;color:#fff;">Add Widget</div>
+    <div class="fake-input" style="background:#fff;border:1px solid #cbd5e0;color:#4a5568;">Search...</div>
+  </div>
+  <div class="info">
+    <div class="name">16. Tailwind Blue Gray</div>
+    <div class="desc">مستوحى من Tailwind CSS. رمادي-أزرق فاتح محترف وحديث.</div>
+    <div class="colors">
+      <span class="dot" style="background:#f0f4f8;border:0.5px solid #ddd;"></span>
+      <span class="dot" style="background:#4299e1;"></span>
+      <span class="dot" style="background:#2d3748;"></span>
+      <span class="dot" style="background:#e53e3e;"></span>
+      <span class="dot" style="background:#48bb78;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#13111c;">
+    <span class="fake-title" style="color:#e2d9f3;">Wallet</span>
+    <div class="fake-btn" style="background:#7c3aed;color:#fff;">Transfer</div>
+    <div class="fake-input" style="background:#1e1a2e;border:1px solid #3b2f6b;color:#a78bfa;">Amount...</div>
+  </div>
+  <div class="info">
+    <div class="name">17. Purple Fintech</div>
+    <div class="desc">بنفسجي داكن فاخر. شائع في تطبيقات المال والعملات الرقمية.</div>
+    <div class="colors">
+      <span class="dot" style="background:#13111c;"></span>
+      <span class="dot" style="background:#7c3aed;"></span>
+      <span class="dot" style="background:#a78bfa;"></span>
+      <span class="dot" style="background:#1e1a2e;"></span>
+      <span class="dot" style="background:#e2d9f3;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#fff;">
+    <span class="fake-title" style="color:#111;">Minimal</span>
+    <div class="fake-btn" style="background:#111;color:#fff;border-radius:2px;">Proceed</div>
+    <div class="fake-input" style="background:#fff;border:1px solid #111;color:#111;border-radius:2px;">Type...</div>
+  </div>
+  <div class="info">
+    <div class="name">18. Swiss Minimal</div>
+    <div class="desc">أبيض وأسود فقط. بدون أي لون. الفخامة في التبسيط المطلق.</div>
+    <div class="colors">
+      <span class="dot" style="background:#ffffff;border:0.5px solid #ddd;"></span>
+      <span class="dot" style="background:#111111;"></span>
+      <span class="dot" style="background:#555555;"></span>
+      <span class="dot" style="background:#cccccc;"></span>
+      <span class="dot" style="background:#f5f5f5;border:0.5px solid #ddd;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#1c2526;">
+    <span class="fake-title" style="color:#e0d7c6;">ElecSa Pro</span>
+    <div class="fake-btn" style="background:#f5a623;color:#1c2526;">Record</div>
+    <div class="fake-input" style="background:#263238;border:1px solid #37474f;color:#b0bec5;">kWh...</div>
+  </div>
+  <div class="info">
+    <div class="name">19. Industrial Orange</div>
+    <div class="desc">داكن صناعي مع برتقالي كهرباء. مثالي لتطبيقك ElecSa.</div>
+    <div class="colors">
+      <span class="dot" style="background:#1c2526;"></span>
+      <span class="dot" style="background:#263238;"></span>
+      <span class="dot" style="background:#f5a623;"></span>
+      <span class="dot" style="background:#29b6f6;"></span>
+      <span class="dot" style="background:#e0d7c6;"></span>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div class="preview" style="background:#282a36;">
+    <span class="fake-title" style="color:#f8f8f2;">Developer</span>
+    <div class="fake-btn" style="background:#ff79c6;color:#282a36;">Deploy</div>
+    <div class="fake-input" style="background:#44475a;border:1px solid #6272a4;color:#f8f8f2;">Code...</div>
+  </div>
+  <div class="info">
+    <div class="name">21. Dracula Theme</div>
+    <div class="desc">المظهر المظلم الأكثر شعبية بين المبرمجين. أسود مزرّق مع وردي نيون.</div>
+    <div class="colors">
+      <span class="dot" style="background:#282a36;"></span>
+      <span class="dot" style="background:#44475a;"></span>
+      <span class="dot" style="background:#ff79c6;"></span>
+      <span class="dot" style="background:#bd93f9;"></span>
+      <span class="dot" style="background:#f8f8f2;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#2e3440;">
+    <span class="fake-title" style="color:#eceff4;">Workspace</span>
+    <div class="fake-btn" style="background:#88c0d0;color:#2e3440;">Save</div>
+    <div class="fake-input" style="background:#3b4252;border:1px solid #4c566a;color:#d8dee9;">Search...</div>
+  </div>
+  <div class="info">
+    <div class="name">22. Nord</div>
+    <div class="desc">مستوحى من الجليد القطبي. أزرق رمادي بارد جداً وأنيق ومريح للعين.</div>
+    <div class="colors">
+      <span class="dot" style="background:#2e3440;"></span>
+      <span class="dot" style="background:#3b4252;"></span>
+      <span class="dot" style="background:#88c0d0;"></span>
+      <span class="dot" style="background:#bf616a;"></span>
+      <span class="dot" style="background:#eceff4;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#ffffff;border-bottom:0.5px solid #eaeaea;">
+    <span class="fake-title" style="color:#000000;">Payment</span>
+    <div class="fake-btn" style="background:#635bff;color:#fff;">Pay Now</div>
+    <div class="fake-input" style="background:#f6f9fc;border:1px solid #e6ebf1;color:#32325d;">Card...</div>
+  </div>
+  <div class="info">
+    <div class="name">23. Stripe SaaS</div>
+    <div class="desc">تصميم مدفوعات Stripe. أبيض ناصع مع أزرق-بنفسجي (Blurple) حيوي.</div>
+    <div class="colors">
+      <span class="dot" style="background:#ffffff;border:0.5px solid #ddd;"></span>
+      <span class="dot" style="background:#f6f9fc;"></span>
+      <span class="dot" style="background:#635bff;"></span>
+      <span class="dot" style="background:#32325d;"></span>
+      <span class="dot" style="background:#00d4ff;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#313338;">
+    <span class="fake-title" style="color:#f2f3f5;">Chat</span>
+    <div class="fake-btn" style="background:#5865f2;color:#fff;">Send</div>
+    <div class="fake-input" style="background:#1e1f22;border:1px solid #2b2d31;color:#dbdee1;">Message...</div>
+  </div>
+  <div class="info">
+    <div class="name">24. Discord Dark</div>
+    <div class="desc">ألوان تطبيق ديسكورد الرسمية. رمادي داكن مع أزرق مميز.</div>
+    <div class="colors">
+      <span class="dot" style="background:#313338;"></span>
+      <span class="dot" style="background:#1e1f22;"></span>
+      <span class="dot" style="background:#5865f2;"></span>
+      <span class="dot" style="background:#2b2d31;"></span>
+      <span class="dot" style="background:#f2f3f5;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#121212;">
+    <span class="fake-title" style="color:#ffffff;">Music</span>
+    <div class="fake-btn" style="background:#1ed760;color:#000;border-radius:20px;">Play</div>
+    <div class="fake-input" style="background:#242424;border:none;color:#b3b3b3;border-radius:20px;">Search...</div>
+  </div>
+  <div class="info">
+    <div class="name">25. Spotify Premium</div>
+    <div class="desc">أسود عميق مع أخضر فاقع. يستخدم لإبراز المحتوى الفني بقوة.</div>
+    <div class="colors">
+      <span class="dot" style="background:#121212;"></span>
+      <span class="dot" style="background:#242424;"></span>
+      <span class="dot" style="background:#1ed760;"></span>
+      <span class="dot" style="background:#b3b3b3;"></span>
+      <span class="dot" style="background:#ffffff;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#000000;">
+    <span class="fake-title" style="color:#ededed;">Vercel</span>
+    <div class="fake-btn" style="background:#ffffff;color:#000;">Deploy</div>
+    <div class="fake-input" style="background:#111111;border:1px solid #333;color:#888;">Repo...</div>
+  </div>
+  <div class="info">
+    <div class="name">26. Next.js / Vercel</div>
+    <div class="desc">أسود داكن وأبيض ناصع. المظهر القياسي لشركات الويب الحديثة.</div>
+    <div class="colors">
+      <span class="dot" style="background:#000000;"></span>
+      <span class="dot" style="background:#111111;"></span>
+      <span class="dot" style="background:#333333;"></span>
+      <span class="dot" style="background:#888888;"></span>
+      <span class="dot" style="background:#ffffff;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#1a1d21;">
+    <span class="fake-title" style="color:#d1d2d3;">Team</span>
+    <div class="fake-btn" style="background:#007a5a;color:#fff;">Reply</div>
+    <div class="fake-input" style="background:#222529;border:1px solid #35373b;color:#ababad;">Type...</div>
+  </div>
+  <div class="info">
+    <div class="name">27. Slack Dark Mode</div>
+    <div class="desc">ألوان تطبيق Slack. رمادي دافئ مع أخضر للعمليات الناجحة.</div>
+    <div class="colors">
+      <span class="dot" style="background:#1a1d21;"></span>
+      <span class="dot" style="background:#222529;"></span>
+      <span class="dot" style="background:#007a5a;"></span>
+      <span class="dot" style="background:#e01e5a;"></span>
+      <span class="dot" style="background:#d1d2d3;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#ffffff;">
+    <span class="fake-title" style="color:#37352f;">Workspace</span>
+    <div class="fake-btn" style="background:#2eaadc;color:#fff;border-radius:3px;">New</div>
+    <div class="fake-input" style="background:#f7f6f3;border:1px solid #e1dfdd;color:#9b9a97;">Filter...</div>
+  </div>
+  <div class="info">
+    <div class="name">28. Notion Minimal</div>
+    <div class="desc">ألوان تطبيق Notion. أبيض ورقي مع نصوص بلون رمادي-أسود مريح.</div>
+    <div class="colors">
+      <span class="dot" style="background:#ffffff;border:0.5px solid #ddd;"></span>
+      <span class="dot" style="background:#f7f6f3;"></span>
+      <span class="dot" style="background:#37352f;"></span>
+      <span class="dot" style="background:#2eaadc;"></span>
+      <span class="dot" style="background:#e03e3e;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#2c2c2c;">
+    <span class="fake-title" style="color:#ffffff;">Design</span>
+    <div class="fake-btn" style="background:#18a0fb;color:#fff;">Share</div>
+    <div class="fake-input" style="background:#383838;border:1px solid #444;color:#b3b3b3;">Layers...</div>
+  </div>
+  <div class="info">
+    <div class="name">29. Figma UI Dark</div>
+    <div class="desc">ألوان واجهة Figma. حيادية جداً لعدم تشتيت المصمم مع أزرق فاقع.</div>
+    <div class="colors">
+      <span class="dot" style="background:#2c2c2c;"></span>
+      <span class="dot" style="background:#383838;"></span>
+      <span class="dot" style="background:#18a0fb;"></span>
+      <span class="dot" style="background:#f24e1e;"></span>
+      <span class="dot" style="background:#ffffff;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#ffffff;">
+    <span class="fake-title" style="color:#484848;">Travel</span>
+    <div class="fake-btn" style="background:#ff5a5f;color:#fff;">Book</div>
+    <div class="fake-input" style="background:#f7f7f7;border:1px solid #ebebeb;color:#767676;">Location...</div>
+  </div>
+  <div class="info">
+    <div class="name">30. Airbnb Coral</div>
+    <div class="desc">أبيض ناصع مع اللون المرجاني (Coral) المميز الذي يبعث على الدفء.</div>
+    <div class="colors">
+      <span class="dot" style="background:#ffffff;border:0.5px solid #ddd;"></span>
+      <span class="dot" style="background:#ff5a5f;"></span>
+      <span class="dot" style="background:#00a699;"></span>
+      <span class="dot" style="background:#484848;"></span>
+      <span class="dot" style="background:#767676;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#1a1a1a;">
+    <span class="fake-title" style="color:#f2f2f2;">Issues</span>
+    <div class="fake-btn" style="background:#5e6ad2;color:#fff;">Create</div>
+    <div class="fake-input" style="background:#222222;border:1px solid #333;color:#8a8a8a;">Search...</div>
+  </div>
+  <div class="info">
+    <div class="name">31. Linear App</div>
+    <div class="desc">داكن جداً مع بنفسجي متوهج. أصبح المعيار الجديد لتطبيقات الإدارة.</div>
+    <div class="colors">
+      <span class="dot" style="background:#1a1a1a;"></span>
+      <span class="dot" style="background:#222222;"></span>
+      <span class="dot" style="background:#5e6ad2;"></span>
+      <span class="dot" style="background:#8a8a8a;"></span>
+      <span class="dot" style="background:#f2f2f2;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#0f172a;">
+    <span class="fake-title" style="color:#f8fafc;">Components</span>
+    <div class="fake-btn" style="background:#3b82f6;color:#fff;">Build</div>
+    <div class="fake-input" style="background:#1e293b;border:1px solid #334155;color:#94a3b8;">Class...</div>
+  </div>
+  <div class="info">
+    <div class="name">32. Tailwind Slate Dark</div>
+    <div class="desc">لوحة Tailwind الرسمية للمظهر المظلم. درجات أزرق رمادي (Slate).</div>
+    <div class="colors">
+      <span class="dot" style="background:#0f172a;"></span>
+      <span class="dot" style="background:#1e293b;"></span>
+      <span class="dot" style="background:#3b82f6;"></span>
+      <span class="dot" style="background:#10b981;"></span>
+      <span class="dot" style="background:#f8fafc;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#1c1c1c;">
+    <span class="fake-title" style="color:#ededed;">Database</span>
+    <div class="fake-btn" style="background:#24b47e;color:#1c1c1c;">Query</div>
+    <div class="fake-input" style="background:#2a2a2a;border:1px solid #3e3e3e;color:#a0a0a0;">Table...</div>
+  </div>
+  <div class="info">
+    <div class="name">33. Supabase Green</div>
+    <div class="desc">أسود رمادي مع أخضر زمردي لامع. المفضل لدى مطوري قواعد البيانات.</div>
+    <div class="colors">
+      <span class="dot" style="background:#1c1c1c;"></span>
+      <span class="dot" style="background:#2a2a2a;"></span>
+      <span class="dot" style="background:#24b47e;"></span>
+      <span class="dot" style="background:#3e3e3e;"></span>
+      <span class="dot" style="background:#ededed;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#282828;">
+    <span class="fake-title" style="color:#ebdbb2;">Editor</span>
+    <div class="fake-btn" style="background:#fabd2f;color:#282828;">Edit</div>
+    <div class="fake-input" style="background:#3c3836;border:1px solid #504945;color:#a89984;">Line...</div>
+  </div>
+  <div class="info">
+    <div class="name">34. Gruvbox Dark</div>
+    <div class="desc">ألوان ريترو دافئة جداً تقلل إجهاد العين. مشهورة بين مستخدمي Vim.</div>
+    <div class="colors">
+      <span class="dot" style="background:#282828;"></span>
+      <span class="dot" style="background:#3c3836;"></span>
+      <span class="dot" style="background:#fabd2f;"></span>
+      <span class="dot" style="background:#fb4934;"></span>
+      <span class="dot" style="background:#ebdbb2;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#fdfdfd;">
+    <span class="fake-title" style="color:#0d0d0d;">Creative</span>
+    <div class="fake-btn" style="background:#ea4c89;color:#fff;">Shot</div>
+    <div class="fake-input" style="background:#f3f3f4;border:none;color:#9e9ea7;border-radius:8px;">Search...</div>
+  </div>
+  <div class="info">
+    <div class="name">35. Dribbble Pink</div>
+    <div class="desc">أبيض ساطع، رمادي فاتح، وزهري Dribbble المميز للإبداع والتصميم.</div>
+    <div class="colors">
+      <span class="dot" style="background:#fdfdfd;border:0.5px solid #ddd;"></span>
+      <span class="dot" style="background:#f3f3f4;"></span>
+      <span class="dot" style="background:#ea4c89;"></span>
+      <span class="dot" style="background:#0d0d0d;"></span>
+      <span class="dot" style="background:#9e9ea7;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#2d2a2e;">
+    <span class="fake-title" style="color:#fcfcfa;">Code</span>
+    <div class="fake-btn" style="background:#a9dc76;color:#2d2a2e;">Run</div>
+    <div class="fake-input" style="background:#403e41;border:1px solid #5b595c;color:#ab9df2;">Input...</div>
+  </div>
+  <div class="info">
+    <div class="name">36. Monokai Pro</div>
+    <div class="desc">نسخة محسنة من الثيم الكلاسيكي. تباين ممتاز وألوان نابضة بالحياة.</div>
+    <div class="colors">
+      <span class="dot" style="background:#2d2a2e;"></span>
+      <span class="dot" style="background:#403e41;"></span>
+      <span class="dot" style="background:#ff6188;"></span>
+      <span class="dot" style="background:#a9dc76;"></span>
+      <span class="dot" style="background:#ab9df2;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#0b0f19;">
+    <span class="fake-title" style="color:#f8f8f2;">Neon</span>
+    <div class="fake-btn" style="background:#f92672;color:#fff;">Hack</div>
+    <div class="fake-input" style="background:#151b2b;border:1px solid #00f3ff;color:#66d9ef;">Access...</div>
+  </div>
+  <div class="info">
+    <div class="name">37. Cyberpunk / Synthwave</div>
+    <div class="desc">ألوان النيون (وردي، سماوي، أصفر) على خلفية ليلية. مشهور في الإعلانات.</div>
+    <div class="colors">
+      <span class="dot" style="background:#0b0f19;"></span>
+      <span class="dot" style="background:#f92672;"></span>
+      <span class="dot" style="background:#00f3ff;"></span>
+      <span class="dot" style="background:#e6db74;"></span>
+      <span class="dot" style="background:#a6e22e;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#fafafa;">
+    <span class="fake-title" style="color:#1d1d1f;">Store</span>
+    <div class="fake-btn" style="background:#0071e3;color:#fff;border-radius:15px;">Buy</div>
+    <div class="fake-input" style="background:#f5f5f7;border:1px solid #d2d2d7;color:#86868b;border-radius:8px;">Search...</div>
+  </div>
+  <div class="info">
+    <div class="name">38. Cupertino Light</div>
+    <div class="desc">مستوحى من تصميمات Apple. رمادي فضي وأزرق حيوي ونقي.</div>
+    <div class="colors">
+      <span class="dot" style="background:#fafafa;border:0.5px solid #ddd;"></span>
+      <span class="dot" style="background:#f5f5f7;"></span>
+      <span class="dot" style="background:#0071e3;"></span>
+      <span class="dot" style="background:#1d1d1f;"></span>
+      <span class="dot" style="background:#86868b;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#000000;">
+    <span class="fake-title" style="color:#f5f5f7;">Pro Max</span>
+    <div class="fake-btn" style="background:#0a84ff;color:#fff;border-radius:15px;">Pre-order</div>
+    <div class="fake-input" style="background:#1c1c1e;border:1px solid #333336;color:#98989d;border-radius:8px;">Explore...</div>
+  </div>
+  <div class="info">
+    <div class="name">39. Cupertino Dark</div>
+    <div class="desc">النسخة المظلمة الفاخرة من Apple. أسود حقيقي (OLED) مع أزرق سماوي.</div>
+    <div class="colors">
+      <span class="dot" style="background:#000000;"></span>
+      <span class="dot" style="background:#1c1c1e;"></span>
+      <span class="dot" style="background:#0a84ff;"></span>
+      <span class="dot" style="background:#ff453a;"></span>
+      <span class="dot" style="background:#f5f5f7;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#1a1b26;">
+    <span class="fake-title" style="color:#c0caf5;">Console</span>
+    <div class="fake-btn" style="background:#7aa2f7;color:#1a1b26;">Init</div>
+    <div class="fake-input" style="background:#24283b;border:1px solid #414868;color:#a9b1d6;">Cmd...</div>
+  </div>
+  <div class="info">
+    <div class="name">40. Tokyo Night</div>
+    <div class="desc">مستوحى من أضواء طوكيو ليلاً. أزرق داكن مع لمسات نيون هادئة.</div>
+    <div class="colors">
+      <span class="dot" style="background:#1a1b26;"></span>
+      <span class="dot" style="background:#24283b;"></span>
+      <span class="dot" style="background:#7aa2f7;"></span>
+      <span class="dot" style="background:#bb9af7;"></span>
+      <span class="dot" style="background:#f7768e;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#232cb4;">
+    <span class="fake-title" style="color:#fff;">Services</span>
+    <div class="fake-btn" style="background:#ec8c1c;color:#fff;">Launch</div>
+    <div class="fake-input" style="background:#1a2185;border:1px solid #3843d0;color:#ccc;">Region...</div>
+  </div>
+  <div class="info">
+    <div class="name">41. Cloud Infrastructure</div>
+    <div class="desc">مستوحى من منصات الكلاود (AWS/Azure). أزرق مؤسسي مع برتقالي منبه.</div>
+    <div class="colors">
+      <span class="dot" style="background:#232cb4;"></span>
+      <span class="dot" style="background:#1a2185;"></span>
+      <span class="dot" style="background:#ec8c1c;"></span>
+      <span class="dot" style="background:#e3242b;"></span>
+      <span class="dot" style="background:#ffffff;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#1f1d2e;">
+    <span class="fake-title" style="color:#e0def4;">Poetry</span>
+    <div class="fake-btn" style="background:#ebbcba;color:#1f1d2e;">Write</div>
+    <div class="fake-input" style="background:#26233a;border:1px solid #44415a;color:#908caa;">Word...</div>
+  </div>
+  <div class="info">
+    <div class="name">42. Rosé Pine</div>
+    <div class="desc">ألوان ناعمة جداً ودافئة (باستيل). مناسبة للمدونات والتطبيقات الهادئة.</div>
+    <div class="colors">
+      <span class="dot" style="background:#1f1d2e;"></span>
+      <span class="dot" style="background:#26233a;"></span>
+      <span class="dot" style="background:#ebbcba;"></span>
+      <span class="dot" style="background:#31748f;"></span>
+      <span class="dot" style="background:#e0def4;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#1b2b34;">
+    <span class="fake-title" style="color:#d8dee9;">Oceanic</span>
+    <div class="fake-btn" style="background:#5fb3b3;color:#1b2b34;">Dive</div>
+    <div class="fake-input" style="background:#343d46;border:1px solid #4f5b66;color:#a6acb9;">Depth...</div>
+  </div>
+  <div class="info">
+    <div class="name">43. Oceanic Next</div>
+    <div class="desc">درجات المحيط المظلمة. مريحة للعين وتستخدم في محررات النصوص الحديثة.</div>
+    <div class="colors">
+      <span class="dot" style="background:#1b2b34;"></span>
+      <span class="dot" style="background:#343d46;"></span>
+      <span class="dot" style="background:#5fb3b3;"></span>
+      <span class="dot" style="background:#ec5f67;"></span>
+      <span class="dot" style="background:#fac863;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#011627;">
+    <span class="fake-title" style="color:#d6deeb;">Night Owl</span>
+    <div class="fake-btn" style="background:#82aaff;color:#011627;">Sleep</div>
+    <div class="fake-input" style="background:#0b2942;border:1px solid #1d3b53;color:#5f7e97;">Time...</div>
+  </div>
+  <div class="info">
+    <div class="name">44. Night Owl</div>
+    <div class="desc">مصمم خصيصاً لمن يعملون في وقت متأخر من الليل لتقليل إجهاد العين.</div>
+    <div class="colors">
+      <span class="dot" style="background:#011627;"></span>
+      <span class="dot" style="background:#0b2942;"></span>
+      <span class="dot" style="background:#82aaff;"></span>
+      <span class="dot" style="background:#c792ea;"></span>
+      <span class="dot" style="background:#ecc48d;"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="preview" style="background:#f4f1ea;">
+    <span class="fake-title" style="color:#2d2a26;">News</span>
+    <div class="fake-btn" style="background:#cc3333;color:#fff;">Subscribe</div>
+    <div class="fake-input" style="background:#e8e5df;border:1px solid #d1ccc0;color:#5c5a56;">Email...</div>
+  </div>
+  <div class="info">
+    <div class="name">45. NYT Classic</div>
+    <div class="desc">ألوان الجرائد الكلاسيكية. عاجي دافئ، أسود فحمي، وأحمر لافت للانتباه.</div>
+    <div class="colors">
+      <span class="dot" style="background:#f4f1ea;border:0.5px solid #ddd;"></span>
+      <span class="dot" style="background:#e8e5df;"></span>
+      <span class="dot" style="background:#2d2a26;"></span>
+      <span class="dot" style="background:#cc3333;"></span>
+      <span class="dot" style="background:#5c5a56;"></span>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div class="preview" style="background:#e8f5e9;">
+    <span class="fake-title" style="color:#1b5e20;">Water & Power</span>
+    <div class="fake-btn" style="background:#2e7d32;color:#fff;">Save</div>
+    <div class="fake-input" style="background:#fff;border:1px solid #a5d6a7;color:#2e7d32;">Liters...</div>
+  </div>
+  <div class="info">
+    <div class="name">20. Eco Green Light</div>
+    <div class="desc">أخضر طبيعي فاتح. مثالي لتطبيقات المياه والطاقة المتجددة.</div>
+    <div class="colors">
+      <span class="dot" style="background:#e8f5e9;border:0.5px solid #ddd;"></span>
+      <span class="dot" style="background:#2e7d32;"></span>
+      <span class="dot" style="background:#a5d6a7;"></span>
+      <span class="dot" style="background:#1565c0;"></span>
+      <span class="dot" style="background:#1b5e20;"></span>
+    </div>
+  </div>
+</div>
+
+</div>
+<div id="colorModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <h3 id="modalTitle" style="margin-top: 10px; color:#333;"></h3>
+    <p style="font-size: 13px; color: #666; margin-top: 5px;">انقر على "نسخ جميع الألوان" للحصول على الأكواد</p>
+    <div id="modalColors" class="modal-colors"></div>
+    <button class="copy-btn" onclick="copyAllColors()">نسخ جميع الألوان</button>
+    <button class="copy-btn" onclick="addToCanvas()" style="margin-right:6px;">+Canvas</button>
+  </div>
+</div>
+
+<div id="toast">تم نسخ جميع الألوان بنجاح! 📋</div>
+
+<script>
+  let currentColors = [];
+
+  // دالة مساعدة لاستخراج الكود اللوني Hex من الستايل المضمن
+  function extractColor(styleString) {
+    const match = styleString.match(/background:\s*([^;]+)/i);
+    return match ? match[1].trim() : '';
+  }
+
+  // إضافة حدث الضغط لكل بطاقة
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', () => {
+      const title = card.querySelector('.name').innerText;
+      const dots = card.querySelectorAll('.colors .dot');
+      
+      currentColors = [];
+      const modalColorsContainer = document.getElementById('modalColors');
+      modalColorsContainer.innerHTML = ''; // تفريغ القديم
+
+      dots.forEach(dot => {
+        const colorStyle = dot.getAttribute('style');
+        const colorValue = extractColor(colorStyle);
+        
+        if(colorValue) {
+          currentColors.push(colorValue);
+          
+          // إنشاء عنصر عرض اللون
+          const swatch = document.createElement('div');
+          swatch.className = 'color-swatch';
+          swatch.innerHTML = `
+            <div class="dot" style="background:${colorValue};"></div>
+            <span>${colorValue}</span>
+          `;
+          modalColorsContainer.appendChild(swatch);
+        }
+      });
+
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('colorModal').style.display = 'flex';
+    });
+  });
+
+  // إغلاق النافذة
+  function closeModal() {
+    document.getElementById('colorModal').style.display = 'none';
+  }
+
+  // إغلاق عند الضغط خارج النافذة
+  window.onclick = function(event) {
+    const modal = document.getElementById('colorModal');
+    if (event.target == modal) {
+      closeModal();
+    }
+  }
+
+  // إضافة للوحة (+Canvas)
+  function addToCanvas() {
+    const title = document.getElementById('modalTitle').innerText
+    const colors = currentColors.join(', ')
+    const html = `<div style="padding:20px;font-family:system-ui,sans-serif;background:#121212;color:#e0e0e0">
+  <h3 style="margin:0 0 12px;font-size:14px">${title}</h3>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">${currentColors.map(c => `<div style="width:40px;height:40px;border-radius:8px;background:${c};border:2px solid #2a2a2a"></div>`).join('')}</div>
+  <div style="margin-top:12px;font-size:10px;color:#888;font-family:monospace">${colors}</div>
+</div>`
+    const css = `/* ${title} */\n` + currentColors.map((c, i) => `--color-${i + 1}: ${c};`).join('\n')
+    parent.postMessage({ type: 'tool-output', toolName: 'PySide6 Styles', name: title, html, css }, '*')
+    closeModal()
+  }
+
+  // نسخ الألوان
+  function copyAllColors() {
+    const textToCopy = currentColors.join(', ');
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      showToast();
+      closeModal();
+    });
+  }
+
+  // إظهار إشعار النسخ (Toast)
+  function showToast() {
+    const toast = document.getElementById("toast");
+    toast.className = "show";
+    setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+  }
+</script>

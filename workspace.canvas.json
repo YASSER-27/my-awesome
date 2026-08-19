@@ -5,9 +5,21 @@
       "name": "README.md",
       "x": 60,
       "y": 60,
-      "preview": "My Awesome"
+      "preview": "My Awesome (Designer 27) 🚀"
+    },
+    {
+      "id": "README_AR.md",
+      "name": "README_AR.md",
+      "x": 320,
+      "y": 60,
+      "preview": "My Awesome (Designer 27) 🚀"
     }
   ],
-  "conns": [],
+  "conns": [
+    {
+      "from": "README.md",
+      "to": "README_AR.md"
+    }
+  ],
   "removed": []
 }

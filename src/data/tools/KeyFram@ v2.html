@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Music Marquee</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           1. Core Variables & Reset
+           ========================================================================== */
+        :root {
+            --bg-main: #310b66;       /* Deep Purple Background */
+            --bg-card: rgba(77, 35, 130, 0.6); /* Semi-transparent Card */
+            --text-primary: #ffffff;
+            --text-muted: #bda3d9;
+            --accent-color: #00f5d4;  /* Cyan Accent */
+            --border-radius: 16px;
+            --card-height: 110px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+        }
+
+        /* ==========================================================================
+           2. Layout & Copy Button Styles
+           ========================================================================== */
+        .wrapper {
+            width: 100%;
+            max-width: 1200px;
+            position: relative;
+        }
+
+        /* The Copy Button Overlay */
+        .copy-container {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            z-index: 10;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-color);
+            color: #000;
+            border-color: var(--accent-color);
+        }
+
+        /* ==========================================================================
+           3. Marquee Containers
+           ========================================================================== */
+        .marquee-section {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            width: 100%;
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+
+        .marquee-row {
+            display: flex;
+            width: max-content; /* Allows content to be wider than screen */
+        }
+
+        .marquee-content {
+            display: flex;
+            gap: 20px;
+            padding-right: 20px;
+        }
+
+        /* --- Animation Variations --- */
+        
+        /* Row 1: Standard Left Scroll */
+        .scroll-left {
+            animation: scrollLeft 40s linear infinite;
+        }
+
+        /* Row 2: Reverse Right Scroll (Slower) */
+        .scroll-right {
+            animation: scrollRight 55s linear infinite;
+        }
+
+        /* Keyframes */
+        @keyframes scrollLeft {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @keyframes scrollRight {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
+        }
+
+        /* Pause on Hover */
+        .marquee-row:hover {
+            animation-play-state: paused;
+        }
+
+        /* ==========================================================================
+           4. Music Card Component
+           ========================================================================== */
+        .music-card {
+            display: flex;
+            background-color: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            height: var(--card-height);
+            width: 300px;
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+        }
+
+        .music-card:hover {
+            transform: scale(1.05) translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3);
+            background-color: rgba(77, 35, 130, 0.9);
+            cursor: pointer;
+        }
+
+        .card-cover {
+            width: var(--card-height);
+            height: var(--card-height);
+            object-fit: cover;
+        }
+
+        .card-info {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #fff;
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Stats Area */
+        .card-stats {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+            align-items: center;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            background: rgba(0,0,0,0.2);
+            padding: 4px 8px;
+            border-radius: 20px;
+        }
+
+        .stat-icon {
+            fill: currentColor;
+            width: 10px;
+            height: 10px;
+        }
+        
+        .stat-item:first-child .stat-icon { fill: var(--accent-color); }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- COPY BUTTON -->
+        <div class="copy-container">
+            <button class="copy-btn" onclick="copyCode()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Code
+            </button>
+        </div>
+
+        <!-- MARQUEE SECTION -->
+        <section class="marquee-section">
+            
+            <!-- ROW 1: Moves LEFT (Standard Speed) -->
+            <div class="marquee-row scroll-left">
+                <!-- Group 1 -->
+                <div class="marquee-content">
+                    <!-- Card 1 -->
+                    <article class="music-card">
+                        <img src="https://via.placeholder.com/120/222222/ffffff?text=Imp" alt="Cover" class="card-cover">
+                        <div class="card-info">
+                            <div>
+                                <h3 class="card-title">Imp Unique</h3>
+                                <p class="card-subtitle">52 Songs</p>
+                            </div>
+                            <div class="card-stats">
+                                <span class="stat-item">
+                                    <svg class="stat-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 29.8K
+                                </span>
+                                <span class="stat-item">
+                                    <svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 73
+                                </span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 2 -->
+                    <article class="music-card">
+                        <img src="https://via.placeholder.com/120/111111/ff0000?text=Hack" alt="Cover" class="card-cover">
+                        <div class="card-info">
+                            <div>
+                                <h3 class="card-title">Hackinet</h3>
+                                <p class="card-subtitle">1 Song</p>
+                            </div>
+                            <div class="card-stats">
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 28.0K</span>
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 187</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 3 -->
+                    <article class="music-card">
+                        <img src="https://via.placeholder.com/120/55aa55/ffffff?text=Gau" alt="Cover" class="card-cover">
+                        <div class="card-info">
+                            <div>
+                                <h3 class="card-title">Gaurav</h3>
+                                <p class="card-subtitle">570 Songs</p>
+                            </div>
+                            <div class="card-stats">
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 27.7K</span>
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 24</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Group 2 (Duplicate for Loop) -->
+                <div class="marquee-content">
+                     <!-- Card 1 Duplicate -->
+                     <article class="music-card">
+                        <img src="https://via.placeholder.com/120/222222/ffffff?text=Imp" alt="Cover" class="card-cover">
+                        <div class="card-info">
+                            <div>
+                                <h3 class="card-title">Imp Unique</h3>
+                                <p class="card-subtitle">52 Songs</p>
+                            </div>
+                            <div class="card-stats">
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 29.8K</span>
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 73</span>
+                            </div>
+                        </div>
+                    </article>
+                    <!-- Card 2 Duplicate -->
+                    <article class="music-card">
+                        <img src="https://via.placeholder.com/120/111111/ff0000?text=Hack" alt="Cover" class="card-cover">
+                        <div class="card-info">
+                            <div>
+                                <h3 class="card-title">Hackinet</h3>
+                                <p class="card-subtitle">1 Song</p>
+                            </div>
+                            <div class="card-stats">
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 28.0K</span>
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 187</span>
+                            </div>
+                        </div>
+                    </article>
+                    <!-- Card 3 Duplicate -->
+                    <article class="music-card">
+                        <img src="https://via.placeholder.com/120/55aa55/ffffff?text=Gau" alt="Cover" class="card-cover">
+                        <div class="card-info">
+                            <div>
+                                <h3 class="card-title">Gaurav</h3>
+                                <p class="card-subtitle">570 Songs</p>
+                            </div>
+                            <div class="card-stats">
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 27.7K</span>
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 24</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <!-- ROW 2: Moves RIGHT (Slower Speed) -->
+            <div class="marquee-row scroll-right">
+                <!-- Group 1 -->
+                <div class="marquee-content">
+                    <!-- Card 4 -->
+                    <article class="music-card">
+                        <img src="https://via.placeholder.com/120/333333/ffffff?text=Kit" alt="Cover" class="card-cover">
+                        <div class="card-info">
+                            <div>
+                                <h3 class="card-title">KiTTeNZZZ</h3>
+                                <p class="card-subtitle">23 Songs</p>
+                            </div>
+                            <div class="card-stats">
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 16.4K</span>
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 130</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 5 -->
+                    <article class="music-card">
+                        <img src="https://via.placeholder.com/120/0077aa/ffffff?text=Epic" alt="Cover" class="card-cover">
+                        <div class="card-info">
+                            <div>
+                                <h3 class="card-title">Epic Dig1-Talé</h3>
+                                <p class="card-subtitle">358 Songs</p>
+                            </div>
+                            <div class="card-stats">
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 19.0K</span>
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 76</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Card 6 -->
+                    <article class="music-card">
+                        <div class="card-cover" style="background-color: #8da9a4; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight:bold; color: white;">S</div>
+                        <div class="card-info">
+                            <div>
+                                <h3 class="card-title">SHAMUS</h3>
+                                <p class="card-subtitle">463 Songs</p>
+                            </div>
+                            <div class="card-stats">
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 19.1K</span>
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 222</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Group 2 (Duplicate for Loop) -->
+                <div class="marquee-content">
+                    <!-- Card 4 Duplicate -->
+                    <article class="music-card">
+                        <img src="https://via.placeholder.com/120/333333/ffffff?text=Kit" alt="Cover" class="card-cover">
+                        <div class="card-info">
+                            <div>
+                                <h3 class="card-title">KiTTeNZZZ</h3>
+                                <p class="card-subtitle">23 Songs</p>
+                            </div>
+                            <div class="card-stats">
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 16.4K</span>
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 130</span>
+                            </div>
+                        </div>
+                    </article>
+                    <!-- Card 5 Duplicate -->
+                    <article class="music-card">
+                        <img src="https://via.placeholder.com/120/0077aa/ffffff?text=Epic" alt="Cover" class="card-cover">
+                        <div class="card-info">
+                            <div>
+                                <h3 class="card-title">Epic Dig1-Talé</h3>
+                                <p class="card-subtitle">358 Songs</p>
+                            </div>
+                            <div class="card-stats">
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 19.0K</span>
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 76</span>
+                            </div>
+                        </div>
+                    </article>
+                    <!-- Card 6 Duplicate -->
+                    <article class="music-card">
+                        <div class="card-cover" style="background-color: #8da9a4; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight:bold; color: white;">S</div>
+                        <div class="card-info">
+                            <div>
+                                <h3 class="card-title">SHAMUS</h3>
+                                <p class="card-subtitle">463 Songs</p>
+                            </div>
+                            <div class="card-stats">
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 19.1K</span>
+                                <span class="stat-item"><svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 222</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    <!-- Hidden Source Code for Copy Functionality -->
+    <textarea id="source-code" style="display:none">
+<style>
+    :root {
+        --bg-main: #310b66;
+        --bg-card: rgba(77, 35, 130, 0.6);
+        --text-primary: #ffffff;
+        --text-muted: #bda3d9;
+        --accent-color: #00f5d4;
+        --border-radius: 16px;
+        --card-height: 110px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-primary); overflow-x: hidden; padding: 40px 0; }
+    
+    .marquee-section { display: flex; flex-direction: column; gap: 25px; width: 100%; mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
+    .marquee-row { display: flex; width: max-content; }
+    .marquee-content { display: flex; gap: 20px; padding-right: 20px; }
+    
+    .scroll-left { animation: scrollLeft 40s linear infinite; }
+    .scroll-right { animation: scrollRight 55s linear infinite; }
+    
+    @keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    @keyframes scrollRight { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
+    
+    .marquee-row:hover { animation-play-state: paused; }
+    
+    .music-card { display: flex; background-color: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--border-radius); height: var(--card-height); width: 300px; overflow: hidden; flex-shrink: 0; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); transition: transform 0.3s; backdrop-filter: blur(10px); }
+    .music-card:hover { transform: scale(1.05) translateY(-5px); border-color: rgba(255, 255, 255, 0.3); }
+    .card-cover { width: var(--card-height); height: var(--card-height); object-fit: cover; }
+    .card-info { padding: 14px; display: flex; flex-direction: column; justify-content: space-between; flex: 1; }
+    .card-title { font-size: 16px; font-weight: 800; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
+    .card-subtitle { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .card-stats { display: flex; gap: 12px; margin-top: auto; align-items: center; }
+    .stat-item { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 20px; }
+    .stat-icon { fill: currentColor; width: 10px; height: 10px; }
+    .stat-item:first-child .stat-icon { fill: var(--accent-color); }
+</style>
+
+<!-- HTML Structure -->
+<section class="marquee-section">
+    <div class="marquee-row scroll-left">
+        <div class="marquee-content">
+            <!-- Paste Your Cards Here (Group 1) -->
+             <article class="music-card">
+                <img src="https://via.placeholder.com/120" class="card-cover">
+                <div class="card-info">
+                    <div><h3 class="card-title">Title</h3><p class="card-subtitle">Subtitle</p></div>
+                    <div class="card-stats"><span class="stat-item">Stats</span></div>
+                </div>
+            </article>
+        </div>
+        <div class="marquee-content">
+            <!-- Paste Your Cards Here (Group 2 - Duplicate) -->
+             <article class="music-card">
+                <img src="https://via.placeholder.com/120" class="card-cover">
+                <div class="card-info">
+                    <div><h3 class="card-title">Title</h3><p class="card-subtitle">Subtitle</p></div>
+                    <div class="card-stats"><span class="stat-item">Stats</span></div>
+                </div>
+            </article>
+        </div>
+    </div>
+    <!-- Repeat for second row with class 'scroll-right' -->
+</section>
+    </textarea>
+
+    <script>
+        function copyCode() {
+            const code = document.getElementById('source-code').value;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.innerHTML;
+                
+                btn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Copied!
+                `;
+                btn.style.background = '#10b981'; // Green color
+                btn.style.borderColor = '#10b981';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '';
+                    btn.style.borderColor = '';
+                }, 2000);
+            });
+        }
+    </script>
+<script>
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  const canvasBtn = document.createElement('button')
+  canvasBtn.textContent = '+Canvas'
+  canvasBtn.style.cssText = 'margin-left:6px;padding:4px 10px;border-radius:6px;border:1px solid #9d4edd;background:transparent;color:#9d4edd;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit'
+  canvasBtn.onmouseenter = () => canvasBtn.style.background = 'rgba(157,78,221,0.15)'
+  canvasBtn.onmouseleave = () => canvasBtn.style.background = 'transparent'
+  canvasBtn.onclick = () => {
+    const ta = document.getElementById('source-code')
+    if (!ta) return
+    const code = ta.value
+    const lines = code.split('\n')
+    const htmlLines = [], cssLines = []
+    let inStyle = false
+    for (const line of lines) {
+      if (line.trim() === '<style>') { inStyle = true; continue }
+      if (line.trim() === '</style>') { inStyle = false; continue }
+      if (inStyle) cssLines.push(line)
+      else htmlLines.push(line)
+    }
+    const html = htmlLines.join('\n')
+    const css = cssLines.join('\n')
+    parent.postMessage({ type: 'tool-output', toolName: 'KeyFram@ v2', name: 'Infinite Music Marquee', html, css }, '*')
+  }
+  btn.parentNode?.insertBefore(canvasBtn, btn.nextSibling)
+})
+</script>
+</body>
+</html>

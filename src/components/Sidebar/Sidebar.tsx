@@ -1,4 +1,4 @@
-﻿import { useState, useMemo, useRef, useEffect, memo } from 'react'
+﻿import { useState, useMemo, useRef, useEffect, memo, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { useDrag } from 'react-dnd'
 import { useAppStore, TOOLS } from '../../store'
@@ -13,9 +13,11 @@ interface DraggableProps {
   onShowPreview: (c: ComponentItem, rect: DOMRect) => void;
   onMovePreview: (rect: DOMRect) => void;
   onHidePreview: () => void;
+  favoriteIds: string[];
+  onToggleFavorite: (id: string) => void;
 }
 
-const DraggableComponent = memo(({ component, onClick, onShowPreview, onMovePreview, onHidePreview }: DraggableProps) => {
+const DraggableComponent = memo(({ component, onClick, onShowPreview, onMovePreview, onHidePreview, favoriteIds, onToggleFavorite }: DraggableProps) => {
   const [, drag] = useDrag(() => ({
     type: 'COMPONENT',
     item: () => {
@@ -68,6 +70,10 @@ const DraggableComponent = memo(({ component, onClick, onShowPreview, onMovePrev
         onHidePreview()
       }}
     >
+      <span className={`sidebar-star${favoriteIds.includes('comp:' + component.id) ? ' active' : ''}`}
+        onClick={e => { e.stopPropagation(); onToggleFavorite('comp:' + component.id) }}>
+        {favoriteIds.includes('comp:' + component.id) ? '★' : '☆'}
+      </span>
       <span className="component-name">{component.name}</span>
       <span className="component-type">{component.type}</span>
     </div>
@@ -77,13 +83,37 @@ const DraggableComponent = memo(({ component, onClick, onShowPreview, onMovePrev
 function SidebarComponent() {
   const [search, setSearch] = useState('')
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
-  const [showImport, setShowImport] = useState(false)
+  const showImport = useAppStore((s) => s.showImportModal)
+  const setShowImport = useAppStore((s) => s.setShowImportModal)
   const hoverTimeRef = useRef(0)
+  const [sidebarWidth, setSidebarWidth] = useState(280)
+  const resizingRef = useRef(false)
   const categories = useAppStore((s) => s.categories)
   const addCanvasElement = useAppStore((s) => s.addCanvasElement)
   const selectElement = useAppStore((s) => s.selectElement)
   const [hoveredComponent, setHoveredComponent] = useState<ComponentItem | null>(null)
   const [hoverPos, setHoverPos] = useState({ x: 0, y: 0 })
+  const [toolsHeight, setToolsHeight] = useState(200)
+  const [importsHeight, setImportsHeight] = useState(180)
+  const resizeToolsRef = useRef(false)
+  const resizeImportsRef = useRef(false)
+  const [navTab, setNavTab] = useState<'all' | 'tools' | 'categories' | 'imports' | 'favorites'>('all')
+  const [showNav, setShowNav] = useState(true)
+  const showNavRef = useRef(true)
+
+  // Ctrl+H toggle nav
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'h') {
+        e.preventDefault()
+        showNavRef.current = !showNavRef.current
+        setShowNav(showNavRef.current)
+        if (showNavRef.current) setNavTab('all')
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
 
   // Force hide hover preview after 2.5s regardless of mouse position
   useEffect(() => {
@@ -163,6 +193,11 @@ function SidebarComponent() {
 
   const savedImports = useAppStore((s) => s.savedImports)
   const deleteSavedImport = useAppStore((s) => s.deleteSavedImport)
+  const renameSavedImport = useAppStore((s) => s.renameSavedImport)
+  const favoriteIds = useAppStore((s) => s.favoriteIds)
+  const toggleFavorite = useAppStore((s) => s.toggleFavorite)
+  const [renamingImportId, setRenamingImportId] = useState<string | null>(null)
+  const [renameImportValue, setRenameImportValue] = useState('')
 
   const handleImportClick = (imp: SavedImport) => {
     const newEl: CanvasElement = {
@@ -194,8 +229,56 @@ function SidebarComponent() {
     selectElement(newEl.id)
   }
 
+  const handleSidebarResize = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    resizingRef.current = true
+    const startX = e.clientX
+    const startW = sidebarWidth
+    const onMove = (ev: MouseEvent) => {
+      if (!resizingRef.current) return
+      const newW = Math.max(180, Math.min(500, startW + ev.clientX - startX))
+      setSidebarWidth(newW)
+    }
+    const onUp = () => { resizingRef.current = false; window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp) }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }, [sidebarWidth])
+
+  const handleToolsResize = (e: React.MouseEvent) => {
+    if (showNav) return
+    e.preventDefault()
+    resizeToolsRef.current = true
+    const startY = e.clientY
+    const startH = toolsHeight
+    const onMove = (ev: MouseEvent) => {
+      if (!resizeToolsRef.current) return
+      const newH = Math.max(80, Math.min(500, startH + (ev.clientY - startY)))
+      setToolsHeight(newH)
+    }
+    const onUp = () => { resizeToolsRef.current = false; window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp) }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }
+
+  const handleImportsResize = (e: React.MouseEvent) => {
+    if (showNav) return
+    e.preventDefault()
+    resizeImportsRef.current = true
+    const startY = e.clientY
+    const startH = importsHeight
+    const onMove = (ev: MouseEvent) => {
+      if (!resizeImportsRef.current) return
+      const newH = Math.max(60, Math.min(400, startH - (ev.clientY - startY)))
+      setImportsHeight(newH)
+    }
+    const onUp = () => { resizeImportsRef.current = false; window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp) }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }
+
   return (
-    <div className="sidebar">
+    <div className="sidebar" style={{ width: sidebarWidth, minWidth: sidebarWidth }}>
+      <div className="sidebar-resize-handle" onMouseDown={handleSidebarResize} />
       <div className="sidebar-header">
         <h1 className="sidebar-title">My Awesome</h1>
         <span className="sidebar-author">by Yasser-27</span>
@@ -209,7 +292,46 @@ function SidebarComponent() {
           className="search-input"
         />
       </div>
-      <div className="sidebar-categories">
+      {/* Nav tabs */}
+      {showNav && (
+        <div className="sidebar-nav">
+          <div className={`sidebar-nav-t${navTab === 'all' ? ' act' : ''}`} onClick={() => setNavTab('all')}>All</div>
+          <div className={`sidebar-nav-t${navTab === 'tools' ? ' act' : ''}`} onClick={() => setNavTab('tools')}>Tools</div>
+          <div className={`sidebar-nav-t${navTab === 'categories' ? ' act' : ''}`} onClick={() => setNavTab('categories')}>Categories</div>
+          <div className={`sidebar-nav-t${navTab === 'imports' ? ' act' : ''}`} onClick={() => setNavTab('imports')}>Imports</div>
+          <div className={`sidebar-nav-t${navTab === 'favorites' ? ' act' : ''}`} onClick={() => setNavTab('favorites')}>Favorites</div>
+        </div>
+      )}
+      <div className="sidebar-scroll">
+      {/* Tools section */}
+      {(!showNav || navTab === 'all' || navTab === 'tools') && (
+      <div className="sidebar-tools" style={{ height: showNav ? 'auto' : toolsHeight, overflow: 'hidden auto', flexShrink: 0 }}>
+        <div className="sidebar-tools-header">
+          <span className="sidebar-tools-title">Tools</span>
+        </div>
+        {TOOLS.map((tool) => (
+          <div key={tool.name} className="sidebar-tool-item"
+            onClick={() => useAppStore.getState().setActiveTool(tool.name)}
+          >
+            <span className={`sidebar-star${favoriteIds.includes('tool:' + tool.name) ? ' active' : ''}`}
+              onClick={e => { e.stopPropagation(); toggleFavorite('tool:' + tool.name) }}
+            >
+              {favoriteIds.includes('tool:' + tool.name) ? '★' : '☆'}
+            </span>
+            <span className="sidebar-tool-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="14" height="14" fill="currentColor"><path d="M598.6 118.6C611.1 106.1 611.1 85.8 598.6 73.3C586.1 60.8 565.8 60.8 553.3 73.3L361.3 265.3L326.6 230.6C322.4 226.4 316.6 224 310.6 224C298.1 224 288 234.1 288 246.6L288 275.7L396.3 384L425.4 384C437.9 384 448 373.9 448 361.4C448 355.4 445.6 349.6 441.4 345.4L406.7 310.7L598.7 118.7zM373.1 417.4L254.6 298.9C211.9 295.2 169.4 310.6 138.8 341.2L130.8 349.2C108.5 371.5 96 401.7 96 433.2C96 440 103.1 444.4 109.2 441.4L160.3 415.9C165.3 413.4 169.8 420 165.7 423.8L39.3 537.4C34.7 541.6 32 547.6 32 553.9C32 566.1 41.9 576 54.1 576L227.4 576C266.2 576 303.3 560.6 330.8 533.2C361.4 502.6 376.7 460.1 373.1 417.4z"/></svg>
+            </span>
+            <span className="sidebar-tool-label">{tool.label}</span>
+          </div>
+        ))}
+      </div>
+      )}
+      {(!showNav || navTab === 'all' || navTab === 'tools') && (
+      <div className="sidebar-splitter" onMouseDown={handleToolsResize} style={{ opacity: showNav ? 0.2 : 1 }} />
+      )}
+
+      {(!showNav || navTab === 'all' || navTab === 'categories') && (
+      <div className="sidebar-categories" style={{ flex: 1, overflow: 'hidden auto' }}>
         {filteredCategories.map((category) => (
           <div key={category.name} className="category-group">
             <div className="category-header" onClick={() => toggleCategory(category.name)}>
@@ -226,6 +348,8 @@ function SidebarComponent() {
                     onShowPreview={handleShowPreview}
                     onMovePreview={handleMovePreview}
                     onHidePreview={handleHidePreview}
+                    favoriteIds={favoriteIds}
+                    onToggleFavorite={toggleFavorite}
                   />
                 ))}
               </div>
@@ -233,38 +357,114 @@ function SidebarComponent() {
           </div>
         ))}
       </div>
-      {/* Tools section */}
-      <div className="sidebar-tools">
-        <div className="sidebar-tools-header">
-          <span className="sidebar-tools-title">Tools</span>
-        </div>
-        {TOOLS.map((tool) => (
-          <div key={tool.name} className="sidebar-tool-item"
-            onClick={() => useAppStore.getState().setActiveTool(tool.name)}
-          >
-            <span className="sidebar-tool-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="14" height="14" fill="currentColor"><path d="M598.6 118.6C611.1 106.1 611.1 85.8 598.6 73.3C586.1 60.8 565.8 60.8 553.3 73.3L361.3 265.3L326.6 230.6C322.4 226.4 316.6 224 310.6 224C298.1 224 288 234.1 288 246.6L288 275.7L396.3 384L425.4 384C437.9 384 448 373.9 448 361.4C448 355.4 445.6 349.6 441.4 345.4L406.7 310.7L598.7 118.7zM373.1 417.4L254.6 298.9C211.9 295.2 169.4 310.6 138.8 341.2L130.8 349.2C108.5 371.5 96 401.7 96 433.2C96 440 103.1 444.4 109.2 441.4L160.3 415.9C165.3 413.4 169.8 420 165.7 423.8L39.3 537.4C34.7 541.6 32 547.6 32 553.9C32 566.1 41.9 576 54.1 576L227.4 576C266.2 576 303.3 560.6 330.8 533.2C361.4 502.6 376.7 460.1 373.1 417.4z"/></svg>
-            </span>
-            <span className="sidebar-tool-label">{tool.label}</span>
-          </div>
-        ))}
-      </div>
+      )}
 
-      {savedImports.length > 0 && (
-        <div className="sidebar-imports">
+      {(!showNav || navTab === 'all' || navTab === 'imports') && savedImports.length > 0 && (
+        <>
+          <div className="sidebar-splitter" onMouseDown={handleImportsResize} style={{ opacity: showNav ? 0.2 : 1 }} />
+          <div className="sidebar-imports" style={{ height: showNav ? 'auto' : importsHeight, overflow: 'hidden auto', flexShrink: 0 }}>
           <div className="sidebar-tools-header">
-            <span className="sidebar-tools-title">My Imports</span>
+            <span className="sidebar-tools-title">Import Saved</span>
           </div>
           {savedImports.map((imp) => (
             <div key={imp.id} className="sidebar-import-item" onClick={() => handleImportClick(imp)}
               title={`${imp.name} (${imp.source})`}>
-              <span className="sidebar-import-item-name">{imp.name}</span>
-              <span className="sidebar-import-item-source">{imp.source}</span>
+              <span className={`sidebar-star${favoriteIds.includes('import:' + imp.id) ? ' active' : ''}`}
+                onClick={e => { e.stopPropagation(); toggleFavorite('import:' + imp.id) }}
+              >
+                {favoriteIds.includes('import:' + imp.id) ? '★' : '☆'}
+              </span>
+              {renamingImportId === imp.id ? (
+                <input
+                  autoFocus
+                  className="sidebar-import-rename-input"
+                  value={renameImportValue}
+                  onChange={e => setRenameImportValue(e.target.value)}
+                  onBlur={() => { renameSavedImport(imp.id, renameImportValue); setRenamingImportId(null) }}
+                  onKeyDown={e => { if (e.key === 'Enter') { renameSavedImport(imp.id, renameImportValue); setRenamingImportId(null) } else if (e.key === 'Escape') setRenamingImportId(null) }}
+                  onClick={e => e.stopPropagation()}
+                />
+              ) : (
+                <>
+                  <span className="sidebar-import-item-name">{imp.name}</span>
+                  <span className="sidebar-import-item-source">{imp.source}</span>
+                </>
+              )}
+              <span className="sidebar-import-item-rename" onClick={e => { e.stopPropagation(); setRenamingImportId(imp.id); setRenameImportValue(imp.name) }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+              </span>
               <span className="sidebar-import-item-del" onClick={e => { e.stopPropagation(); deleteSavedImport(imp.id) }}>✕</span>
             </div>
           ))}
         </div>
+        </>
       )}
+
+      {/* Favorites tab */}
+      {(!showNav || navTab === 'favorites') && (
+        <div className="sidebar-favorites">
+          <div className="sidebar-tools-header">
+            <span className="sidebar-tools-title">Favorites</span>
+          </div>
+          {favoriteIds.length === 0 && (
+            <div style={{ padding: '12px 16px', fontSize: 11, color: '#555', textAlign: 'center' }}>
+              Star items to add them here
+            </div>
+          )}
+          {favoriteIds.map(fid => {
+            if (fid.startsWith('tool:')) {
+              const name = fid.slice(5)
+              const tool = TOOLS.find(t => t.name === name)
+              if (!tool) return null
+              return (
+                <div key={fid} className="sidebar-fav-item">
+                  <span className={`sidebar-star active`}
+                    onClick={() => toggleFavorite(fid)}>★</span>
+                  <span className="sidebar-fav-label">{tool.label}</span>
+                  <span className="sidebar-fav-type">Tool</span>
+                </div>
+              )
+            }
+            if (fid.startsWith('comp:')) {
+              const compId = fid.slice(5)
+              for (const cat of categories) {
+                const comp = cat.components.find(c => c.id === compId)
+                if (comp) {
+                  return (
+                    <div key={fid} className="sidebar-fav-item"
+                      onClick={() => handleComponentClick(comp)}
+                      style={{ cursor: 'pointer' }}>
+                      <span className={`sidebar-star active`}
+                        onClick={e => { e.stopPropagation(); toggleFavorite(fid) }}>★</span>
+                      <span className="sidebar-fav-label">{comp.name}</span>
+                      <span className="sidebar-fav-type">{comp.type}</span>
+                    </div>
+                  )
+                }
+              }
+              return null
+            }
+            if (fid.startsWith('import:')) {
+              const impId = fid.slice(7)
+              const imp = savedImports.find(i => i.id === impId)
+              if (!imp) return null
+              return (
+                <div key={fid} className="sidebar-fav-item"
+                  onClick={() => handleImportClick(imp)}
+                  style={{ cursor: 'pointer' }}>
+                  <span className={`sidebar-star active`}
+                    onClick={e => { e.stopPropagation(); toggleFavorite(fid) }}>★</span>
+                  <span className="sidebar-fav-label">{imp.name}</span>
+                  <span className="sidebar-fav-type">{imp.source}</span>
+                </div>
+              )
+            }
+            return null
+          })}
+        </div>
+      )}
+
+      </div>
 
       {/* Import Design */}
       <div className="sidebar-import">
@@ -299,7 +499,7 @@ function SidebarComponent() {
             {hoveredComponent.name}
           </div>
           <div style={{ height: 82, overflow: 'hidden', padding: 4 }}>
-            <ComponentPreview html={hoveredComponent.html} css={hoveredComponent.css} maxHeight={82} />
+            <ComponentPreview html={hoveredComponent.html} css={hoveredComponent.css} js={hoveredComponent.js} maxHeight={82} />
           </div>
         </div>,
         document.body

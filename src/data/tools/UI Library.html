@@ -1,0 +1,1715 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI Component Library</title>
+<style>
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#1a1a1a}
+::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#444}
+::-webkit-scrollbar-corner{background:#1a1a1a}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#121212;--s1:#121212;--s2:#121212;--s3:#121212;
+  --border:#252d4a;--border2:#333d60;
+  --text:#c8d0e8;--dim:#5a6480;--muted:#3a4260;
+  --accent:#c8ff00;--r:8px;
+}
+body{background:var(--bg);color:var(--text);font-family:'SF Mono','Fira Code',monospace;min-height:100vh;display:flex;flex-direction:column}
+
+/* ── Header ── */
+header{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:50px;background:var(--s1);border-bottom:1px solid var(--border);flex-shrink:0;position:sticky;top:0;z-index:100}
+.logo{font-size:14px;font-weight:700;color:#e8edf8;letter-spacing:-0.02em;display:flex;align-items:center;gap:8px}
+.logo-dot{width:8px;height:8px;background:var(--accent);border-radius:50%}
+.stats{font-size:11px;color:var(--dim)}
+
+/* ── Nav tabs ── */
+.cat-nav{display:flex;gap:0;background:var(--s1);border-bottom:1px solid var(--border);padding:0 20px;overflow-x:auto;flex-shrink:0;position:sticky;top:50px;z-index:99}
+.cat-tab{padding:10px 16px;font-size:12px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;color:var(--dim);white-space:nowrap;transition:all .15s;font-family:inherit}
+.cat-tab:hover{color:var(--text)}
+.cat-tab.active{color:var(--accent);border-color:var(--accent)}
+
+/* ── Content ── */
+.content{flex:1;padding:24px 20px}
+.cat-section{display:none}
+.cat-section.active{display:block}
+.section-header{margin-bottom:20px}
+.section-title{font-size:13px;font-weight:700;color:#e8edf8;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
+.section-desc{font-size:11px;color:var(--dim)}
+
+/* ── Grid of components ── */
+.comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+
+/* ── Component Card ── */
+.comp-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color .15s}
+.comp-card:hover{border-color:var(--border2)}
+.comp-preview{min-height:100px;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--s2);flex-wrap:wrap;gap:8px}
+.comp-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-top:1px solid var(--border)}
+.comp-name{font-size:11px;color:var(--dim);font-weight:500}
+.copy-btn{padding:4px 10px;border-radius:5px;border:1px solid var(--border);background:var(--s3);color:var(--text);font-size:10px;cursor:pointer;font-family:inherit;transition:all .15s}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.copy-btn.copied{background:rgba(200,255,0,.15);border-color:var(--accent);color:var(--accent)}
+
+/* Toast */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--s2);border:1px solid var(--border2);color:var(--text);font-size:11px;padding:7px 14px;border-radius:6px;opacity:0;transition:all .2s;pointer-events:none;z-index:999}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><div class="logo-dot"></div>UI Library</div>
+  <div class="stats">105 components · 7 categories · click any card to send to canvas</div>
+</header>
+
+<div class="cat-nav" id="catNav">
+  <div class="cat-tab active" onclick="showCat('bar',this)">▬ Bars</div>
+  <div class="cat-tab" onclick="showCat('button',this)">⬛ Buttons</div>
+  <div class="cat-tab" onclick="showCat('card',this)">▭ Cards</div>
+  <div class="cat-tab" onclick="showCat('grid',this)">⊞ Grids</div>
+  <div class="cat-tab" onclick="showCat('input',this)">▱ Inputs</div>
+  <div class="cat-tab" onclick="showCat('layout',this)">⊟ Layouts</div>
+  <div class="cat-tab" onclick="showCat('tabs',this)">⊤ Tabs</div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════ BARS ═══════════════════════ -->
+<div class="cat-section active" id="sec-bar">
+<div class="section-header">
+  <div class="section-title">Bars</div>
+  <div class="section-desc">Progress, loading, skill, steps, ratings and more</div>
+</div>
+<div class="comp-grid" id="grid-bar"></div>
+</div>
+
+<!-- ═══════════════════════ BUTTONS ═══════════════════════ -->
+<div class="cat-section" id="sec-button">
+<div class="section-header">
+  <div class="section-title">Buttons</div>
+  <div class="section-desc">Solid, outline, ghost, gradient, neon and more</div>
+</div>
+<div class="comp-grid" id="grid-button"></div>
+</div>
+
+<!-- ═══════════════════════ CARDS ═══════════════════════ -->
+<div class="cat-section" id="sec-card">
+<div class="section-header">
+  <div class="section-title">Cards</div>
+  <div class="section-desc">Profile, stat, feature, pricing, notification and more</div>
+</div>
+<div class="comp-grid" id="grid-card"></div>
+</div>
+
+<!-- ═══════════════════════ GRIDS ═══════════════════════ -->
+<div class="cat-section" id="sec-grid">
+<div class="section-header">
+  <div class="section-title">Grids</div>
+  <div class="section-desc">Gallery, masonry, bento, dashboard and more</div>
+</div>
+<div class="comp-grid" id="grid-grid"></div>
+</div>
+
+<!-- ═══════════════════════ INPUTS ═══════════════════════ -->
+<div class="cat-section" id="sec-input">
+<div class="section-header">
+  <div class="section-title">Inputs</div>
+  <div class="section-desc">Text, search, chat, tags, file upload and more</div>
+</div>
+<div class="comp-grid" id="grid-input"></div>
+</div>
+
+<!-- ═══════════════════════ LAYOUTS ═══════════════════════ -->
+<div class="cat-section" id="sec-layout">
+<div class="section-header">
+  <div class="section-title">Layouts</div>
+  <div class="section-desc">Sidebar, hero, split, navbar, footer and more</div>
+</div>
+<div class="comp-grid" id="grid-layout"></div>
+</div>
+
+<!-- ═══════════════════════ TABS ═══════════════════════ -->
+<div class="cat-section" id="sec-tabs">
+<div class="section-header">
+  <div class="section-title">Tabs</div>
+  <div class="section-desc">Underline, pill, vertical, icon, boxed and more</div>
+</div>
+<div class="comp-grid" id="grid-tabs"></div>
+</div>
+
+</div>
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// COMPONENT DATA  — each entry: { name, html, css }
+// ═══════════════════════════════════════════════════════
+
+const BARS = [
+{
+name:"Progress Basic",
+preview:`<div style="width:220px"><div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:11px;color:#6b7599"><span>Progress</span><span>65%</span></div><div style="background:#121212;border-radius:50px;height:8px;overflow:hidden"><div style="width:65%;height:100%;background:#4facfe;border-radius:50px"></div></div></div>`,
+html:`<div class="progress-wrap">
+  <div class="progress-header">
+    <span>Progress</span><span>65%</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" style="width: 65%"></div>
+  </div>
+</div>`,
+css:`.progress-wrap { width: 100%; }
+.progress-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; color: #6b7599; }
+.progress-track { background: #121212; border-radius: 50px; height: 8px; overflow: hidden; }
+.progress-fill { height: 100%; background: #4facfe; border-radius: 50px; transition: width 0.4s ease; }`
+},
+{
+name:"Progress Gradient",
+preview:`<div style="width:220px"><div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:11px;color:#6b7599"><span>Uploading...</span><span>78%</span></div><div style="background:#121212;border-radius:50px;height:10px;overflow:hidden"><div style="width:78%;height:100%;background:linear-gradient(90deg,#667eea,#f093fb);border-radius:50px"></div></div></div>`,
+html:`<div class="progress-wrap">
+  <div class="progress-header">
+    <span>Uploading...</span><span>78%</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill"></div>
+  </div>
+</div>`,
+css:`.progress-wrap { width: 100%; }
+.progress-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; color: #6b7599; }
+.progress-track { background: #121212; border-radius: 50px; height: 10px; overflow: hidden; }
+.progress-fill { width: 78%; height: 100%; background: linear-gradient(90deg, #667eea, #f093fb); border-radius: 50px; transition: width 0.4s ease; }`
+},
+{
+name:"Loading Animated",
+preview:`<style>@keyframes ld{0%{left:-60%}100%{left:110%}}</style><div style="width:220px;background:#121212;border-radius:50px;height:6px;overflow:hidden;position:relative"><div style="position:absolute;height:100%;width:60%;background:#4facfe;border-radius:50px;animation:ld 1.2s infinite ease-in-out"></div></div>`,
+html:`<div class="loading-track">
+  <div class="loading-bar"></div>
+</div>`,
+css:`.loading-track { width: 100%; height: 6px; background: #121212; border-radius: 50px; overflow: hidden; position: relative; }
+.loading-bar { position: absolute; height: 100%; width: 60%; background: #4facfe; border-radius: 50px; animation: loading 1.2s infinite ease-in-out; }
+@keyframes loading { 0% { left: -60%; } 100% { left: 110%; } }`
+},
+{
+name:"Multi Step",
+preview:`<div style="width:220px;display:flex;gap:4px">${[1,2,3,4,5].map((i)=>`<div style="flex:1;height:6px;border-radius:50px;background:${i<=3?'#4facfe':'#121212'}"></div>`).join('')}</div>`,
+html:`<div class="steps-bar">
+  <div class="step done"></div>
+  <div class="step done"></div>
+  <div class="step done"></div>
+  <div class="step"></div>
+  <div class="step"></div>
+</div>`,
+css:`.steps-bar { display: flex; gap: 4px; width: 100%; }
+.step { flex: 1; height: 6px; border-radius: 50px; background: #121212; }
+.step.done { background: #4facfe; }`
+},
+{
+name:"Skill Bars",
+preview:`<div style="width:220px;display:flex;flex-direction:column;gap:10px">${[['React',90],['Python',72],['CSS',85]].map(([l,v])=>`<div><div style="display:flex;justify-content:space-between;font-size:11px;color:#c8d0e8;margin-bottom:4px"><span>${l}</span><span>${v}%</span></div><div style="background:#121212;border-radius:4px;height:7px"><div style="width:${v}%;height:100%;background:#a78bfa;border-radius:4px"></div></div></div>`).join('')}</div>`,
+html:`<div class="skill-list">
+  <div class="skill-item">
+    <div class="skill-header"><span>React</span><span>90%</span></div>
+    <div class="skill-track"><div class="skill-fill" style="width:90%"></div></div>
+  </div>
+  <div class="skill-item">
+    <div class="skill-header"><span>Python</span><span>72%</span></div>
+    <div class="skill-track"><div class="skill-fill" style="width:72%"></div></div>
+  </div>
+</div>`,
+css:`.skill-list { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.skill-header { display: flex; justify-content: space-between; font-size: 12px; color: #c8d0e8; margin-bottom: 4px; }
+.skill-track { background: #121212; border-radius: 4px; height: 7px; }
+.skill-fill { height: 100%; background: #a78bfa; border-radius: 4px; transition: width 0.6s ease; }`
+},
+{
+name:"Striped Progress",
+preview:`<div style="width:220px"><div style="background:#121212;border-radius:6px;height:20px;overflow:hidden;position:relative"><div style="width:60%;height:100%;background:repeating-linear-gradient(45deg,#4facfe,#4facfe 10px,#3d98ef 10px,#3d98ef 20px)"></div></div></div>`,
+html:`<div class="striped-track">
+  <div class="striped-fill" style="width: 60%"></div>
+</div>`,
+css:`.striped-track { background: #121212; border-radius: 6px; height: 20px; overflow: hidden; }
+.striped-fill { height: 100%; background: repeating-linear-gradient(45deg, #4facfe, #4facfe 10px, #3d98ef 10px, #3d98ef 20px); transition: width 0.4s ease; }`
+},
+{
+name:"Rating Stars",
+preview:`<div style="display:flex;gap:4px;font-size:22px">★★★★<span style="color:#2a3050">★</span></div><div style="font-size:11px;color:#6b7599;margin-top:4px">4.0 out of 5</div>`,
+html:`<div class="rating">
+  <div class="stars">
+    <span class="star filled">★</span>
+    <span class="star filled">★</span>
+    <span class="star filled">★</span>
+    <span class="star filled">★</span>
+    <span class="star">★</span>
+  </div>
+  <div class="rating-label">4.0 out of 5</div>
+</div>`,
+css:`.rating { display: inline-flex; flex-direction: column; gap: 4px; }
+.stars { display: flex; gap: 4px; font-size: 22px; }
+.star { color: #2a3050; }
+.star.filled { color: #f59e0b; }
+.rating-label { font-size: 12px; color: #6b7599; }`
+},
+{
+name:"Circular Progress",
+preview:`<div style="position:relative;width:70px;height:70px"><svg viewBox="0 0 70 70" width="70" height="70"><circle cx="35" cy="35" r="28" fill="none" stroke="#121212" stroke-width="6"/><circle cx="35" cy="35" r="28" fill="none" stroke="#4facfe" stroke-width="6" stroke-dasharray="${Math.round(2*Math.PI*28*0.72)} ${Math.round(2*Math.PI*28*(1-0.72))}" stroke-dashoffset="${Math.round(2*Math.PI*28*0.25)}" stroke-linecap="round" transform="rotate(-90 35 35)"/></svg><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#c8d0e8">72%</div></div>`,
+html:`<div class="circle-progress">
+  <svg viewBox="0 0 70 70" width="70" height="70">
+    <circle cx="35" cy="35" r="28" fill="none" stroke="#121212" stroke-width="6"/>
+    <circle class="circle-fill" cx="35" cy="35" r="28" fill="none" stroke="#4facfe" stroke-width="6" stroke-linecap="round" transform="rotate(-90 35 35)"/>
+  </svg>
+  <div class="circle-label">72%</div>
+</div>`,
+css:`.circle-progress { position: relative; width: 70px; height: 70px; }
+.circle-fill { stroke-dasharray: 126 176; stroke-dashoffset: 44; transition: stroke-dasharray 0.6s ease; }
+.circle-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #c8d0e8; }`
+},
+{
+name:"Segmented Bar",
+preview:`<div style="width:220px"><div style="display:flex;border-radius:8px;overflow:hidden;height:24px"><div style="flex:4;background:#4facfe;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff">40%</div><div style="flex:3;background:#a78bfa;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff">30%</div><div style="flex:2;background:#f093fb;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff">20%</div><div style="flex:1;background:#34d399;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff">10%</div></div></div>`,
+html:`<div class="seg-bar">
+  <div class="seg" style="flex:4; background:#4facfe">40%</div>
+  <div class="seg" style="flex:3; background:#a78bfa">30%</div>
+  <div class="seg" style="flex:2; background:#f093fb">20%</div>
+  <div class="seg" style="flex:1; background:#34d399">10%</div>
+</div>`,
+css:`.seg-bar { display: flex; border-radius: 8px; overflow: hidden; height: 24px; width: 100%; }
+.seg { display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; font-weight: 600; }`
+},
+{
+name:"Volume Slider",
+preview:`<div style="display:flex;align-items:center;gap:10px;width:220px"><span style="font-size:16px">🔈</span><div style="flex:1;background:#121212;border-radius:50px;height:4px;position:relative"><div style="width:60%;height:100%;background:#4facfe;border-radius:50px"></div><div style="position:absolute;left:60%;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;background:#4facfe;border-radius:50%;border:2px solid #121212"></div></div><span style="font-size:16px">🔊</span></div>`,
+html:`<div class="volume-slider">
+  <span>🔈</span>
+  <div class="vol-track">
+    <div class="vol-fill" style="width: 60%"></div>
+    <div class="vol-thumb" style="left: 60%"></div>
+  </div>
+  <span>🔊</span>
+</div>`,
+css:`.volume-slider { display: flex; align-items: center; gap: 10px; width: 100%; }
+.vol-track { flex: 1; background: #121212; border-radius: 50px; height: 4px; position: relative; }
+.vol-fill { height: 100%; background: #4facfe; border-radius: 50px; }
+.vol-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 14px; height: 14px; background: #4facfe; border-radius: 50%; border: 2px solid #121212; }`
+},
+{
+name:"Notification Badge Bar",
+preview:`<div style="width:220px;display:flex;flex-direction:column;gap:8px">${[['Messages','#4facfe',8],['Alerts','#f87171',3],['Updates','#34d399',12]].map(([l,c,n])=>`<div style="display:flex;align-items:center;gap:10px"><span style="font-size:11px;color:#6b7599;width:55px">${l}</span><div style="flex:1;background:#121212;border-radius:50px;height:6px;overflow:hidden"><div style="width:${n*7}%;height:100%;background:${c}"></div></div><span style="font-size:10px;font-weight:700;color:${c};min-width:20px;text-align:right">${n}</span></div>`).join('')}</div>`,
+html:`<div class="notif-bars">
+  <div class="notif-row">
+    <span class="notif-label">Messages</span>
+    <div class="notif-track"><div class="notif-fill" style="width:56%;background:#4facfe"></div></div>
+    <span class="notif-count" style="color:#4facfe">8</span>
+  </div>
+</div>`,
+css:`.notif-bars { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.notif-row { display: flex; align-items: center; gap: 10px; }
+.notif-label { font-size: 11px; color: #6b7599; min-width: 60px; }
+.notif-track { flex: 1; background: #121212; border-radius: 50px; height: 6px; overflow: hidden; }
+.notif-fill { height: 100%; border-radius: 50px; }
+.notif-count { font-size: 11px; font-weight: 700; min-width: 20px; text-align: right; }`
+},
+{
+name:"Timeline Bar",
+preview:`<div style="width:220px"><div style="position:relative;padding-left:20px"><div style="position:absolute;left:7px;top:0;bottom:0;width:2px;background:#121212"></div>${[['Design','done'],['Dev','done'],['Test','active'],['Launch','']].map(([l,s])=>`<div style="position:relative;margin-bottom:14px;display:flex;align-items:center;gap:10px"><div style="position:absolute;left:-16px;width:10px;height:10px;border-radius:50%;background:${s==='done'?'#34d399':s==='active'?'#4facfe':'#121212'};border:2px solid ${s==='active'?'#4facfe':'transparent'}"></div><span style="font-size:11px;color:${s?'#c8d0e8':'#4a5270'}">${l}</span></div>`).join('')}</div></div>`,
+html:`<div class="timeline">
+  <div class="t-item done"><span>Design</span></div>
+  <div class="t-item done"><span>Development</span></div>
+  <div class="t-item active"><span>Testing</span></div>
+  <div class="t-item"><span>Launch</span></div>
+</div>`,
+css:`.timeline { position: relative; padding-left: 24px; }
+.timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: #121212; }
+.t-item { position: relative; padding-bottom: 16px; }
+.t-item::before { content: ''; position: absolute; left: -19px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: #121212; }
+.t-item.done::before { background: #34d399; }
+.t-item.active::before { background: #4facfe; box-shadow: 0 0 0 3px rgba(79,172,254,0.25); }
+.t-item span { font-size: 12px; color: #6b7599; }
+.t-item.done span, .t-item.active span { color: #c8d0e8; }`
+},
+{
+name:"Meter / Range",
+preview:`<div style="width:220px"><div style="background:linear-gradient(90deg,#34d399 0%,#f59e0b 50%,#f87171 100%);border-radius:50px;height:12px;position:relative"><div style="position:absolute;left:68%;top:50%;transform:translate(-50%,-50%);width:4px;height:20px;background:#fff;border-radius:2px;box-shadow:0 2px 6px rgba(0,0,0,0.4)"></div></div><div style="display:flex;justify-content:space-between;font-size:10px;color:#4a5270;margin-top:4px"><span>Low</span><span>Normal</span><span>High</span></div></div>`,
+html:`<div class="meter-wrap">
+  <div class="meter-track">
+    <div class="meter-needle" style="left: 68%"></div>
+  </div>
+  <div class="meter-labels">
+    <span>Low</span><span>Normal</span><span>High</span>
+  </div>
+</div>`,
+css:`.meter-wrap { width: 100%; }
+.meter-track { background: linear-gradient(90deg, #34d399 0%, #f59e0b 50%, #f87171 100%); border-radius: 50px; height: 12px; position: relative; }
+.meter-needle { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 4px; height: 20px; background: #fff; border-radius: 2px; box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
+.meter-labels { display: flex; justify-content: space-between; font-size: 10px; color: #6b7599; margin-top: 4px; }`
+},
+{
+name:"Battery Bar",
+preview:`<div style="display:flex;align-items:center;gap:6px"><div style="width:60px;height:26px;border:2px solid #4facfe;border-radius:5px;position:relative;padding:3px;display:flex;gap:2px;align-items:center"><div style="flex:1;height:100%;background:#4facfe;border-radius:2px"></div><div style="flex:1;height:100%;background:#4facfe;border-radius:2px"></div><div style="flex:1;height:100%;background:#4facfe;border-radius:2px"></div><div style="flex:1;height:100%;background:#121212;border-radius:2px"></div><div style="position:absolute;right:-6px;top:50%;transform:translateY(-50%);width:4px;height:12px;background:#4facfe;border-radius:0 2px 2px 0"></div></div><span style="font-size:12px;color:#4facfe;font-weight:600">75%</span></div>`,
+html:`<div class="battery">
+  <div class="bat-body">
+    <div class="bat-cell filled"></div>
+    <div class="bat-cell filled"></div>
+    <div class="bat-cell filled"></div>
+    <div class="bat-cell"></div>
+    <div class="bat-tip"></div>
+  </div>
+  <span class="bat-label">75%</span>
+</div>`,
+css:`.battery { display: flex; align-items: center; gap: 6px; }
+.bat-body { width: 60px; height: 26px; border: 2px solid #4facfe; border-radius: 5px; padding: 3px; display: flex; gap: 2px; position: relative; }
+.bat-cell { flex: 1; background: #121212; border-radius: 2px; }
+.bat-cell.filled { background: #4facfe; }
+.bat-tip { position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 4px; height: 12px; background: #4facfe; border-radius: 0 2px 2px 0; }
+.bat-label { font-size: 12px; color: #4facfe; font-weight: 700; }`
+},
+{
+name:"Data Bar Chart",
+preview:`<div style="display:flex;align-items:flex-end;gap:8px;height:70px;padding:0 8px">${[60,85,45,70,90,55,75].map((v,i)=>`<div style="flex:1;background:${i===4?'#4facfe':'#121212'};height:${v}%;border-radius:4px 4px 0 0;position:relative"><div style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:9px;color:${i===4?'#4facfe':'#4a5270'}">${v}</div></div>`).join('')}</div>`,
+html:`<div class="bar-chart">
+  <div class="bar-col" style="height:60%"><span>60</span></div>
+  <div class="bar-col highlight" style="height:90%"><span>90</span></div>
+  <div class="bar-col" style="height:75%"><span>75</span></div>
+</div>`,
+css:`.bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 80px; padding: 0 8px; }
+.bar-col { flex: 1; background: #121212; border-radius: 4px 4px 0 0; position: relative; }
+.bar-col.highlight { background: #4facfe; }
+.bar-col span { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: 9px; color: #6b7599; }`
+}
+];
+
+const BUTTONS = [
+{
+name:"Solid Primary",
+preview:`<button style="background:#4facfe;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Click me</button>`,
+html:`<button class="btn-solid">Click me</button>`,
+css:`.btn-solid { background: #4facfe; color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+.btn-solid:hover { opacity: 0.85; }`
+},
+{
+name:"Outline Button",
+preview:`<button style="background:transparent;color:#4facfe;border:2px solid #4facfe;border-radius:8px;padding:9px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Outline</button>`,
+html:`<button class="btn-outline">Outline</button>`,
+css:`.btn-outline { background: transparent; color: #4facfe; border: 2px solid #4facfe; border-radius: 8px; padding: 9px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-outline:hover { background: rgba(79,172,254,0.1); }`
+},
+{
+name:"Ghost Button",
+preview:`<button style="background:rgba(79,172,254,0.1);color:#4facfe;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Ghost</button>`,
+html:`<button class="btn-ghost">Ghost</button>`,
+css:`.btn-ghost { background: rgba(79,172,254,0.1); color: #4facfe; border: none; border-radius: 8px; padding: 10px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.btn-ghost:hover { background: rgba(79,172,254,0.2); }`
+},
+{
+name:"Gradient Button",
+preview:`<button style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 8px 25px rgba(102,126,234,0.4)">Gradient</button>`,
+html:`<button class="btn-gradient">Gradient</button>`,
+css:`.btn-gradient { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 25px rgba(102,126,234,0.4); transition: transform 0.2s; }
+.btn-gradient:hover { transform: translateY(-2px); }`
+},
+{
+name:"Neon Button",
+preview:`<button style="background:transparent;color:#c8ff00;border:2px solid #c8ff00;border-radius:8px;padding:9px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 0 20px rgba(200,255,0,0.3),inset 0 0 20px rgba(200,255,0,0.05)">Neon</button>`,
+html:`<button class="btn-neon">Neon</button>`,
+css:`.btn-neon { background: transparent; color: #c8ff00; border: 2px solid #c8ff00; border-radius: 8px; padding: 9px 24px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 0 20px rgba(200,255,0,0.3), inset 0 0 20px rgba(200,255,0,0.05); transition: box-shadow 0.2s; }
+.btn-neon:hover { box-shadow: 0 0 35px rgba(200,255,0,0.5), inset 0 0 30px rgba(200,255,0,0.1); }`
+},
+{
+name:"Pill Button",
+preview:`<button style="background:#f093fb;color:#fff;border:none;border-radius:50px;padding:10px 28px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 15px rgba(240,147,251,0.4)">Pill</button>`,
+html:`<button class="btn-pill">Pill</button>`,
+css:`.btn-pill { background: #f093fb; color: #fff; border: none; border-radius: 50px; padding: 10px 28px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(240,147,251,0.4); transition: transform 0.2s; }
+.btn-pill:hover { transform: translateY(-2px); }`
+},
+{
+name:"Icon + Text Button",
+preview:`<button style="background:#121212;color:#c8d0e8;border:1px solid #2a3050;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px">⬇ Download</button>`,
+html:`<button class="btn-icon">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+  Download
+</button>`,
+css:`.btn-icon { display: flex; align-items: center; gap: 8px; background: #121212; color: #c8d0e8; border: 1px solid #2a3050; border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.btn-icon:hover { border-color: #4facfe; color: #4facfe; }`
+},
+{
+name:"Loading Button",
+preview:`<style>@keyframes spin{to{transform:rotate(360deg)}}</style><button style="background:#4facfe;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px;opacity:.8"><div style="width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite"></div>Loading...</button>`,
+html:`<button class="btn-loading" disabled>
+  <div class="spinner"></div>
+  Loading...
+</button>`,
+css:`.btn-loading { display: flex; align-items: center; gap: 8px; background: #4facfe; color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 14px; font-weight: 600; cursor: not-allowed; opacity: 0.8; }
+.spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }`
+},
+{
+name:"Danger Button",
+preview:`<button style="background:#f87171;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Delete</button>`,
+html:`<button class="btn-danger">Delete</button>`,
+css:`.btn-danger { background: #f87171; color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.btn-danger:hover { background: #ef4444; }`
+},
+{
+name:"Success Button",
+preview:`<button style="background:#34d399;color:#000;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">✓ Saved</button>`,
+html:`<button class="btn-success">✓ Saved</button>`,
+css:`.btn-success { background: #34d399; color: #000; border: none; border-radius: 8px; padding: 10px 24px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+.btn-success:hover { background: #10b981; }`
+},
+{
+name:"Dark Button",
+preview:`<button style="background:#121212;color:#c8d0e8;border:1px solid #2a3050;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit">Dark</button>`,
+html:`<button class="btn-dark">Dark</button>`,
+css:`.btn-dark { background: #121212; color: #c8d0e8; border: 1px solid #2a3050; border-radius: 8px; padding: 10px 24px; font-size: 14px; font-weight: 500; cursor: pointer; transition: border-color 0.2s; }
+.btn-dark:hover { border-color: #4facfe; }`
+},
+{
+name:"Floating Action",
+preview:`<button style="width:50px;height:50px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:#fff;border:none;border-radius:50%;font-size:22px;cursor:pointer;box-shadow:0 6px 20px rgba(79,172,254,0.4);display:flex;align-items:center;justify-content:center">+</button>`,
+html:`<button class="btn-fab">+</button>`,
+css:`.btn-fab { width: 50px; height: 50px; background: linear-gradient(135deg, #4facfe, #00f2fe); color: #fff; border: none; border-radius: 50%; font-size: 22px; cursor: pointer; box-shadow: 0 6px 20px rgba(79,172,254,0.4); display: flex; align-items: center; justify-content: center; transition: transform 0.2s, box-shadow 0.2s; }
+.btn-fab:hover { transform: scale(1.1); box-shadow: 0 10px 30px rgba(79,172,254,0.5); }`
+},
+{
+name:"Split Button",
+preview:`<div style="display:flex"><button style="background:#4facfe;color:#fff;border:none;border-radius:8px 0 0 8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Save</button><button style="background:#3a9cf0;color:#fff;border:none;border-radius:0 8px 8px 0;padding:10px 10px;font-size:13px;font-weight:600;cursor:pointer;border-left:1px solid rgba(0,0,0,0.2)">▾</button></div>`,
+html:`<div class="split-btn">
+  <button class="split-main">Save</button>
+  <button class="split-arrow">▾</button>
+</div>`,
+css:`.split-btn { display: flex; }
+.split-main { background: #4facfe; color: #fff; border: none; border-radius: 8px 0 0 8px; padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.split-arrow { background: #3a9cf0; color: #fff; border: none; border-radius: 0 8px 8px 0; padding: 10px 12px; cursor: pointer; border-left: 1px solid rgba(0,0,0,0.2); }
+.split-main:hover, .split-arrow:hover { opacity: 0.85; }`
+},
+{
+name:"Text Link Button",
+preview:`<button style="background:none;border:none;color:#4facfe;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:underline;text-underline-offset:3px">Learn more →</button>`,
+html:`<button class="btn-link">Learn more →</button>`,
+css:`.btn-link { background: none; border: none; color: #4facfe; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 0; transition: color 0.2s; }
+.btn-link:hover { color: #38bdf8; }`
+},
+{
+name:"Social Button",
+preview:`<div style="display:flex;gap:8px"><button style="background:#1877f2;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">f Facebook</button><button style="background:#1da1f2;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">𝕏 Twitter</button></div>`,
+html:`<div class="social-btns">
+  <button class="btn-fb">f Facebook</button>
+  <button class="btn-tw">𝕏 Twitter</button>
+</div>`,
+css:`.social-btns { display: flex; gap: 8px; }
+.btn-fb { background: #1877f2; color: #fff; border: none; border-radius: 8px; padding: 9px 16px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.btn-tw { background: #1da1f2; color: #fff; border: none; border-radius: 8px; padding: 9px 16px; font-size: 12px; font-weight: 600; cursor: pointer; }`
+}
+];
+
+const CARDS = [
+{
+name:"Simple Card",
+preview:`<div style="background:#121212;border:1px solid #2a3050;border-radius:12px;padding:18px;width:200px"><p style="font-weight:700;color:#e8edf8;margin-bottom:6px;font-size:13px">Simple Card</p><p style="color:#6b7599;font-size:11px;line-height:1.5">A clean minimal card with subtle border styling.</p></div>`,
+html:`<div class="card">
+  <h3>Simple Card</h3>
+  <p>A clean minimal card with subtle border styling.</p>
+</div>`,
+css:`.card { background: #121212; border: 1px solid #2a3050; border-radius: 12px; padding: 18px; }
+.card h3 { font-weight: 700; color: #e8edf8; margin-bottom: 6px; }
+.card p { color: #6b7599; font-size: 13px; line-height: 1.5; }`
+},
+{
+name:"Gradient Border Card",
+preview:`<div style="background:linear-gradient(135deg,#667eea,#f093fb);padding:2px;border-radius:14px;width:200px"><div style="background:#121212;border-radius:12px;padding:18px"><p style="font-weight:700;color:#e8edf8;margin-bottom:6px;font-size:13px">Gradient Border</p><p style="color:#6b7599;font-size:11px;line-height:1.5">Beautiful gradient border effect.</p></div></div>`,
+html:`<div class="card-grad-wrap">
+  <div class="card-grad-inner">
+    <h3>Gradient Border</h3>
+    <p>Beautiful gradient border effect.</p>
+  </div>
+</div>`,
+css:`.card-grad-wrap { background: linear-gradient(135deg, #667eea, #f093fb); padding: 2px; border-radius: 14px; }
+.card-grad-inner { background: #121212; border-radius: 12px; padding: 18px; }
+.card-grad-inner h3 { font-weight: 700; color: #e8edf8; margin-bottom: 6px; }
+.card-grad-inner p { color: #6b7599; font-size: 13px; line-height: 1.5; }`
+},
+{
+name:"Profile Card",
+preview:`<div style="background:#121212;border:1px solid #2a3050;border-radius:12px;padding:18px;width:200px;text-align:center"><div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#4facfe,#00f2fe);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;margin:0 auto 10px">AM</div><p style="font-weight:700;color:#e8edf8;font-size:13px;margin-bottom:3px">Alex Morgan</p><p style="color:#6b7599;font-size:11px;margin-bottom:12px">Senior Designer</p><button style="background:#4facfe;color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Follow</button></div>`,
+html:`<div class="profile-card">
+  <div class="avatar">AM</div>
+  <h3>Alex Morgan</h3>
+  <p>Senior Designer</p>
+  <button class="follow-btn">Follow</button>
+</div>`,
+css:`.profile-card { background: #121212; border: 1px solid #2a3050; border-radius: 12px; padding: 20px; text-align: center; }
+.avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #4facfe, #00f2fe); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: #fff; margin: 0 auto 10px; }
+.profile-card h3 { color: #e8edf8; font-size: 14px; margin-bottom: 3px; }
+.profile-card p { color: #6b7599; font-size: 12px; margin-bottom: 12px; }
+.follow-btn { background: #4facfe; color: #fff; border: none; border-radius: 6px; padding: 7px 16px; font-size: 12px; font-weight: 600; cursor: pointer; }`
+},
+{
+name:"Stat Card",
+preview:`<div style="background:#121212;border:1px solid #2a3050;border-radius:12px;padding:18px;width:160px"><p style="font-size:11px;color:#6b7599;margin-bottom:6px">Total Revenue</p><p style="font-size:26px;font-weight:800;color:#e8edf8;margin-bottom:8px">$48.2k</p><span style="background:rgba(52,211,153,0.15);color:#34d399;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px">↑ +12%</span></div>`,
+html:`<div class="stat-card">
+  <p class="stat-label">Total Revenue</p>
+  <p class="stat-value">$48.2k</p>
+  <span class="stat-badge">↑ +12%</span>
+</div>`,
+css:`.stat-card { background: #121212; border: 1px solid #2a3050; border-radius: 12px; padding: 18px; }
+.stat-label { font-size: 12px; color: #6b7599; margin-bottom: 6px; }
+.stat-value { font-size: 28px; font-weight: 800; color: #e8edf8; margin-bottom: 8px; }
+.stat-badge { background: rgba(52,211,153,0.15); color: #34d399; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }`
+},
+{
+name:"Pricing Card",
+preview:`<div style="background:#121212;border:2px solid #4facfe;border-radius:12px;padding:18px;width:170px;text-align:center"><div style="background:rgba(79,172,254,0.15);color:#4facfe;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px">PRO</div><p style="font-size:24px;font-weight:800;color:#e8edf8;margin-bottom:4px">$29<span style="font-size:12px;font-weight:400;color:#6b7599">/mo</span></p><div style="text-align:left;margin:10px 0;display:flex;flex-direction:column;gap:4px"><div style="font-size:11px;color:#c8d0e8">✓ Unlimited projects</div><div style="font-size:11px;color:#c8d0e8">✓ Priority support</div><div style="font-size:11px;color:#c8d0e8">✓ Analytics</div></div><button style="background:#4facfe;color:#fff;border:none;border-radius:6px;padding:8px;width:100%;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px">Get started</button></div>`,
+html:`<div class="pricing-card featured">
+  <div class="plan-badge">PRO</div>
+  <div class="price">$29<span>/mo</span></div>
+  <ul class="features">
+    <li>✓ Unlimited projects</li>
+    <li>✓ Priority support</li>
+    <li>✓ Analytics</li>
+  </ul>
+  <button class="plan-btn">Get started</button>
+</div>`,
+css:`.pricing-card { background: #121212; border: 1px solid #2a3050; border-radius: 12px; padding: 20px; text-align: center; }
+.pricing-card.featured { border-color: #4facfe; }
+.plan-badge { display: inline-block; background: rgba(79,172,254,0.15); color: #4facfe; font-size: 11px; font-weight: 600; padding: 3px 12px; border-radius: 20px; margin-bottom: 12px; }
+.price { font-size: 28px; font-weight: 800; color: #e8edf8; margin-bottom: 6px; }
+.price span { font-size: 13px; font-weight: 400; color: #6b7599; }
+.features { list-style: none; text-align: left; margin: 12px 0; display: flex; flex-direction: column; gap: 6px; }
+.features li { font-size: 12px; color: #c8d0e8; }
+.plan-btn { background: #4facfe; color: #fff; border: none; border-radius: 8px; padding: 9px; width: 100%; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 8px; }`
+},
+{
+name:"Notification Card",
+preview:`<div style="background:#121212;border:1px solid #2a3050;border-radius:12px;padding:14px;width:220px;display:flex;gap:12px;align-items:flex-start"><div style="width:36px;height:36px;border-radius:50%;background:rgba(79,172,254,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📬</div><div><p style="font-weight:600;color:#e8edf8;font-size:12px;margin-bottom:3px">New message</p><p style="color:#6b7599;font-size:11px;line-height:1.4">You have 3 unread messages from the team.</p><p style="color:#4a5270;font-size:10px;margin-top:6px">2 min ago</p></div></div>`,
+html:`<div class="notif-card">
+  <div class="notif-icon">📬</div>
+  <div class="notif-body">
+    <p class="notif-title">New message</p>
+    <p class="notif-text">You have 3 unread messages.</p>
+    <p class="notif-time">2 min ago</p>
+  </div>
+</div>`,
+css:`.notif-card { background: #121212; border: 1px solid #2a3050; border-radius: 12px; padding: 14px; display: flex; gap: 12px; align-items: flex-start; }
+.notif-icon { width: 36px; height: 36px; border-radius: 50%; background: rgba(79,172,254,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.notif-title { font-weight: 600; color: #e8edf8; font-size: 13px; margin-bottom: 3px; }
+.notif-text { color: #6b7599; font-size: 12px; line-height: 1.4; }
+.notif-time { color: #4a5270; font-size: 11px; margin-top: 4px; }`
+},
+{
+name:"Feature Card",
+preview:`<div style="background:#121212;border:1px solid #2a3050;border-radius:14px;padding:20px;width:200px"><div style="width:42px;height:42px;border-radius:10px;background:rgba(167,139,250,0.15);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px">⚡</div><p style="font-weight:700;color:#e8edf8;font-size:13px;margin-bottom:6px">Lightning Fast</p><p style="color:#6b7599;font-size:11px;line-height:1.5">Built for performance at every scale you need.</p></div>`,
+html:`<div class="feature-card">
+  <div class="feat-icon">⚡</div>
+  <h3>Lightning Fast</h3>
+  <p>Built for performance at every scale.</p>
+</div>`,
+css:`.feature-card { background: #121212; border: 1px solid #2a3050; border-radius: 14px; padding: 20px; }
+.feat-icon { width: 42px; height: 42px; border-radius: 10px; background: rgba(167,139,250,0.15); display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 14px; }
+.feature-card h3 { font-weight: 700; color: #e8edf8; font-size: 14px; margin-bottom: 6px; }
+.feature-card p { color: #6b7599; font-size: 13px; line-height: 1.5; }`
+},
+{
+name:"Glass Card",
+preview:`<div style="background:linear-gradient(135deg,rgba(102,126,234,0.3),rgba(240,147,251,0.2));padding:2px;border-radius:14px;width:200px"><div style="background:rgba(30,37,64,0.8);backdrop-filter:blur(12px);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.08)"><p style="font-weight:700;color:#e8edf8;font-size:13px;margin-bottom:6px">Glass Effect</p><p style="color:rgba(200,208,232,0.7);font-size:11px;line-height:1.5">Frosted glass design card.</p></div></div>`,
+html:`<div class="glass-card">
+  <h3>Glass Effect</h3>
+  <p>Frosted glass design card.</p>
+</div>`,
+css:`.glass-card { background: rgba(255,255,255,0.06); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 20px; }
+.glass-card h3 { font-weight: 700; color: #e8edf8; margin-bottom: 8px; }
+.glass-card p { color: rgba(200,208,232,0.7); font-size: 13px; line-height: 1.5; }`
+},
+{
+name:"Horizontal Card",
+preview:`<div style="background:#121212;border:1px solid #2a3050;border-radius:12px;padding:14px;width:230px;display:flex;gap:14px;align-items:center"><div style="width:50px;height:50px;border-radius:10px;background:linear-gradient(135deg,#f093fb,#f5576c);flex-shrink:0"></div><div><p style="font-weight:700;color:#e8edf8;font-size:12px;margin-bottom:3px">Horizontal Card</p><p style="color:#6b7599;font-size:11px;line-height:1.4">Side image layout.</p></div></div>`,
+html:`<div class="h-card">
+  <div class="h-card-img"></div>
+  <div class="h-card-body">
+    <h3>Horizontal Card</h3>
+    <p>Side image layout.</p>
+  </div>
+</div>`,
+css:`.h-card { background: #121212; border: 1px solid #2a3050; border-radius: 12px; padding: 14px; display: flex; gap: 14px; align-items: center; }
+.h-card-img { width: 50px; height: 50px; border-radius: 10px; background: linear-gradient(135deg, #f093fb, #f5576c); flex-shrink: 0; }
+.h-card-body h3 { font-weight: 700; color: #e8edf8; font-size: 13px; margin-bottom: 4px; }
+.h-card-body p { color: #6b7599; font-size: 12px; line-height: 1.4; }`
+},
+{
+name:"Image Card",
+preview:`<div style="background:#121212;border:1px solid #2a3050;border-radius:12px;overflow:hidden;width:200px"><div style="height:90px;background:linear-gradient(135deg,#4facfe22,#a78bfa44,#f093fb33);display:flex;align-items:center;justify-content:center;font-size:32px">🌄</div><div style="padding:14px"><p style="font-weight:700;color:#e8edf8;font-size:12px;margin-bottom:4px">Mountain View</p><p style="color:#6b7599;font-size:11px">Photography</p></div></div>`,
+html:`<div class="img-card">
+  <div class="img-card-thumb"></div>
+  <div class="img-card-body">
+    <h3>Mountain View</h3>
+    <p>Photography</p>
+  </div>
+</div>`,
+css:`.img-card { background: #121212; border: 1px solid #2a3050; border-radius: 12px; overflow: hidden; }
+.img-card-thumb { height: 120px; background: linear-gradient(135deg, #4facfe, #a78bfa); }
+.img-card-body { padding: 14px; }
+.img-card-body h3 { font-weight: 700; color: #e8edf8; font-size: 13px; margin-bottom: 4px; }
+.img-card-body p { color: #6b7599; font-size: 12px; }`
+},
+{
+name:"Todo Card",
+preview:`<div style="background:#121212;border:1px solid #2a3050;border-radius:12px;padding:14px;width:210px"><p style="font-weight:700;color:#e8edf8;font-size:12px;margin-bottom:10px">Tasks</p>${[['Design mockup',true],['Write code',true],['Deploy',false]].map(([t,d])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px"><div style="width:16px;height:16px;border-radius:4px;background:${d?'#34d399':'transparent'};border:2px solid ${d?'#34d399':'#2a3050'};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;color:#000">${d?'✓':''}</div><span style="font-size:12px;color:${d?'#4a5270':'#c8d0e8'};text-decoration:${d?'line-through':'none'}">${t}</span></div>`).join('')}</div>`,
+html:`<div class="todo-card">
+  <h3>Tasks</h3>
+  <div class="todo-item done">
+    <div class="checkbox checked">✓</div>
+    <span>Design mockup</span>
+  </div>
+  <div class="todo-item">
+    <div class="checkbox"></div>
+    <span>Deploy</span>
+  </div>
+</div>`,
+css:`.todo-card { background: #121212; border: 1px solid #2a3050; border-radius: 12px; padding: 14px; }
+.todo-card h3 { font-weight: 700; color: #e8edf8; font-size: 13px; margin-bottom: 10px; }
+.todo-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.checkbox { width: 16px; height: 16px; border-radius: 4px; border: 2px solid #2a3050; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+.checkbox.checked { background: #34d399; border-color: #34d399; color: #000; }
+.todo-item.done span { color: #4a5270; text-decoration: line-through; }
+.todo-item span { color: #c8d0e8; font-size: 12px; }`
+},
+{
+name:"Testimonial Card",
+preview:`<div style="background:#121212;border:1px solid #2a3050;border-radius:12px;padding:18px;width:220px"><div style="color:#f59e0b;font-size:16px;margin-bottom:8px">★★★★★</div><p style="color:#c8d0e8;font-size:11px;line-height:1.5;margin-bottom:12px;font-style:italic">"This is absolutely the best tool I've used. Highly recommended!"</p><div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:30px;border-radius:50%;background:#667eea;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff">JD</div><div><p style="font-size:11px;font-weight:600;color:#e8edf8">John Doe</p><p style="font-size:10px;color:#4a5270">CEO, Acme Corp</p></div></div></div>`,
+html:`<div class="testimonial">
+  <div class="stars">★★★★★</div>
+  <p class="quote">"This is the best tool I've used!"</p>
+  <div class="author">
+    <div class="author-avatar">JD</div>
+    <div>
+      <p class="author-name">John Doe</p>
+      <p class="author-role">CEO, Acme Corp</p>
+    </div>
+  </div>
+</div>`,
+css:`.testimonial { background: #121212; border: 1px solid #2a3050; border-radius: 12px; padding: 20px; }
+.stars { color: #f59e0b; font-size: 16px; margin-bottom: 10px; }
+.quote { color: #c8d0e8; font-size: 13px; line-height: 1.6; font-style: italic; margin-bottom: 14px; }
+.author { display: flex; align-items: center; gap: 10px; }
+.author-avatar { width: 32px; height: 32px; border-radius: 50%; background: #667eea; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.author-name { font-size: 12px; font-weight: 600; color: #e8edf8; }
+.author-role { font-size: 11px; color: #6b7599; }`
+},
+{
+name:"Product Card",
+preview:`<div style="background:#121212;border:1px solid #2a3050;border-radius:12px;overflow:hidden;width:180px"><div style="height:100px;background:linear-gradient(135deg,#121212,#121212);display:flex;align-items:center;justify-content:center;font-size:36px">👟</div><div style="padding:12px"><p style="font-weight:700;color:#e8edf8;font-size:12px;margin-bottom:3px">Air Max Pro</p><p style="color:#6b7599;font-size:10px;margin-bottom:8px">Running Shoes</p><div style="display:flex;align-items:center;justify-content:space-between"><span style="font-weight:800;color:#4facfe;font-size:14px">$129</span><button style="background:#4facfe;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit">Add</button></div></div></div>`,
+html:`<div class="product-card">
+  <div class="product-img">👟</div>
+  <div class="product-body">
+    <h3>Air Max Pro</h3>
+    <p>Running Shoes</p>
+    <div class="product-footer">
+      <span class="price">$129</span>
+      <button class="add-btn">Add</button>
+    </div>
+  </div>
+</div>`,
+css:`.product-card { background: #121212; border: 1px solid #2a3050; border-radius: 12px; overflow: hidden; }
+.product-img { height: 120px; background: linear-gradient(135deg, #121212, #121212); display: flex; align-items: center; justify-content: center; font-size: 40px; }
+.product-body { padding: 12px; }
+.product-body h3 { font-weight: 700; color: #e8edf8; font-size: 13px; margin-bottom: 3px; }
+.product-body p { color: #6b7599; font-size: 11px; margin-bottom: 8px; }
+.product-footer { display: flex; align-items: center; justify-content: space-between; }
+.price { font-weight: 800; color: #4facfe; font-size: 16px; }
+.add-btn { background: #4facfe; color: #fff; border: none; border-radius: 6px; padding: 6px 12px; font-size: 11px; font-weight: 600; cursor: pointer; }`
+},
+{
+name:"Alert Card",
+preview:`<div style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:10px;padding:14px;width:220px;display:flex;gap:10px;align-items:flex-start"><span style="font-size:18px;flex-shrink:0">⚠️</span><div><p style="font-weight:600;color:#f87171;font-size:12px;margin-bottom:3px">Error occurred</p><p style="color:rgba(248,113,113,0.8);font-size:11px;line-height:1.4">Something went wrong. Please try again.</p></div></div>`,
+html:`<div class="alert-card error">
+  <span class="alert-icon">⚠️</span>
+  <div>
+    <p class="alert-title">Error occurred</p>
+    <p class="alert-msg">Something went wrong. Please try again.</p>
+  </div>
+</div>`,
+css:`.alert-card { display: flex; gap: 10px; align-items: flex-start; border-radius: 10px; padding: 14px; border: 1px solid; }
+.alert-card.error { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.3); }
+.alert-card.success { background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.3); }
+.alert-icon { font-size: 18px; flex-shrink: 0; }
+.alert-title { font-weight: 600; color: #f87171; font-size: 13px; margin-bottom: 3px; }
+.alert-msg { color: rgba(248,113,113,0.8); font-size: 12px; line-height: 1.4; }`
+}
+];
+
+const GRIDS = [
+{
+name:"Basic 3-col Grid",
+preview:`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:220px">${Array.from({length:6},(_,i)=>`<div style="background:#121212;border:1px solid #2a3050;border-radius:6px;height:50px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#4a5270">${i+1}</div>`).join('')}</div>`,
+html:`<div class="grid-3">
+  <div class="grid-item">1</div>
+  <div class="grid-item">2</div>
+  <div class="grid-item">3</div>
+  <div class="grid-item">4</div>
+  <div class="grid-item">5</div>
+  <div class="grid-item">6</div>
+</div>`,
+css:`.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.grid-item { background: #121212; border: 1px solid #2a3050; border-radius: 8px; height: 60px; display: flex; align-items: center; justify-content: center; color: #6b7599; font-size: 12px; }`
+},
+{
+name:"Bento Grid",
+preview:`<div style="display:grid;grid-template-columns:2fr 1fr;grid-template-rows:auto auto;gap:6px;width:220px"><div style="background:#121212;border:1px solid #2a3050;border-radius:8px;height:90px;grid-row:1/3;display:flex;align-items:center;justify-content:center;font-size:11px;color:#4a5270">Main</div><div style="background:#121212;border:1px solid #2a3050;border-radius:8px;height:42px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#4a5270">A</div><div style="background:#121212;border:1px solid #2a3050;border-radius:8px;height:42px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#4a5270">B</div></div>`,
+html:`<div class="bento-grid">
+  <div class="bento-main">Main</div>
+  <div class="bento-a">A</div>
+  <div class="bento-b">B</div>
+</div>`,
+css:`.bento-grid { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: auto auto; gap: 8px; }
+.bento-main { background: #121212; border: 1px solid #2a3050; border-radius: 10px; grid-row: 1 / 3; min-height: 120px; display: flex; align-items: center; justify-content: center; }
+.bento-a, .bento-b { background: #121212; border: 1px solid #2a3050; border-radius: 10px; min-height: 55px; display: flex; align-items: center; justify-content: center; }`
+},
+{
+name:"Masonry Grid",
+preview:`<div style="columns:3;gap:6px;width:220px">${[70,50,90,55,80,65].map((h,i)=>`<div style="background:#121212;border:1px solid #2a3050;border-radius:6px;height:${h}px;margin-bottom:6px;break-inside:avoid;display:flex;align-items:center;justify-content:center;font-size:10px;color:#4a5270">${i+1}</div>`).join('')}</div>`,
+html:`<div class="masonry">
+  <div class="m-item" style="height:80px">1</div>
+  <div class="m-item" style="height:55px">2</div>
+  <div class="m-item" style="height:100px">3</div>
+  <div class="m-item" style="height:65px">4</div>
+  <div class="m-item" style="height:90px">5</div>
+  <div class="m-item" style="height:70px">6</div>
+</div>`,
+css:`.masonry { columns: 3; gap: 8px; }
+.m-item { background: #121212; border: 1px solid #2a3050; border-radius: 8px; margin-bottom: 8px; break-inside: avoid; display: flex; align-items: center; justify-content: center; color: #6b7599; font-size: 12px; }`
+},
+{
+name:"Auto-fit Grid",
+preview:`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:6px;width:220px">${Array.from({length:8},(_,i)=>`<div style="background:linear-gradient(135deg,#4facfe${30+i*10},#a78bfa${30+i*10});border-radius:6px;height:50px"></div>`).join('')}</div>`,
+html:`<div class="auto-grid">
+  <div class="auto-item"></div>
+  <div class="auto-item"></div>
+  <div class="auto-item"></div>
+  <div class="auto-item"></div>
+  <div class="auto-item"></div>
+</div>`,
+css:`.auto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; }
+.auto-item { background: #121212; border-radius: 8px; height: 60px; }`
+},
+{
+name:"Gallery Grid",
+preview:`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;width:200px">${['#4facfe','#a78bfa','#f093fb','#34d399','#f59e0b','#f87171','#4facfe','#667eea','#a78bfa'].map((c,i)=>`<div style="background:${c}22;border-radius:4px;height:${i===0?'80px':'40px'};${i===0?'grid-column:span 2;':''}">`).join('')}</div>`,
+html:`<div class="gallery-grid">
+  <div class="gal-item span2"></div>
+  <div class="gal-item"></div>
+  <div class="gal-item"></div>
+  <div class="gal-item"></div>
+  <div class="gal-item"></div>
+  <div class="gal-item"></div>
+</div>`,
+css:`.gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.gal-item { background: #121212; border-radius: 6px; height: 80px; }
+.gal-item.span2 { grid-column: span 2; }`
+},
+{
+name:"Dashboard Grid",
+preview:`<div style="display:grid;grid-template-columns:1fr 2fr;grid-template-rows:auto auto;gap:6px;width:220px"><div style="grid-column:1/-1;background:#121212;border:1px solid #2a3050;border-radius:8px;height:30px;display:flex;align-items:center;padding:0 10px;font-size:10px;color:#4a5270">Navbar</div><div style="background:#121212;border:1px solid #2a3050;border-radius:8px;height:70px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#4a5270">Sidebar</div><div style="background:#121212;border:1px solid #2a3050;border-radius:8px;height:70px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#4a5270">Content</div></div>`,
+html:`<div class="dash-grid">
+  <div class="dash-nav">Navbar</div>
+  <div class="dash-sidebar">Sidebar</div>
+  <div class="dash-content">Content</div>
+</div>`,
+css:`.dash-grid { display: grid; grid-template-columns: 200px 1fr; grid-template-rows: 50px 1fr; min-height: 400px; gap: 8px; }
+.dash-nav { grid-column: 1 / -1; background: #121212; border: 1px solid #2a3050; border-radius: 8px; }
+.dash-sidebar { background: #121212; border: 1px solid #2a3050; border-radius: 8px; }
+.dash-content { background: #121212; border: 1px solid #2a3050; border-radius: 8px; }`
+},
+{
+name:"Card Grid 4-col",
+preview:`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;width:220px">${Array.from({length:4},(_,i)=>`<div style="background:#121212;border:1px solid #2a3050;border-radius:6px;padding:8px"><div style="width:20px;height:20px;border-radius:4px;background:linear-gradient(135deg,#4facfe,#a78bfa);margin-bottom:5px"></div><div style="height:6px;background:#2a3050;border-radius:2px;margin-bottom:3px"></div><div style="height:5px;background:#2a3050;border-radius:2px;width:70%"></div></div>`).join('')}</div>`,
+html:`<div class="card-grid-4">
+  <div class="cg-item">
+    <div class="cg-icon"></div>
+    <div class="cg-title"></div>
+    <div class="cg-sub"></div>
+  </div>
+  <!-- repeat x4 -->
+</div>`,
+css:`.card-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.cg-item { background: #121212; border: 1px solid #2a3050; border-radius: 8px; padding: 12px; }
+.cg-icon { width: 28px; height: 28px; border-radius: 6px; background: linear-gradient(135deg, #4facfe, #a78bfa); margin-bottom: 8px; }
+.cg-title { height: 8px; background: #2a3050; border-radius: 4px; margin-bottom: 4px; }
+.cg-sub { height: 6px; background: #2a3050; border-radius: 4px; width: 70%; }`
+},
+{
+name:"Mosaic Grid",
+preview:`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;grid-auto-rows:40px;gap:4px;width:200px"><div style="background:#4facfe22;border-radius:4px;grid-row:span 2"></div><div style="background:#a78bfa22;border-radius:4px"></div><div style="background:#f093fb22;border-radius:4px;grid-row:span 3"></div><div style="background:#34d39922;border-radius:4px;grid-row:span 2"></div><div style="background:#f59e0b22;border-radius:4px"></div><div style="background:#f8717122;border-radius:4px"></div></div>`,
+html:`<div class="mosaic">
+  <div class="mo-1"></div>
+  <div class="mo-2"></div>
+  <div class="mo-3"></div>
+  <div class="mo-4"></div>
+  <div class="mo-5"></div>
+</div>`,
+css:`.mosaic { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-auto-rows: 60px; gap: 6px; }
+.mo-1 { background: #121212; border-radius: 6px; grid-row: span 2; }
+.mo-2 { background: #121212; border-radius: 6px; }
+.mo-3 { background: #121212; border-radius: 6px; grid-row: span 3; }
+.mo-4 { background: #121212; border-radius: 6px; grid-row: span 2; }
+.mo-5 { background: #121212; border-radius: 6px; }`
+},
+{
+name:"Icon Grid",
+preview:`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:200px">${['🎨','⚡','🔥','💎','🚀','🎯','✨','🌊'].map(e=>`<div style="background:#121212;border:1px solid #2a3050;border-radius:8px;height:42px;display:flex;align-items:center;justify-content:center;font-size:18px">${e}</div>`).join('')}</div>`,
+html:`<div class="icon-grid">
+  <div class="icon-cell">🎨</div>
+  <div class="icon-cell">⚡</div>
+  <div class="icon-cell">🔥</div>
+  <div class="icon-cell">💎</div>
+</div>`,
+css:`.icon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.icon-cell { background: #121212; border: 1px solid #2a3050; border-radius: 10px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; transition: background 0.2s; }
+.icon-cell:hover { background: #252d4a; }`
+},
+{
+name:"Stat Grid",
+preview:`<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;width:200px">${[['Users','2.4k','#4facfe'],['Sales','$18k','#34d399'],['Views','98k','#a78bfa'],['Rate','94%','#f59e0b']].map(([l,v,c])=>`<div style="background:#121212;border:1px solid #2a3050;border-radius:8px;padding:10px"><p style="font-size:10px;color:#6b7599;margin-bottom:3px">${l}</p><p style="font-size:16px;font-weight:800;color:${c}">${v}</p></div>`).join('')}</div>`,
+html:`<div class="stat-grid">
+  <div class="sg-card">
+    <p class="sg-label">Users</p>
+    <p class="sg-value" style="color:#4facfe">2.4k</p>
+  </div>
+  <div class="sg-card">
+    <p class="sg-label">Sales</p>
+    <p class="sg-value" style="color:#34d399">$18k</p>
+  </div>
+</div>`,
+css:`.stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.sg-card { background: #121212; border: 1px solid #2a3050; border-radius: 10px; padding: 12px; }
+.sg-label { font-size: 11px; color: #6b7599; margin-bottom: 4px; }
+.sg-value { font-size: 20px; font-weight: 800; }`
+},
+{
+name:"Timeline Grid",
+preview:`<div style="width:200px;display:flex;flex-direction:column;gap:0">${[['Jan','Launch'],['Mar','v2.0'],['Jun','Scale'],['Sep','Global']].map(([d,e],i)=>`<div style="display:flex;gap:12px"><div style="display:flex;flex-direction:column;align-items:center"><div style="width:10px;height:10px;border-radius:50%;background:${i%2===0?'#4facfe':'#a78bfa'};flex-shrink:0;margin-top:2px"></div>${i<3?`<div style="width:2px;height:30px;background:#2a3050"></div>`:''}</div><div style="padding-bottom:${i<3?'10px':'0'}"><p style="font-size:10px;color:#4a5270;margin-bottom:1px">${d}</p><p style="font-size:11px;color:#c8d0e8;font-weight:600">${e}</p></div></div>`).join('')}</div>`,
+html:`<div class="timeline-grid">
+  <div class="tg-item">
+    <div class="tg-dot"></div>
+    <div class="tg-content">
+      <span class="tg-date">Jan</span>
+      <p class="tg-event">Launch</p>
+    </div>
+  </div>
+</div>`,
+css:`.timeline-grid { display: flex; flex-direction: column; }
+.tg-item { display: flex; gap: 12px; }
+.tg-dot { width: 10px; height: 10px; border-radius: 50%; background: #4facfe; flex-shrink: 0; margin-top: 4px; }
+.tg-date { font-size: 11px; color: #6b7599; }
+.tg-event { font-size: 13px; color: #c8d0e8; font-weight: 600; margin-bottom: 16px; }`
+},
+{
+name:"Split Screen Grid",
+preview:`<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;width:200px;height:100px;border-radius:8px;overflow:hidden"><div style="background:#121212;border:1px solid #2a3050;display:flex;align-items:center;justify-content:center;font-size:10px;color:#4a5270">Left</div><div style="background:#121212;border:1px solid #2a3050;display:flex;align-items:center;justify-content:center;font-size:10px;color:#4a5270">Right</div></div>`,
+html:`<div class="split-grid">
+  <div class="split-left">Left</div>
+  <div class="split-right">Right</div>
+</div>`,
+css:`.split-grid { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+.split-left { background: #121212; display: flex; align-items: center; justify-content: center; padding: 40px; }
+.split-right { background: #121212; display: flex; align-items: center; justify-content: center; padding: 40px; }`
+},
+{
+name:"Feature Grid 3-col",
+preview:`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:220px">${[['⚡','Fast'],['🔒','Secure'],['🌐','Global']].map(([e,l])=>`<div style="background:#121212;border:1px solid #2a3050;border-radius:8px;padding:10px;text-align:center"><div style="font-size:18px;margin-bottom:5px">${e}</div><p style="font-size:10px;color:#c8d0e8;font-weight:600">${l}</p></div>`).join('')}</div>`,
+html:`<div class="feat-grid">
+  <div class="fg-cell">
+    <span class="fg-icon">⚡</span>
+    <p>Fast</p>
+  </div>
+  <div class="fg-cell">
+    <span class="fg-icon">🔒</span>
+    <p>Secure</p>
+  </div>
+  <div class="fg-cell">
+    <span class="fg-icon">🌐</span>
+    <p>Global</p>
+  </div>
+</div>`,
+css:`.feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.fg-cell { background: #121212; border: 1px solid #2a3050; border-radius: 10px; padding: 16px; text-align: center; }
+.fg-icon { font-size: 24px; display: block; margin-bottom: 8px; }
+.fg-cell p { font-size: 12px; color: #c8d0e8; font-weight: 600; }`
+},
+{
+name:"Responsive Auto Grid",
+preview:`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(55px,1fr));gap:5px;width:220px">${Array.from({length:6},(_,i)=>`<div style="background:#121212;border:1px solid #2a3050;border-radius:6px;height:55px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#4a5270">${i+1}</div>`).join('')}</div>`,
+html:`<div class="resp-grid">
+  <div class="rg-item">1</div>
+  <div class="rg-item">2</div>
+  <div class="rg-item">3</div>
+  <div class="rg-item">4</div>
+</div>`,
+css:`.resp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+.rg-item { background: #121212; border: 1px solid #2a3050; border-radius: 8px; min-height: 80px; display: flex; align-items: center; justify-content: center; color: #6b7599; }`
+},
+{
+name:"Overlap Grid",
+preview:`<div style="position:relative;width:200px;height:100px"><div style="position:absolute;top:0;left:0;width:160px;height:80px;background:#121212;border:1px solid #2a3050;border-radius:8px"></div><div style="position:absolute;top:20px;left:40px;width:160px;height:80px;background:#252d4a;border:1px solid #333d60;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#6b7599">Stacked Cards</div></div>`,
+html:`<div class="overlap-grid">
+  <div class="ov-card back"></div>
+  <div class="ov-card front">Stacked Cards</div>
+</div>`,
+css:`.overlap-grid { position: relative; height: 160px; }
+.ov-card { position: absolute; width: 90%; border-radius: 12px; border: 1px solid #2a3050; padding: 20px; }
+.ov-card.back { background: #121212; top: 0; left: 5%; }
+.ov-card.front { background: #252d4a; top: 20px; left: 10%; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }`
+}
+];
+
+const INPUTS = [
+{
+name:"Simple Text Input",
+preview:`<input style="background:#121212;border:1px solid #2a3050;border-radius:8px;color:#c8d0e8;font-size:13px;padding:10px 14px;outline:none;font-family:inherit;width:220px" placeholder="Type here...">`,
+html:`<input class="input" type="text" placeholder="Type here...">`,
+css:`.input { width: 100%; background: #121212; border: 1px solid #2a3050; border-radius: 8px; color: #c8d0e8; font-size: 13px; padding: 10px 14px; outline: none; font-family: inherit; transition: border-color 0.2s; }
+.input:focus { border-color: #4facfe; }`
+},
+{
+name:"Search Bar",
+preview:`<div style="display:flex;align-items:center;background:#121212;border:1px solid #2a3050;border-radius:50px;padding:8px 16px;gap:10px;width:220px"><span style="color:#6b7599;font-size:14px">🔍</span><input style="background:none;border:none;color:#c8d0e8;font-size:13px;outline:none;font-family:inherit;flex:1" placeholder="Search..."></div>`,
+html:`<div class="search-bar">
+  <span class="search-icon">🔍</span>
+  <input type="text" placeholder="Search...">
+</div>`,
+css:`.search-bar { display: flex; align-items: center; background: #121212; border: 1px solid #2a3050; border-radius: 50px; padding: 8px 16px; gap: 10px; }
+.search-icon { color: #6b7599; font-size: 16px; }
+.search-bar input { background: none; border: none; color: #c8d0e8; font-size: 13px; outline: none; flex: 1; font-family: inherit; }
+.search-bar:focus-within { border-color: #4facfe; }`
+},
+{
+name:"Chat Input + Send",
+preview:`<div style="display:flex;align-items:center;gap:8px;background:#121212;border:1px solid #2a3050;border-radius:12px;padding:8px 8px 8px 14px;width:240px"><input style="background:none;border:none;color:#c8d0e8;font-size:13px;outline:none;font-family:inherit;flex:1" placeholder="Send a message..."><button style="background:#4facfe;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit">Send ➤</button></div>`,
+html:`<div class="chat-input">
+  <input type="text" placeholder="Send a message...">
+  <button class="send-btn">Send ➤</button>
+</div>`,
+css:`.chat-input { display: flex; align-items: center; gap: 8px; background: #121212; border: 1px solid #2a3050; border-radius: 12px; padding: 8px; }
+.chat-input input { background: none; border: none; color: #c8d0e8; font-size: 13px; outline: none; flex: 1; padding: 4px 8px; font-family: inherit; }
+.send-btn { background: #4facfe; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.chat-input:focus-within { border-color: #4facfe; }`
+},
+{
+name:"Underline Input",
+preview:`<div style="width:220px"><input style="background:none;border:none;border-bottom:2px solid #4facfe;color:#c8d0e8;font-size:14px;padding:8px 0;outline:none;font-family:inherit;width:100%" placeholder="Enter value..."></div>`,
+html:`<input class="underline-input" type="text" placeholder="Enter value...">`,
+css:`.underline-input { width: 100%; background: transparent; border: none; border-bottom: 2px solid #4facfe; color: #c8d0e8; font-size: 14px; padding: 8px 0; outline: none; font-family: inherit; transition: border-color 0.2s; }
+.underline-input:focus { border-bottom-color: #a78bfa; }`
+},
+{
+name:"Input with Icon",
+preview:`<div style="position:relative;width:220px"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#6b7599;font-size:14px">✉</span><input style="background:#121212;border:1px solid #2a3050;border-radius:8px;color:#c8d0e8;font-size:13px;padding:10px 14px 10px 34px;outline:none;font-family:inherit;width:100%" placeholder="Email address"></div>`,
+html:`<div class="icon-input-wrap">
+  <span class="icon-input-icon">✉</span>
+  <input class="icon-input" type="email" placeholder="Email address">
+</div>`,
+css:`.icon-input-wrap { position: relative; }
+.icon-input-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #6b7599; font-size: 16px; }
+.icon-input { width: 100%; background: #121212; border: 1px solid #2a3050; border-radius: 8px; color: #c8d0e8; font-size: 13px; padding: 10px 14px 10px 36px; outline: none; font-family: inherit; }
+.icon-input:focus { border-color: #4facfe; }`
+},
+{
+name:"Textarea",
+preview:`<textarea style="background:#121212;border:1px solid #2a3050;border-radius:8px;color:#c8d0e8;font-size:12px;padding:10px 14px;outline:none;font-family:inherit;width:220px;height:70px;resize:none" placeholder="Write your message here..."></textarea>`,
+html:`<textarea class="textarea" placeholder="Write your message here..."></textarea>`,
+css:`.textarea { width: 100%; background: #121212; border: 1px solid #2a3050; border-radius: 8px; color: #c8d0e8; font-size: 13px; padding: 10px 14px; outline: none; font-family: inherit; resize: vertical; min-height: 100px; }
+.textarea:focus { border-color: #4facfe; }`
+},
+{
+name:"Tag Input",
+preview:`<div style="background:#121212;border:1px solid #2a3050;border-radius:8px;padding:6px 10px;display:flex;flex-wrap:wrap;gap:5px;width:220px;align-items:center"><span style="background:rgba(79,172,254,0.15);color:#4facfe;border:1px solid rgba(79,172,254,0.3);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:500">React ×</span><span style="background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:500">CSS ×</span><input style="background:none;border:none;color:#c8d0e8;font-size:12px;outline:none;font-family:inherit;min-width:60px" placeholder="Add tag..."></div>`,
+html:`<div class="tag-input">
+  <span class="tag">React <button class="tag-remove">×</button></span>
+  <span class="tag">CSS <button class="tag-remove">×</button></span>
+  <input type="text" placeholder="Add tag...">
+</div>`,
+css:`.tag-input { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: #121212; border: 1px solid #2a3050; border-radius: 8px; padding: 6px 10px; }
+.tag { display: flex; align-items: center; gap: 4px; background: rgba(79,172,254,0.15); color: #4facfe; border: 1px solid rgba(79,172,254,0.3); border-radius: 4px; padding: 3px 8px; font-size: 12px; }
+.tag-remove { background: none; border: none; color: #4facfe; cursor: pointer; padding: 0; font-size: 12px; }
+.tag-input input { background: none; border: none; color: #c8d0e8; font-size: 12px; outline: none; flex: 1; min-width: 80px; font-family: inherit; }`
+},
+{
+name:"Select Dropdown",
+preview:`<select style="background:#121212;border:1px solid #2a3050;border-radius:8px;color:#c8d0e8;font-size:13px;padding:10px 14px;outline:none;font-family:inherit;width:220px;cursor:pointer"><option>Design</option><option>Development</option><option>Marketing</option></select>`,
+html:`<select class="select">
+  <option>Design</option>
+  <option>Development</option>
+  <option>Marketing</option>
+</select>`,
+css:`.select { width: 100%; background: #121212; border: 1px solid #2a3050; border-radius: 8px; color: #c8d0e8; font-size: 13px; padding: 10px 14px; outline: none; cursor: pointer; font-family: inherit; }
+.select:focus { border-color: #4facfe; }`
+},
+{
+name:"Toggle Switch",
+preview:`<div style="display:flex;align-items:center;gap:10px"><div style="width:44px;height:24px;background:#4facfe;border-radius:50px;position:relative;cursor:pointer"><div style="position:absolute;right:4px;top:4px;width:16px;height:16px;background:#fff;border-radius:50%;transition:.2s"></div></div><span style="font-size:13px;color:#c8d0e8">Enabled</span></div>`,
+html:`<label class="toggle">
+  <input type="checkbox" checked>
+  <div class="toggle-track">
+    <div class="toggle-thumb"></div>
+  </div>
+  <span>Enabled</span>
+</label>`,
+css:`.toggle { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.toggle input { display: none; }
+.toggle-track { width: 44px; height: 24px; background: #2a3050; border-radius: 50px; position: relative; transition: background 0.2s; }
+.toggle input:checked + .toggle-track { background: #4facfe; }
+.toggle-thumb { position: absolute; left: 4px; top: 4px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: left 0.2s; }
+.toggle input:checked + .toggle-track .toggle-thumb { left: 24px; }
+.toggle span { font-size: 13px; color: #c8d0e8; }`
+},
+{
+name:"Range Slider",
+preview:`<div style="width:220px"><div style="display:flex;justify-content:space-between;font-size:11px;color:#6b7599;margin-bottom:6px"><span>Quality</span><span>75%</span></div><input type="range" value="75" style="width:100%;height:4px;-webkit-appearance:none;background:#121212;border-radius:2px;cursor:pointer"></div>`,
+html:`<div class="range-wrap">
+  <div class="range-header">
+    <span>Quality</span><span>75%</span>
+  </div>
+  <input type="range" class="range" min="0" max="100" value="75">
+</div>`,
+css:`.range-wrap { width: 100%; }
+.range-header { display: flex; justify-content: space-between; font-size: 12px; color: #6b7599; margin-bottom: 6px; }
+.range { width: 100%; height: 4px; -webkit-appearance: none; background: #121212; border-radius: 2px; cursor: pointer; outline: none; }
+.range::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #4facfe; border: 2px solid #121212; }`
+},
+{
+name:"Password Input",
+preview:`<div style="position:relative;width:220px"><input type="password" value="secretpassword" style="background:#121212;border:1px solid #2a3050;border-radius:8px;color:#c8d0e8;font-size:13px;padding:10px 40px 10px 14px;outline:none;font-family:inherit;width:100%"><span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#6b7599;cursor:pointer;font-size:14px">👁</span></div>`,
+html:`<div class="pwd-wrap">
+  <input class="pwd-input" type="password" placeholder="Password">
+  <button class="pwd-toggle">👁</button>
+</div>`,
+css:`.pwd-wrap { position: relative; }
+.pwd-input { width: 100%; background: #121212; border: 1px solid #2a3050; border-radius: 8px; color: #c8d0e8; font-size: 13px; padding: 10px 40px 10px 14px; outline: none; font-family: inherit; }
+.pwd-input:focus { border-color: #4facfe; }
+.pwd-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #6b7599; cursor: pointer; font-size: 16px; }`
+},
+{
+name:"File Upload",
+preview:`<div style="border:2px dashed #2a3050;border-radius:10px;padding:16px;text-align:center;width:210px;cursor:pointer"><div style="font-size:24px;margin-bottom:6px">☁</div><p style="font-size:12px;color:#6b7599;margin-bottom:3px">Drop files here</p><p style="font-size:11px;color:#4a5270">or <span style="color:#4facfe">browse</span></p></div>`,
+html:`<label class="file-drop">
+  <input type="file" hidden>
+  <div class="drop-icon">☁</div>
+  <p>Drop files here</p>
+  <p>or <span>browse</span></p>
+</label>`,
+css:`.file-drop { display: block; border: 2px dashed #2a3050; border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+.file-drop:hover { border-color: #4facfe; }
+.drop-icon { font-size: 32px; margin-bottom: 8px; }
+.file-drop p { font-size: 13px; color: #6b7599; margin-bottom: 4px; }
+.file-drop span { color: #4facfe; }`
+},
+{
+name:"OTP Input",
+preview:`<div style="display:flex;gap:8px">${Array.from({length:4},(_,i)=>`<input maxlength="1" style="width:44px;height:48px;background:#121212;border:${i===1?'2px solid #4facfe':'1px solid #2a3050'};border-radius:8px;color:#e8edf8;font-size:20px;font-weight:700;text-align:center;outline:none;font-family:inherit" value="${i<2?'2 3'.split(' ')[i]||'':''}"></input>`).join('')}</div>`,
+html:`<div class="otp-wrap">
+  <input class="otp-input" maxlength="1" type="text">
+  <input class="otp-input" maxlength="1" type="text">
+  <input class="otp-input" maxlength="1" type="text">
+  <input class="otp-input" maxlength="1" type="text">
+</div>`,
+css:`.otp-wrap { display: flex; gap: 10px; }
+.otp-input { width: 50px; height: 55px; background: #121212; border: 1px solid #2a3050; border-radius: 8px; color: #e8edf8; font-size: 22px; font-weight: 700; text-align: center; outline: none; font-family: inherit; transition: border-color 0.2s; }
+.otp-input:focus { border: 2px solid #4facfe; }`
+},
+{
+name:"Checkbox Group",
+preview:`<div style="display:flex;flex-direction:column;gap:8px;width:180px">${[['Option A',true],['Option B',false],['Option C',true]].map(([l,c])=>`<label style="display:flex;align-items:center;gap:8px;cursor:pointer"><div style="width:16px;height:16px;border-radius:4px;background:${c?'#4facfe':'transparent'};border:2px solid ${c?'#4facfe':'#2a3050'};display:flex;align-items:center;justify-content:center;font-size:10px;color:#000;flex-shrink:0">${c?'✓':''}</div><span style="font-size:12px;color:#c8d0e8">${l}</span></label>`).join('')}</div>`,
+html:`<div class="checkbox-group">
+  <label class="checkbox-label">
+    <input type="checkbox" checked>
+    <span class="checkmark"></span>
+    Option A
+  </label>
+  <label class="checkbox-label">
+    <input type="checkbox">
+    <span class="checkmark"></span>
+    Option B
+  </label>
+</div>`,
+css:`.checkbox-group { display: flex; flex-direction: column; gap: 10px; }
+.checkbox-label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 13px; color: #c8d0e8; }
+.checkbox-label input { display: none; }
+.checkmark { width: 18px; height: 18px; border-radius: 4px; border: 2px solid #2a3050; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+.checkbox-label input:checked + .checkmark { background: #4facfe; border-color: #4facfe; }
+.checkbox-label input:checked + .checkmark::after { content: '✓'; color: #000; font-size: 11px; font-weight: 700; }`
+}
+];
+
+const LAYOUTS = [
+{
+name:"Sidebar Layout",
+preview:`<div style="width:230px;height:110px;display:flex;border:1px solid #2a3050;border-radius:8px;overflow:hidden"><div style="width:55px;background:#121212;border-right:1px solid #2a3050;display:flex;flex-direction:column;align-items:center;padding:8px;gap:6px">${Array.from({length:4},()=>`<div style="width:28px;height:6px;background:#2a3050;border-radius:3px"></div>`).join('')}</div><div style="flex:1;background:#121212;padding:10px"><div style="height:8px;background:#2a3050;border-radius:4px;width:60%;margin-bottom:6px"></div><div style="height:6px;background:#2a3050;border-radius:4px;width:80%"></div></div></div>`,
+html:`<div class="app-layout">
+  <aside class="sidebar">
+    <nav><!-- nav items --></nav>
+  </aside>
+  <main class="main-content">
+    <!-- content -->
+  </main>
+</div>`,
+css:`.app-layout { display: flex; min-height: 100vh; }
+.sidebar { width: 240px; background: #121212; border-right: 1px solid #2a3050; padding: 20px; flex-shrink: 0; }
+.main-content { flex: 1; background: #121212; padding: 24px; overflow-y: auto; }`
+},
+{
+name:"Header + Content",
+preview:`<div style="width:230px;height:110px;display:flex;flex-direction:column;border:1px solid #2a3050;border-radius:8px;overflow:hidden"><div style="height:30px;background:#121212;border-bottom:1px solid #2a3050;display:flex;align-items:center;padding:0 10px;gap:6px"><div style="width:6px;height:6px;border-radius:50%;background:#4facfe"></div><div style="flex:1;height:6px;background:#2a3050;border-radius:3px"></div></div><div style="flex:1;background:#121212;padding:10px"><div style="height:7px;background:#2a3050;border-radius:3px;width:70%;margin-bottom:5px"></div><div style="height:5px;background:#2a3050;border-radius:3px;width:50%"></div></div></div>`,
+html:`<div class="header-layout">
+  <header class="top-bar">
+    <div class="logo">Logo</div>
+    <nav><!-- nav --></nav>
+  </header>
+  <main class="page-content">
+    <!-- content -->
+  </main>
+</div>`,
+css:`.header-layout { display: flex; flex-direction: column; min-height: 100vh; }
+.top-bar { height: 56px; background: #121212; border-bottom: 1px solid #2a3050; display: flex; align-items: center; padding: 0 24px; gap: 20px; flex-shrink: 0; }
+.page-content { flex: 1; padding: 24px; background: #121212; }`
+},
+{
+name:"Hero Section",
+preview:`<div style="width:230px;height:110px;background:linear-gradient(135deg,#121212,#121212);border-radius:8px;border:1px solid #2a3050;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;text-align:center"><div style="height:8px;background:#e8edf8;border-radius:4px;width:80%;margin-bottom:5px"></div><div style="height:5px;background:#6b7599;border-radius:4px;width:60%;margin-bottom:8px"></div><div style="background:#4facfe;border-radius:4px;padding:4px 12px;font-size:9px;color:#fff;font-weight:600">Get Started</div></div>`,
+html:`<section class="hero">
+  <div class="hero-content">
+    <h1>Build Faster</h1>
+    <p>The modern UI toolkit you need.</p>
+    <button class="hero-cta">Get Started</button>
+  </div>
+</section>`,
+css:`.hero { min-height: 100vh; background: linear-gradient(135deg, #121212, #121212); display: flex; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+.hero-content h1 { font-size: 48px; font-weight: 800; color: #e8edf8; margin-bottom: 16px; }
+.hero-content p { font-size: 18px; color: #6b7599; margin-bottom: 28px; }
+.hero-cta { background: #4facfe; color: #fff; border: none; border-radius: 8px; padding: 14px 32px; font-size: 16px; font-weight: 600; cursor: pointer; }`
+},
+{
+name:"Split Screen",
+preview:`<div style="width:230px;height:110px;display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:8px;overflow:hidden;border:1px solid #2a3050"><div style="background:#121212;display:flex;align-items:center;justify-content:center;font-size:10px;color:#4a5270">Left</div><div style="background:#121212;display:flex;align-items:center;justify-content:center;font-size:10px;color:#4a5270">Right</div></div>`,
+html:`<div class="split-layout">
+  <div class="split-pane left-pane">
+    <!-- Left content -->
+  </div>
+  <div class="split-pane right-pane">
+    <!-- Right content -->
+  </div>
+</div>`,
+css:`.split-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+.split-pane { display: flex; align-items: center; justify-content: center; padding: 40px; }
+.left-pane { background: #121212; }
+.right-pane { background: #121212; }`
+},
+{
+name:"Card Center Layout",
+preview:`<div style="width:230px;height:110px;background:#121212;border-radius:8px;display:flex;align-items:center;justify-content:center"><div style="background:#121212;border:1px solid #2a3050;border-radius:8px;padding:14px 20px;width:150px"><div style="height:7px;background:#2a3050;border-radius:3px;width:80%;margin-bottom:6px"></div><div style="height:5px;background:#2a3050;border-radius:3px;width:60%;margin-bottom:10px"></div><div style="background:#4facfe;border-radius:4px;height:20px;width:80px"></div></div></div>`,
+html:`<div class="center-layout">
+  <div class="center-card">
+    <h2>Login</h2>
+    <p>Welcome back</p>
+    <button>Sign In</button>
+  </div>
+</div>`,
+css:`.center-layout { min-height: 100vh; background: #121212; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.center-card { background: #121212; border: 1px solid #2a3050; border-radius: 16px; padding: 32px; width: 100%; max-width: 400px; }`
+},
+{
+name:"Footer Layout",
+preview:`<div style="width:230px;border:1px solid #2a3050;border-radius:8px;overflow:hidden"><div style="height:60px;background:#121212;display:flex;align-items:center;justify-content:center;font-size:10px;color:#4a5270">Content</div><div style="background:#121212;border-top:1px solid #2a3050;padding:8px 12px;display:flex;justify-content:space-between;align-items:center"><div style="height:5px;background:#2a3050;border-radius:3px;width:50px"></div><div style="display:flex;gap:6px">${Array.from({length:3},()=>`<div style="width:20px;height:5px;background:#2a3050;border-radius:3px"></div>`).join('')}</div></div></div>`,
+html:`<div class="footer-layout">
+  <main class="main-area">
+    <!-- content -->
+  </main>
+  <footer class="site-footer">
+    <div class="footer-brand">Logo</div>
+    <nav class="footer-nav"><!-- links --></nav>
+  </footer>
+</div>`,
+css:`.footer-layout { display: flex; flex-direction: column; min-height: 100vh; }
+.main-area { flex: 1; padding: 24px; }
+.site-footer { background: #121212; border-top: 1px solid #2a3050; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; }
+.footer-brand { font-weight: 700; color: #e8edf8; }
+.footer-nav { display: flex; gap: 20px; }
+.footer-nav a { color: #6b7599; text-decoration: none; font-size: 13px; }`
+},
+{
+name:"3-col Content",
+preview:`<div style="width:230px;height:100px;display:grid;grid-template-columns:1fr 2fr 1fr;gap:4px;border-radius:8px;overflow:hidden"><div style="background:#121212;border:1px solid #2a3050;border-radius:6px;padding:6px"><div style="height:5px;background:#2a3050;border-radius:3px;margin-bottom:4px"></div><div style="height:4px;background:#2a3050;border-radius:3px;width:70%"></div></div><div style="background:#121212;border:1px solid #2a3050;border-radius:6px;padding:8px"><div style="height:6px;background:#2a3050;border-radius:3px;margin-bottom:5px"></div><div style="height:5px;background:#2a3050;border-radius:3px;width:80%"></div></div><div style="background:#121212;border:1px solid #2a3050;border-radius:6px;padding:6px"><div style="height:5px;background:#2a3050;border-radius:3px;margin-bottom:4px"></div><div style="height:4px;background:#2a3050;border-radius:3px;width:70%"></div></div></div>`,
+html:`<div class="three-col">
+  <aside class="col-left"><!-- sidebar --></aside>
+  <main class="col-main"><!-- content --></main>
+  <aside class="col-right"><!-- widgets --></aside>
+</div>`,
+css:`.three-col { display: grid; grid-template-columns: 220px 1fr 220px; gap: 20px; padding: 24px; min-height: 100vh; }
+.col-left, .col-right { background: #121212; border: 1px solid #2a3050; border-radius: 10px; padding: 16px; }
+.col-main { background: #121212; border: 1px solid #2a3050; border-radius: 10px; padding: 20px; }`
+},
+{
+name:"Modal Overlay",
+preview:`<div style="width:230px;height:110px;background:rgba(13,15,26,0.9);border-radius:8px;display:flex;align-items:center;justify-content:center"><div style="background:#121212;border:1px solid #2a3050;border-radius:8px;padding:14px;width:160px"><div style="height:7px;background:#e8edf8;border-radius:3px;width:60%;margin-bottom:8px"></div><div style="height:5px;background:#2a3050;border-radius:3px;margin-bottom:8px"></div><div style="display:flex;gap:6px;justify-content:flex-end"><div style="background:#2a3050;border-radius:4px;padding:3px 8px;font-size:9px;color:#6b7599">Cancel</div><div style="background:#4facfe;border-radius:4px;padding:3px 8px;font-size:9px;color:#fff">Confirm</div></div></div></div>`,
+html:`<div class="overlay">
+  <div class="modal">
+    <h2>Confirm action</h2>
+    <p>Are you sure you want to proceed?</p>
+    <div class="modal-actions">
+      <button class="btn-cancel">Cancel</button>
+      <button class="btn-confirm">Confirm</button>
+    </div>
+  </div>
+</div>`,
+css:`.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.modal { background: #121212; border: 1px solid #2a3050; border-radius: 14px; padding: 28px; width: 90%; max-width: 420px; }
+.modal h2 { color: #e8edf8; font-size: 18px; margin-bottom: 10px; }
+.modal p { color: #6b7599; font-size: 14px; margin-bottom: 20px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.btn-cancel { background: #2a3050; color: #c8d0e8; border: none; border-radius: 8px; padding: 9px 18px; cursor: pointer; }
+.btn-confirm { background: #4facfe; color: #fff; border: none; border-radius: 8px; padding: 9px 18px; cursor: pointer; font-weight: 600; }`
+},
+{
+name:"Sticky Header",
+preview:`<div style="width:230px;border:1px solid #2a3050;border-radius:8px;overflow:hidden"><div style="height:28px;background:#121212;border-bottom:1px solid #2a3050;display:flex;align-items:center;justify-content:space-between;padding:0 10px"><div style="height:5px;background:#4facfe;border-radius:3px;width:30px"></div><div style="display:flex;gap:4px">${Array.from({length:3},()=>`<div style="width:16px;height:4px;background:#2a3050;border-radius:2px"></div>`).join('')}</div></div><div style="height:80px;background:#121212;padding:8px;display:flex;flex-direction:column;gap:5px"><div style="height:6px;background:#2a3050;border-radius:3px;width:70%"></div><div style="height:5px;background:#2a3050;border-radius:3px;width:50%"></div></div></div>`,
+html:`<div class="sticky-layout">
+  <header class="sticky-header">
+    <div class="logo">Logo</div>
+    <nav class="header-nav">
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+  <main><!-- content --></main>
+</div>`,
+css:`.sticky-header { position: sticky; top: 0; z-index: 50; background: #121212; border-bottom: 1px solid #2a3050; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+.logo { font-weight: 700; color: #e8edf8; }
+.header-nav { display: flex; gap: 24px; }
+.header-nav a { color: #6b7599; text-decoration: none; font-size: 13px; transition: color 0.2s; }
+.header-nav a:hover { color: #e8edf8; }`
+},
+{
+name:"Notification Toast Layout",
+preview:`<div style="width:220px;position:relative;height:90px"><div style="position:absolute;top:0;right:0;background:#121212;border:1px solid #2a3050;border-radius:8px;padding:10px 12px;width:180px;box-shadow:0 8px 24px rgba(0,0,0,0.4)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-size:11px;font-weight:600;color:#e8edf8">Success!</span><span style="font-size:12px;color:#4a5270">×</span></div><p style="font-size:10px;color:#6b7599">Your changes were saved.</p></div></div>`,
+html:`<div class="toast-container">
+  <div class="toast success">
+    <div class="toast-header">
+      <span class="toast-title">Success!</span>
+      <button class="toast-close">×</button>
+    </div>
+    <p class="toast-msg">Your changes were saved.</p>
+  </div>
+</div>`,
+css:`.toast-container { position: fixed; top: 20px; right: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 999; }
+.toast { background: #121212; border: 1px solid #2a3050; border-radius: 10px; padding: 12px 16px; min-width: 280px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+.toast.success { border-left: 3px solid #34d399; }
+.toast-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.toast-title { font-weight: 600; color: #e8edf8; font-size: 13px; }
+.toast-close { background: none; border: none; color: #6b7599; cursor: pointer; font-size: 16px; }
+.toast-msg { font-size: 12px; color: #6b7599; }`
+},
+{
+name:"Drawer / Sidebar Panel",
+preview:`<div style="width:230px;height:110px;display:flex;border-radius:8px;overflow:hidden;border:1px solid #2a3050"><div style="flex:1;background:#121212;display:flex;align-items:center;justify-content:center;font-size:10px;color:#4a5270">Content</div><div style="width:90px;background:#121212;border-left:1px solid #2a3050;padding:8px;display:flex;flex-direction:column;gap:5px"><div style="height:5px;background:#2a3050;border-radius:3px"></div><div style="height:5px;background:#2a3050;border-radius:3px;width:70%"></div><div style="height:5px;background:#4facfe;border-radius:3px;width:50%"></div></div></div>`,
+html:`<div class="drawer-layout">
+  <main class="drawer-main">Content</main>
+  <div class="drawer" id="drawer">
+    <button class="drawer-close">×</button>
+    <!-- drawer content -->
+  </div>
+</div>`,
+css:`.drawer-layout { display: flex; min-height: 100vh; overflow: hidden; }
+.drawer-main { flex: 1; padding: 24px; background: #121212; }
+.drawer { width: 300px; background: #121212; border-left: 1px solid #2a3050; padding: 20px; transition: transform 0.3s ease; }
+.drawer.hidden { transform: translateX(100%); }
+.drawer-close { background: none; border: none; color: #6b7599; font-size: 20px; cursor: pointer; margin-bottom: 16px; }`
+},
+{
+name:"Dashboard Layout",
+preview:`<div style="width:230px;height:110px;display:grid;grid-template-columns:50px 1fr;grid-template-rows:28px 1fr;gap:3px"><div style="grid-column:1/-1;background:#121212;border:1px solid #2a3050;border-radius:4px;display:flex;align-items:center;padding:0 8px"><div style="height:4px;background:#4facfe;border-radius:2px;width:30px"></div></div><div style="background:#121212;border:1px solid #2a3050;border-radius:4px"></div><div style="background:#121212;border:1px solid #2a3050;border-radius:4px;display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:5px">${Array.from({length:4},()=>`<div style="background:#2a3050;border-radius:3px"></div>`).join('')}</div></div>`,
+html:`<div class="dashboard">
+  <header class="dash-header">Dashboard</header>
+  <nav class="dash-nav"><!-- nav --></nav>
+  <main class="dash-body">
+    <!-- widgets grid -->
+  </main>
+</div>`,
+css:`.dashboard { display: grid; grid-template-columns: 200px 1fr; grid-template-rows: 56px 1fr; min-height: 100vh; }
+.dash-header { grid-column: 1 / -1; background: #121212; border-bottom: 1px solid #2a3050; display: flex; align-items: center; padding: 0 20px; font-weight: 700; color: #e8edf8; }
+.dash-nav { background: #121212; border-right: 1px solid #2a3050; padding: 16px; }
+.dash-body { padding: 20px; background: #121212; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; align-content: start; }`
+},
+{
+name:"Blog Layout",
+preview:`<div style="width:230px;border:1px solid #2a3050;border-radius:8px;overflow:hidden"><div style="height:28px;background:#121212;border-bottom:1px solid #2a3050;display:flex;align-items:center;padding:0 8px;gap:6px"><div style="height:4px;background:#4facfe;border-radius:2px;width:30px"></div><div style="height:4px;background:#2a3050;border-radius:2px;width:50px;margin-left:auto"></div></div><div style="display:grid;grid-template-columns:1fr 80px;gap:0"><div style="background:#121212;padding:8px"><div style="height:6px;background:#2a3050;border-radius:3px;width:80%;margin-bottom:4px"></div><div style="height:5px;background:#2a3050;border-radius:3px;width:60%"></div></div><div style="background:#121212;border-left:1px solid #2a3050;padding:8px"><div style="height:5px;background:#2a3050;border-radius:3px;margin-bottom:4px"></div><div style="height:5px;background:#2a3050;border-radius:3px;width:70%"></div></div></div></div>`,
+html:`<div class="blog-layout">
+  <header class="blog-header">
+    <div class="blog-logo">Blog</div>
+    <nav><!-- links --></nav>
+  </header>
+  <div class="blog-body">
+    <article class="blog-content">
+      <!-- article -->
+    </article>
+    <aside class="blog-sidebar">
+      <!-- widgets -->
+    </aside>
+  </div>
+</div>`,
+css:`.blog-layout { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.blog-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; border-bottom: 1px solid #2a3050; margin-bottom: 32px; }
+.blog-body { display: grid; grid-template-columns: 1fr 280px; gap: 32px; }
+.blog-content { background: #121212; border: 1px solid #2a3050; border-radius: 10px; padding: 24px; }
+.blog-sidebar { background: #121212; border: 1px solid #2a3050; border-radius: 10px; padding: 16px; }`
+},
+{
+name:"Landing Page Layout",
+preview:`<div style="width:230px;border:1px solid #2a3050;border-radius:8px;overflow:hidden"><div style="height:20px;background:#121212;border-bottom:1px solid #2a3050"></div><div style="height:50px;background:linear-gradient(135deg,#121212,#121212);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px"><div style="height:5px;background:#e8edf8;border-radius:3px;width:70%"></div><div style="height:4px;background:#4a5270;border-radius:3px;width:50%"></div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:5px;background:#121212">${Array.from({length:3},()=>`<div style="background:#2a3050;border-radius:4px;height:20px"></div>`).join('')}</div><div style="height:14px;background:#121212;border-top:1px solid #2a3050"></div></div>`,
+html:`<div class="landing">
+  <nav class="landing-nav"><!-- nav --></nav>
+  <section class="landing-hero">
+    <h1>Your headline here</h1>
+    <p>Subheadline goes here.</p>
+    <button>Get started</button>
+  </section>
+  <section class="features"><!-- features --></section>
+  <footer class="landing-footer"><!-- footer --></footer>
+</div>`,
+css:`.landing { display: flex; flex-direction: column; min-height: 100vh; }
+.landing-nav { height: 56px; background: #121212; border-bottom: 1px solid #2a3050; display: flex; align-items: center; padding: 0 24px; }
+.landing-hero { padding: 80px 24px; text-align: center; background: linear-gradient(135deg, #121212, #121212); }
+.landing-hero h1 { font-size: 48px; font-weight: 800; color: #e8edf8; margin-bottom: 16px; }
+.features { padding: 60px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; background: #121212; }
+.landing-footer { background: #121212; border-top: 1px solid #2a3050; padding: 20px 24px; }`
+}
+];
+
+const TABS = [
+{
+name:"Underline Tabs",
+preview:`<div><div style="display:flex;border-bottom:1px solid #2a3050;gap:0;width:220px">${['Design','Code','Preview'].map((t,i)=>`<div style="padding:8px 14px;font-size:12px;cursor:pointer;border-bottom:2px solid ${i===0?'#4facfe':'transparent'};color:${i===0?'#4facfe':'#6b7599'};margin-bottom:-1px">${t}</div>`).join('')}</div><div style="padding:10px;font-size:11px;color:#6b7599;background:#121212;border-radius:0 0 6px 6px">Design panel content</div></div>`,
+html:`<div class="tabs-container">
+  <div class="tabs-nav underline">
+    <button class="tab active">Design</button>
+    <button class="tab">Code</button>
+    <button class="tab">Preview</button>
+  </div>
+  <div class="tab-content">Content here</div>
+</div>`,
+css:`.tabs-nav.underline { display: flex; border-bottom: 1px solid #2a3050; }
+.tab { padding: 10px 16px; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7599; font-size: 13px; cursor: pointer; font-family: inherit; margin-bottom: -1px; transition: all 0.2s; }
+.tab.active { color: #4facfe; border-bottom-color: #4facfe; }
+.tab-content { padding: 16px; background: #121212; border-radius: 0 0 8px 8px; color: #c8d0e8; font-size: 13px; }`
+},
+{
+name:"Pill Tabs",
+preview:`<div style="display:flex;gap:6px;background:#121212;border-radius:10px;padding:5px;width:220px">${['All','Active','Done'].map((t,i)=>`<div style="flex:1;padding:6px;text-align:center;font-size:11px;font-weight:${i===0?700:400};cursor:pointer;border-radius:7px;background:${i===0?'#121212':'transparent'};color:${i===0?'#e8edf8':'#6b7599'};box-shadow:${i===0?'0 1px 4px rgba(0,0,0,0.3)':'none'}">${t}</div>`).join('')}</div>`,
+html:`<div class="pill-tabs">
+  <div class="ptab active">All</div>
+  <div class="ptab">Active</div>
+  <div class="ptab">Done</div>
+</div>`,
+css:`.pill-tabs { display: flex; gap: 4px; background: #121212; border-radius: 10px; padding: 4px; }
+.ptab { flex: 1; padding: 7px; text-align: center; font-size: 12px; cursor: pointer; border-radius: 7px; color: #6b7599; transition: all 0.2s; }
+.ptab.active { background: #121212; color: #e8edf8; font-weight: 600; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }`
+},
+{
+name:"Icon Tabs",
+preview:`<div style="display:flex;gap:0;border-bottom:1px solid #2a3050;width:220px">${[['🎨','Design'],['⚙️','Settings'],['📊','Stats']].map(([e,t],i)=>`<div style="padding:8px 14px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border-bottom:2px solid ${i===0?'#4facfe':'transparent'};color:${i===0?'#4facfe':'#6b7599'};margin-bottom:-1px"><span style="font-size:16px">${e}</span><span style="font-size:10px">${t}</span></div>`).join('')}</div>`,
+html:`<div class="icon-tabs">
+  <button class="icon-tab active">
+    <span class="it-icon">🎨</span>
+    <span class="it-label">Design</span>
+  </button>
+  <button class="icon-tab">
+    <span class="it-icon">⚙️</span>
+    <span class="it-label">Settings</span>
+  </button>
+</div>`,
+css:`.icon-tabs { display: flex; border-bottom: 1px solid #2a3050; }
+.icon-tab { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 18px; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7599; cursor: pointer; margin-bottom: -1px; transition: all 0.2s; font-family: inherit; }
+.icon-tab.active { color: #4facfe; border-bottom-color: #4facfe; }
+.it-icon { font-size: 18px; }
+.it-label { font-size: 11px; }`
+},
+{
+name:"Vertical Tabs",
+preview:`<div style="display:flex;gap:0;width:220px;height:100px"><div style="width:80px;border-right:1px solid #2a3050;display:flex;flex-direction:column">${['Profile','Security','Billing'].map((t,i)=>`<div style="padding:8px 10px;font-size:11px;cursor:pointer;background:${i===0?'#121212':'transparent'};color:${i===0?'#e8edf8':'#6b7599'};border-right:${i===0?'2px solid #4facfe':'2px solid transparent'}">${t}</div>`).join('')}</div><div style="flex:1;background:#121212;padding:10px;font-size:10px;color:#6b7599">Profile settings</div></div>`,
+html:`<div class="vertical-tabs">
+  <div class="vtab-nav">
+    <button class="vtab active">Profile</button>
+    <button class="vtab">Security</button>
+    <button class="vtab">Billing</button>
+  </div>
+  <div class="vtab-content">Profile settings</div>
+</div>`,
+css:`.vertical-tabs { display: flex; }
+.vtab-nav { width: 160px; border-right: 1px solid #2a3050; flex-shrink: 0; }
+.vtab { display: block; width: 100%; padding: 10px 16px; text-align: left; background: none; border: none; border-right: 2px solid transparent; color: #6b7599; font-size: 13px; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+.vtab.active { background: #121212; color: #e8edf8; border-right-color: #4facfe; }
+.vtab-content { flex: 1; padding: 20px; background: #121212; color: #c8d0e8; font-size: 13px; }`
+},
+{
+name:"Boxed Tabs",
+preview:`<div><div style="display:flex;gap:4px;padding:4px;background:#121212;border-radius:8px 8px 0 0;width:220px">${['HTML','CSS','JS'].map((t,i)=>`<div style="padding:6px 12px;font-size:11px;font-weight:${i===0?600:400};cursor:pointer;border-radius:5px;background:${i===0?'#121212':'transparent'};color:${i===0?'#e8edf8':'#6b7599'};border:${i===0?'1px solid #2a3050':'1px solid transparent'}">${t}</div>`).join('')}</div><div style="background:#121212;border:1px solid #2a3050;padding:10px;border-radius:0 0 8px 8px;font-size:10px;color:#4facfe;width:218px">&lt;div&gt;content&lt;/div&gt;</div></div>`,
+html:`<div class="boxed-tabs">
+  <div class="btab-nav">
+    <button class="btab active">HTML</button>
+    <button class="btab">CSS</button>
+    <button class="btab">JS</button>
+  </div>
+  <div class="btab-panel"><!-- content --></div>
+</div>`,
+css:`.boxed-tabs { display: flex; flex-direction: column; }
+.btab-nav { display: flex; gap: 4px; padding: 4px; background: #121212; border-radius: 8px 8px 0 0; }
+.btab { padding: 7px 14px; background: none; border: 1px solid transparent; border-radius: 6px; color: #6b7599; font-size: 12px; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+.btab.active { background: #121212; border-color: #2a3050; color: #e8edf8; font-weight: 600; }
+.btab-panel { background: #121212; border: 1px solid #2a3050; border-radius: 0 0 8px 8px; padding: 16px; }`
+},
+{
+name:"Scrollable Tabs",
+preview:`<div style="width:220px;overflow:hidden"><div style="display:flex;gap:0;border-bottom:1px solid #2a3050;overflow-x:auto">${['Overview','Analytics','Reports','Settings','Members','Billing'].map((t,i)=>`<div style="padding:7px 12px;font-size:10px;white-space:nowrap;cursor:pointer;border-bottom:2px solid ${i===0?'#4facfe':'transparent'};color:${i===0?'#4facfe':'#6b7599'};margin-bottom:-1px;flex-shrink:0">${t}</div>`).join('')}</div></div>`,
+html:`<div class="scroll-tabs">
+  <div class="scroll-tabs-nav">
+    <button class="stab active">Overview</button>
+    <button class="stab">Analytics</button>
+    <button class="stab">Reports</button>
+    <button class="stab">Settings</button>
+    <button class="stab">Members</button>
+    <button class="stab">Billing</button>
+  </div>
+</div>`,
+css:`.scroll-tabs-nav { display: flex; border-bottom: 1px solid #2a3050; overflow-x: auto; scrollbar-width: none; }
+.scroll-tabs-nav::-webkit-scrollbar { display: none; }
+.stab { padding: 10px 14px; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7599; font-size: 13px; cursor: pointer; font-family: inherit; white-space: nowrap; flex-shrink: 0; margin-bottom: -1px; transition: all 0.2s; }
+.stab.active { color: #4facfe; border-bottom-color: #4facfe; }`
+},
+{
+name:"Gradient Tabs",
+preview:`<div><div style="display:flex;gap:0;width:220px">${['Design','Code','Preview'].map((t,i)=>`<div style="flex:1;padding:8px;text-align:center;font-size:11px;cursor:pointer;background:${i===0?'linear-gradient(135deg,#667eea,#764ba2)':'#121212'};color:${i===0?'#fff':'#6b7599'};border:1px solid #2a3050;${i===0?'border-radius:8px 8px 0 0':'border-bottom:none'}">${t}</div>`).join('')}</div><div style="background:#121212;border:1px solid #2a3050;border-top:none;border-radius:0 0 8px 8px;padding:8px;font-size:10px;color:#6b7599;width:220px">Content area</div></div>`,
+html:`<div class="grad-tabs">
+  <div class="grad-tab-nav">
+    <button class="gtab active">Design</button>
+    <button class="gtab">Code</button>
+    <button class="gtab">Preview</button>
+  </div>
+  <div class="gtab-panel">Content area</div>
+</div>`,
+css:`.grad-tab-nav { display: flex; }
+.gtab { flex: 1; padding: 10px; text-align: center; background: #121212; border: 1px solid #2a3050; border-bottom: none; color: #6b7599; font-size: 13px; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+.gtab.active { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border-color: transparent; border-radius: 8px 8px 0 0; }
+.gtab-panel { background: #121212; border: 1px solid #2a3050; border-radius: 0 0 8px 8px; padding: 16px; }`
+},
+{
+name:"Dot Indicator Tabs",
+preview:`<div style="display:flex;gap:0;width:220px;border-bottom:1px solid #2a3050">${['Feed','Explore','Saved'].map((t,i)=>`<div style="padding:8px 14px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer"><span style="font-size:11px;color:${i===0?'#e8edf8':'#6b7599'}">${t}</span>${i===0?`<div style="width:4px;height:4px;border-radius:50%;background:#4facfe"></div>`:'<div style="width:4px;height:4px"></div>'}</div>`).join('')}</div>`,
+html:`<div class="dot-tabs">
+  <button class="dtab active">
+    <span>Feed</span>
+    <div class="dot"></div>
+  </button>
+  <button class="dtab">
+    <span>Explore</span>
+    <div class="dot"></div>
+  </button>
+  <button class="dtab">
+    <span>Saved</span>
+    <div class="dot"></div>
+  </button>
+</div>`,
+css:`.dot-tabs { display: flex; border-bottom: 1px solid #2a3050; }
+.dtab { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 10px 16px; background: none; border: none; color: #6b7599; font-size: 13px; cursor: pointer; font-family: inherit; transition: color 0.2s; }
+.dtab.active { color: #e8edf8; }
+.dot { width: 4px; height: 4px; border-radius: 50%; background: transparent; }
+.dtab.active .dot { background: #4facfe; }`
+},
+{
+name:"Count Badge Tabs",
+preview:`<div style="display:flex;gap:0;border-bottom:1px solid #2a3050;width:220px">${[['Inbox',12],['Sent',0],['Drafts',3]].map(([t,n],i)=>`<div style="padding:8px 12px;display:flex;align-items:center;gap:5px;cursor:pointer;border-bottom:2px solid ${i===0?'#4facfe':'transparent'};color:${i===0?'#4facfe':'#6b7599'};margin-bottom:-1px"><span style="font-size:11px">${t}</span>${n>0?`<span style="background:${i===0?'rgba(79,172,254,0.15)':'rgba(107,117,153,0.15)'};color:${i===0?'#4facfe':'#6b7599'};font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">${n}</span>`:''}</div>`).join('')}</div>`,
+html:`<div class="badge-tabs">
+  <button class="bgtab active">
+    Inbox <span class="badge">12</span>
+  </button>
+  <button class="bgtab">Sent</button>
+  <button class="bgtab">
+    Drafts <span class="badge">3</span>
+  </button>
+</div>`,
+css:`.badge-tabs { display: flex; border-bottom: 1px solid #2a3050; }
+.bgtab { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7599; font-size: 13px; cursor: pointer; font-family: inherit; margin-bottom: -1px; transition: all 0.2s; }
+.bgtab.active { color: #4facfe; border-bottom-color: #4facfe; }
+.badge { background: rgba(107,117,153,0.15); color: #6b7599; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 10px; }
+.bgtab.active .badge { background: rgba(79,172,254,0.15); color: #4facfe; }`
+},
+{
+name:"Animated Slider Tabs",
+preview:`<style>@keyframes slidein{from{transform:translateX(-10px);opacity:0}to{transform:translateX(0);opacity:1}}</style><div style="position:relative;width:220px"><div style="display:flex;gap:0;border-bottom:2px solid #121212">${['React','Vue','Svelte'].map((t,i)=>`<div style="flex:1;padding:8px;text-align:center;font-size:11px;cursor:pointer;color:${i===0?'#e8edf8':'#6b7599'}">${t}</div>`).join('')}<div style="position:absolute;bottom:-2px;width:33.33%;height:2px;background:linear-gradient(90deg,#667eea,#4facfe);border-radius:2px;left:0;transition:left .3s"></div></div></div>`,
+html:`<div class="slider-tabs">
+  <div class="slider-nav">
+    <button class="sltab active" data-idx="0">React</button>
+    <button class="sltab" data-idx="1">Vue</button>
+    <button class="sltab" data-idx="2">Svelte</button>
+    <div class="slider-bar"></div>
+  </div>
+</div>`,
+css:`.slider-nav { position: relative; display: flex; border-bottom: 2px solid #121212; }
+.sltab { flex: 1; padding: 10px; text-align: center; background: none; border: none; color: #6b7599; font-size: 13px; cursor: pointer; font-family: inherit; transition: color 0.2s; }
+.sltab.active { color: #e8edf8; }
+.slider-bar { position: absolute; bottom: -2px; height: 2px; background: linear-gradient(90deg, #667eea, #4facfe); border-radius: 2px; transition: left 0.3s ease; width: 33.33%; left: 0; }`
+},
+{
+name:"Segmented Control",
+preview:`<div style="display:flex;background:#121212;border-radius:10px;padding:4px;border:1px solid #2a3050;width:220px">${['Day','Week','Month'].map((t,i)=>`<div style="flex:1;padding:6px;text-align:center;font-size:11px;font-weight:${i===1?700:400};cursor:pointer;border-radius:7px;background:${i===1?'#4facfe':'transparent'};color:${i===1?'#fff':'#6b7599'}">${t}</div>`).join('')}</div>`,
+html:`<div class="seg-control">
+  <button class="seg-btn">Day</button>
+  <button class="seg-btn active">Week</button>
+  <button class="seg-btn">Month</button>
+</div>`,
+css:`.seg-control { display: flex; background: #121212; border-radius: 10px; padding: 4px; border: 1px solid #2a3050; }
+.seg-btn { flex: 1; padding: 7px; text-align: center; background: none; border: none; border-radius: 7px; color: #6b7599; font-size: 13px; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+.seg-btn.active { background: #4facfe; color: #fff; font-weight: 600; }`
+},
+{
+name:"Top Navigation Bar Tabs",
+preview:`<div style="width:230px;background:#121212;border-bottom:1px solid #2a3050;display:flex;align-items:center;justify-content:space-between;padding:0 10px;height:36px"><div style="height:6px;background:#4facfe;border-radius:3px;width:24px"></div><div style="display:flex;gap:0">${['Home','About','Work','Contact'].map((t,i)=>`<div style="padding:0 8px;font-size:10px;cursor:pointer;color:${i===0?'#e8edf8':'#6b7599'};height:36px;display:flex;align-items:center;border-bottom:2px solid ${i===0?'#4facfe':'transparent'}">${t}</div>`).join('')}</div></div>`,
+html:`<nav class="navbar-tabs">
+  <div class="nav-brand">Logo</div>
+  <div class="nav-links">
+    <a class="nav-link active" href="#">Home</a>
+    <a class="nav-link" href="#">About</a>
+    <a class="nav-link" href="#">Work</a>
+    <a class="nav-link" href="#">Contact</a>
+  </div>
+</nav>`,
+css:`.navbar-tabs { display: flex; align-items: center; justify-content: space-between; background: #121212; border-bottom: 1px solid #2a3050; padding: 0 24px; height: 56px; }
+.nav-brand { font-weight: 700; color: #e8edf8; }
+.nav-links { display: flex; height: 100%; }
+.nav-link { display: flex; align-items: center; padding: 0 16px; color: #6b7599; text-decoration: none; font-size: 13px; border-bottom: 2px solid transparent; transition: all 0.2s; }
+.nav-link.active { color: #e8edf8; border-bottom-color: #4facfe; }
+.nav-link:hover { color: #e8edf8; }`
+},
+{
+name:"Floating Tabs",
+preview:`<div style="display:flex;gap:6px;background:#121212;border-radius:50px;padding:5px;box-shadow:0 4px 20px rgba(0,0,0,0.4);width:220px">${['All','Photos','Videos','Files'].map((t,i)=>`<div style="flex:1;padding:5px;text-align:center;font-size:10px;cursor:pointer;border-radius:50px;background:${i===0?'linear-gradient(135deg,#667eea,#4facfe)':'transparent'};color:${i===0?'#fff':'#6b7599'}">${t}</div>`).join('')}</div>`,
+html:`<div class="float-tabs">
+  <button class="ftab active">All</button>
+  <button class="ftab">Photos</button>
+  <button class="ftab">Videos</button>
+  <button class="ftab">Files</button>
+</div>`,
+css:`.float-tabs { display: flex; gap: 4px; background: #121212; border-radius: 50px; padding: 5px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+.ftab { flex: 1; padding: 7px 12px; border-radius: 50px; border: none; background: transparent; color: #6b7599; font-size: 12px; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+.ftab.active { background: linear-gradient(135deg, #667eea, #4facfe); color: #fff; font-weight: 600; }`
+},
+{
+name:"Card Tabs",
+preview:`<div style="width:220px"><div style="display:flex;gap:6px;margin-bottom:8px">${['Overview','Details'].map((t,i)=>`<div style="flex:1;padding:8px;text-align:center;font-size:11px;cursor:pointer;border-radius:8px;background:${i===0?'#121212':'transparent'};color:${i===0?'#e8edf8':'#6b7599'};border:1px solid ${i===0?'#2a3050':'transparent'};font-weight:${i===0?600:400}">${t}</div>`).join('')}</div><div style="background:#121212;border:1px solid #2a3050;border-radius:8px;padding:10px;font-size:10px;color:#6b7599">Tab content goes here</div></div>`,
+html:`<div class="card-tabs">
+  <div class="ctab-nav">
+    <button class="ctab active">Overview</button>
+    <button class="ctab">Details</button>
+  </div>
+  <div class="ctab-panel">Content here</div>
+</div>`,
+css:`.ctab-nav { display: flex; gap: 6px; margin-bottom: 10px; }
+.ctab { flex: 1; padding: 9px; text-align: center; background: transparent; border: 1px solid transparent; border-radius: 8px; color: #6b7599; font-size: 13px; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+.ctab.active { background: #121212; border-color: #2a3050; color: #e8edf8; font-weight: 600; }
+.ctab-panel { background: #121212; border: 1px solid #2a3050; border-radius: 8px; padding: 16px; color: #c8d0e8; font-size: 13px; }`
+},
+{
+name:"Bottom Tab Bar",
+preview:`<div style="width:220px;background:#121212;border-top:1px solid #2a3050;border-radius:8px;display:flex">${[['🏠','Home'],['🔍','Search'],['❤️','Saved'],['👤','Profile']].map(([e,t],i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:8px;gap:2px;cursor:pointer"><span style="font-size:16px">${e}</span><span style="font-size:9px;color:${i===0?'#4facfe':'#6b7599'}">${t}</span>${i===0?`<div style="width:4px;height:4px;border-radius:50%;background:#4facfe"></div>`:''}</div>`).join('')}</div>`,
+html:`<nav class="bottom-tabs">
+  <button class="btmtab active">
+    <span>🏠</span>
+    <span>Home</span>
+  </button>
+  <button class="btmtab">
+    <span>🔍</span>
+    <span>Search</span>
+  </button>
+  <button class="btmtab">
+    <span>❤️</span>
+    <span>Saved</span>
+  </button>
+  <button class="btmtab">
+    <span>👤</span>
+    <span>Profile</span>
+  </button>
+</nav>`,
+css:`.bottom-tabs { position: fixed; bottom: 0; left: 0; right: 0; background: #121212; border-top: 1px solid #2a3050; display: flex; z-index: 50; }
+.btmtab { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px; gap: 3px; background: none; border: none; cursor: pointer; font-family: inherit; color: #6b7599; font-size: 10px; transition: color 0.2s; }
+.btmtab.active { color: #4facfe; }
+.btmtab:first-child { font-size: 18px; }
+.btmtab span:first-child { font-size: 20px; }`
+}
+];
+
+// ═══════════════════════════════════════════════════
+// RENDER ENGINE
+// ═══════════════════════════════════════════════════
+function buildGrid(items, gridId) {
+  const grid = document.getElementById(gridId);
+  items.forEach((comp, idx) => {
+    const card = document.createElement('div');
+    card.className = 'comp-card';
+
+    const prev = document.createElement('div');
+    prev.className = 'comp-preview';
+    prev.innerHTML = comp.preview;
+
+    const footer = document.createElement('div');
+    footer.className = 'comp-footer';
+
+    const name = document.createElement('span');
+    name.className = 'comp-name';
+    name.textContent = comp.name;
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'copy-btn';
+    copyBtn.textContent = 'Send to Canvas';
+    copyBtn.onclick = () => sendToCanvas(comp, copyBtn);
+
+    footer.appendChild(name);
+    footer.appendChild(copyBtn);
+    card.appendChild(prev);
+    card.appendChild(footer);
+    grid.appendChild(card);
+  });
+}
+
+function sendToCanvas(comp, btn) {
+  const containerCss = `* { box-sizing: border-box; margin: 0; padding: 0; }
+body { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #121212; font-family: 'Inter', system-ui, sans-serif; padding: 40px; }
+${comp.css}`;
+  parent.postMessage({ type: 'tool-output', toolName: 'UI Library', name: comp.name, html: comp.html, css: containerCss }, '*');
+  btn.textContent = '✓ Sent!';
+  btn.classList.add('copied');
+  showToast(comp.name + ' sent to canvas!');
+  setTimeout(() => { btn.textContent = 'Send to Canvas'; btn.classList.remove('copied'); }, 2000);
+}
+
+function showCat(cat, el) {
+  document.querySelectorAll('.cat-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + cat).classList.add('active');
+  el.classList.add('active');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 2000);
+}
+
+// Build all grids
+buildGrid(BARS, 'grid-bar');
+buildGrid(BUTTONS, 'grid-button');
+buildGrid(CARDS, 'grid-card');
+buildGrid(GRIDS, 'grid-grid');
+buildGrid(INPUTS, 'grid-input');
+buildGrid(LAYOUTS, 'grid-layout');
+buildGrid(TABS, 'grid-tabs');
+</script>
+</body>
+</html>

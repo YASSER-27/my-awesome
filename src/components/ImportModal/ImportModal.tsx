@@ -15,6 +15,7 @@ export default function ImportModal({ onClose }: Props) {
   const saveImport = useAppStore(s => s.saveImport)
 
   const [htmlOnly, setHtmlOnly] = useState(true)
+  const [jsxOnly, setJsxOnly] = useState(false)
   const [html, setHtml] = useState('')
   const [css, setCss] = useState('')
   const [js, setJs] = useState('')
@@ -45,6 +46,7 @@ export default function ImportModal({ onClose }: Props) {
   }
 
   const detectSource = () => {
+    if (jsxOnly) return 'jsx'
     const hasHtml = html.trim().length > 0
     const hasCss = css.trim().length > 0 && !htmlOnly
     const hasJs = js.trim().length > 0 && !htmlOnly
@@ -55,6 +57,30 @@ export default function ImportModal({ onClose }: Props) {
 
   const handleSubmit = () => {
     const trimmedHtml = html.trim()
+    const trimmedJs = js.trim()
+
+    if (jsxOnly) {
+      if (!trimmedJs) return
+      const name = fileName || 'React Component'
+      saveImport({ name, html: '<div id="root"></div>', css: '', js: trimmedJs, source: 'jsx' })
+      const newEl: CanvasElement = {
+        id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2),
+        componentId: 'import-jsx-' + Date.now(),
+        x: 100 + Math.random() * 200, y: 100 + Math.random() * 200,
+        width: 360, height: 240,
+        name, category: 'Imports', type: 'jsx',
+        html: '<div id="root"></div>', css: '', js: trimmedJs,
+        description: 'React JSX component', source: 'jsx', mode: 'source',
+      }
+      addCanvasElement(newEl)
+      if (canvasElements.length > 0) {
+        addConnection({ id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2), fromId: canvasElements[canvasElements.length - 1].id, toId: newEl.id })
+      }
+      selectElement(newEl.id)
+      onClose()
+      return
+    }
+
     if (!trimmedHtml) return
 
     // Smart linking: wrap CSS in <style> and inject into HTML
@@ -124,31 +150,51 @@ export default function ImportModal({ onClose }: Props) {
           </div>
 
           <div className="import-toggle-row">
-            <span className="import-toggle-label">HTML only</span>
+            <span className="import-toggle-label">JSX only</span>
             <label className="import-switch">
-              <input type="checkbox" checked={htmlOnly} onChange={e => setHtmlOnly(e.target.checked)} />
+              <input type="checkbox" checked={jsxOnly} onChange={e => { setJsxOnly(e.target.checked); if (e.target.checked) setHtmlOnly(true) }} />
               <span className="import-slider"></span>
             </label>
           </div>
 
-          <div className="import-field">
-            <label className="import-field-label">HTML</label>
-            <textarea className="import-textarea" value={html} onChange={e => setHtml(e.target.value)}
-              placeholder="<div>Your HTML here...</div>" spellCheck={false} />
-          </div>
-
-          {!htmlOnly && (
+          {jsxOnly ? (
+            <div className="import-field">
+              <label className="import-field-label">React JSX Code</label>
+              <textarea className="import-textarea" value={js} onChange={e => setJs(e.target.value)}
+                placeholder={'function App() {\n  const [count, setCount] = useState(0);\n  return (\n    <div>\n      <p>Count: {count}</p>\n      <button onClick={() => setCount(c => c + 1)}>+</button>\n    </div>\n  );\n}'} spellCheck={false} />
+              <span style={{ fontSize: 10, color: '#555', marginTop: 2 }}>React 18 + Babel auto-included. Use JSX, hooks, returns JSX.</span>
+            </div>
+          ) : (
             <>
-              <div className="import-field">
-                <label className="import-field-label">CSS</label>
-                <textarea className="import-textarea" value={css} onChange={e => setCss(e.target.value)}
-                  placeholder=".my-class { color: #00c8ff; }" spellCheck={false} />
+              <div className="import-toggle-row">
+                <span className="import-toggle-label">HTML only</span>
+                <label className="import-switch">
+                  <input type="checkbox" checked={htmlOnly} onChange={e => setHtmlOnly(e.target.checked)} />
+                  <span className="import-slider"></span>
+                </label>
               </div>
+
               <div className="import-field">
-                <label className="import-field-label">JS</label>
-                <textarea className="import-textarea" value={js} onChange={e => setJs(e.target.value)}
-                  placeholder="console.log('hello');" spellCheck={false} />
+                <label className="import-field-label">HTML</label>
+                <textarea className="import-textarea" value={html} onChange={e => setHtml(e.target.value)}
+                  placeholder="<div>Your HTML here...</div>" spellCheck={false} />
               </div>
+
+              {!htmlOnly && (
+                <>
+                  <div className="import-field">
+                    <label className="import-field-label">CSS</label>
+                    <textarea className="import-textarea" value={css} onChange={e => setCss(e.target.value)}
+                      placeholder=".my-class { color: #00c8ff; }" spellCheck={false} />
+                  </div>
+                  <div className="import-field">
+                    <label className="import-field-label">JS (React JSX)</label>
+                    <textarea className="import-textarea" value={js} onChange={e => setJs(e.target.value)}
+                      placeholder={'function App() {\n  const [count, setCount] = useState(0);\n  return <button onClick={() => setCount(c+1)}>Count: {count}</button>;\n}'} spellCheck={false} />
+                    <span style={{ fontSize: 10, color: '#555', marginTop: 2 }}>React 18 + Babel auto-included in preview. Use JSX, hooks, MUI etc.</span>
+                  </div>
+                </>
+              )}
             </>
           )}
 
@@ -159,7 +205,7 @@ export default function ImportModal({ onClose }: Props) {
 
         <div className="import-footer">
           <button className="import-cancel" onClick={onClose}>Cancel</button>
-          <button className="import-submit" onClick={handleSubmit} disabled={!html.trim()}>
+          <button className="import-submit" onClick={handleSubmit} disabled={jsxOnly ? !js.trim() : !html.trim()}>
             Add to Canvas
           </button>
         </div>
