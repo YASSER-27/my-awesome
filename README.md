@@ -56,6 +56,9 @@ The Quick Menu in the top navigation includes:
 - AI-assisted tool creation and updates.
 - Asset and image management through Quick Tool.
 
+<img width="3840" height="2160" alt="showcase_17_Stage_ _Wings_1787172174" src="https://github.com/user-attachments/assets/31de91a9-e75c-4bf6-a1ec-2e93f37033db" />
+
+
 ## Getting Started
 
 ### Requirements
