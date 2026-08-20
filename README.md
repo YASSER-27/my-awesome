@@ -1,12 +1,12 @@
 <p align="center">
   <a href="https://github.com/YASSER-27/my-awesome/releases/tag/1.3.0">
-    <img src="assets/icon.png" width="200" alt="Logo">
+    <img src="assets/icon.png" width="230" alt="Logo">
   </a>
 </p>
 
-Version 1.3.0
-
+<p align="center">
 A desktop application for visually building and composing UI components on an interactive canvas. Drag components from the sidebar, connect them, preview live HTML/CSS output, and export or generate code.
+</p>
 
 ## What's New in 1.3.0
 
